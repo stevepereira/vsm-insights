@@ -18,6 +18,11 @@
 		"sparkMasterExecutionEndPoint": "http://localhost:4040"
 	},
 
+	"queryCache": 
+	{
+		"esCacheIndex": "neo4j-cached-results/querycacheresult"
+	},
+
 	"emailConfiguration": 
 	{
 		"sendEmailEnabled": true,
@@ -94,11 +99,6 @@
 		"unzipPath": "D://download",
 		"agentExchange": "iAgent",
 		"agentPkgQueue": "INSIGHTS.AGENTS.PACKAGE"
-	},
-
-	"queryCache": 
-	{
-		"esCacheIndex": "http://localhost:9200/neo4j-cached-results/querycacheresult"
 	},
 
 	"insightsServiceURL": "http://localhost:8080",
