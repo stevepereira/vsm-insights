@@ -64,7 +64,13 @@ public class ApplicationConfigProvider implements Serializable {
 			instance.refreshTime = new Date();
 		}
 	}
+	public MaturityModel getMaturityModel() {
+		return maturityModel;
+	}
 
+	public void setMaturityModel(MaturityModel maturityModel) {
+		this.maturityModel = maturityModel;
+	}
 	public static ApplicationConfigProvider getInstance() {
 		return instance;
 	}

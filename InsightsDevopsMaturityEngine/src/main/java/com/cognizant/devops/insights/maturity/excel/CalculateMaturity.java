@@ -60,18 +60,7 @@ import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 public class CalculateMaturity {
 
 	public void calculateMaturity() {
-		System.out.println("Inside CalculateMaturity");
-		
-		Gson gson = new Gson();
-		
 		String file_name = ApplicationConfigProvider.getInstance().getMaturityModel().getFileMaturelocation();//filematurelocation
-		System.out.println(file_name);
-		
-		//ApplicationConfigProvider config = gson.fromJson(jsonElement.getAsJsonObject(), ApplicationConfigProvider.class);
-		JsonParser parser = new JsonParser();
-		JsonElement data = parser.parse(ApplicationConfigCache.readConfigFile());
-		JsonObject dashboardData = data.getAsJsonObject();
-		//JsonArray excelData = getExcelDataAsJsonObject("C:\\Insights-master\\Insights-maturity-model\\InsightsDevopsMaturityEngine\\src\\main\\resources\\MaturityAssessmentFramework_v_0.1.xlsx");
 		JsonArray excelData = getExcelDataAsJsonObject(file_name);
 		List<Questionnaire> questionList = initialize(excelData);
 		Map<String,Integer> vectorScore = new HashMap<>(5);
