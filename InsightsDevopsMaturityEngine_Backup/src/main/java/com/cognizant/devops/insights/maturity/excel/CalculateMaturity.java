@@ -37,42 +37,23 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-
 import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
-import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphResponse;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jDBHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
-import com.cognizant.devops.platformcommons.constants.ConfigOptions;
-import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
-
 
 @SuppressWarnings("restriction")
 public class CalculateMaturity {
 
 	public void calculateMaturity() {
-		System.out.println("Inside CalculateMaturity");
 		
-		Gson gson = new Gson();
-		
-		String file_name = ApplicationConfigProvider.getInstance().getMaturityModel().getFileMaturelocation();//filematurelocation
-		System.out.println(file_name);
-		
-		//ApplicationConfigProvider config = gson.fromJson(jsonElement.getAsJsonObject(), ApplicationConfigProvider.class);
-		JsonParser parser = new JsonParser();
-		JsonElement data = parser.parse(ApplicationConfigCache.readConfigFile());
-		JsonObject dashboardData = data.getAsJsonObject();
-		//JsonArray excelData = getExcelDataAsJsonObject("C:\\Insights-master\\Insights-maturity-model\\InsightsDevopsMaturityEngine\\src\\main\\resources\\MaturityAssessmentFramework_v_0.1.xlsx");
-		JsonArray excelData = getExcelDataAsJsonObject(file_name);
+		JsonArray excelData = getExcelDataAsJsonObject("D:\\proj\\devops maturity\\MaturityAssessmentSingleSheet.xlsx");
 		List<Questionnaire> questionList = initialize(excelData);
 		Map<String,Integer> vectorScore = new HashMap<>(5);
 		calculateVectorScore(questionList,vectorScore);
@@ -87,7 +68,6 @@ public class CalculateMaturity {
 	private void calculateVectorScore(List<Questionnaire> questionList,
 			Map<String, Integer> vectorScore) {
 		Integer totalScore = 0;
-		Integer currentScore = 0;
 		String source;
 		String operation;
 		String leftHandValue;
@@ -99,7 +79,6 @@ public class CalculateMaturity {
 		String activity;
 		List<Questionnaire> rulePassedQuestionList = new ArrayList<>();
 		for(Questionnaire data :questionList) {
-			
 			source = data.getResponseSource();
 			operation = data.getComparisonOperation();
 			leftHandValue = data.getExpectedResponse();
@@ -112,44 +91,39 @@ public class CalculateMaturity {
 				vectorScore.put(tempVectorName, totalScore);
 				totalScore = 0;
 			}
+				
 			if ("Input".equalsIgnoreCase(source)) {
 				rightHandValue = data.getResponse();
 				if(operation(operation, leftHandValue, rightHandValue,comparisonDataType)) {
 					totalScore += inputScore;
-					currentScore = inputScore;
-					System.out.println(operation(operation, leftHandValue, rightHandValue,comparisonDataType) + " -- " + rightHandValue );
-					
 					rulePassedQuestionList.add(data);
 				}
 			} else if ("DB".equalsIgnoreCase(source)) {
 				rightHandValue = calculateScoreFromGraphDB(data.getQuery());
 				if(operation(operation, leftHandValue, rightHandValue,comparisonDataType)) {
 					totalScore += inputScore;
-					currentScore = inputScore;
 					rulePassedQuestionList.add(data);
 				}
 			}
-			data.setCurrentScore(currentScore);
 			tempVectorName = vector;
-			
 		}
-		//System.out.println(rulePassedQuestionList);
-		Map<String,Integer> scoreByVector = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
-														Collectors.summingInt(Questionnaire::getCurrentScore)));
 		
-		Map<String,Double> scoreAvgByVector = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
-				Collectors.averagingInt(Questionnaire::getCurrentScore)));
+		Map<String,Integer> scoreByVector = rulePassedQuestionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
+														Collectors.summingInt(Questionnaire::getScore)));
+		
+		Map<String,Double> scoreAvgByVector = rulePassedQuestionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
+				Collectors.averagingInt(Questionnaire::getScore)));
 		
 		System.out.println("GroupB SUM"+scoreByVector);
 		System.out.println("GroupB Avr"+scoreAvgByVector);
 		
 		Map<String, Map<String,Set<String>>> mappingByVectorToActivityToCategory
-        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, Collectors.mapping(Questionnaire::getCategory,Collectors.toSet()))));
+        = rulePassedQuestionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, Collectors.mapping(Questionnaire::getCategory,Collectors.toSet()))));
 		System.out.println(mappingByVectorToActivityToCategory);
 		
 		Map<String, Map<String,Map<String,Integer>>> mappingByVectorToActivityToCategoryToScore
-        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
-        		Collectors.groupingBy(Questionnaire::getCategory,Collectors.summingInt(Questionnaire::getCurrentScore)))));
+        = rulePassedQuestionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
+        		Collectors.groupingBy(Questionnaire::getCategory,Collectors.summingInt(Questionnaire::getScore)))));
 		
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	    gson.toJson(mappingByVectorToActivityToCategoryToScore, System.out);

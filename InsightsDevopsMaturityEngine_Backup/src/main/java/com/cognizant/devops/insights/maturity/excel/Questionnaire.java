@@ -33,13 +33,11 @@ public class Questionnaire  implements Serializable{
 	String ExpectedResponse;
 	String Response;
 	Integer Score = 0;
-	Integer currentScore = 0;
-
 	String ComparisonOperation;
 	String InputDataType;
 	String SourceName;
 	String Query;
-
+	
 	public Integer getSrNo() {
 		return SrNo;
 	}
@@ -93,12 +91,6 @@ public class Questionnaire  implements Serializable{
 	}
 	public void setScore(Integer score) {
 		Score = score;
-	}
-	public Integer getCurrentScore() {
-		return currentScore;
-	}
-	public void setCurrentScore(Integer currentScore) {
-		this.currentScore = currentScore;
 	}
 	public String getComparisonOperation() {
 		return ComparisonOperation;
