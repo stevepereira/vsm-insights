@@ -3,7 +3,9 @@
 	{
 		"elasticSearchEndpoint": "http://localhost:9200"
 	},
-
+	"maturityModel": {
+		"fileMaturelocation": "/location/to/the/file/path"
+	},
 	"sparkConfigurations": 
 	{
 		"appName": "inSights",
