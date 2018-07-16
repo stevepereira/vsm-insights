@@ -18,14 +18,20 @@ package com.cognizant.devops.platformcommons.config;
 import java.io.Serializable;
 
 public class MaturityModel implements Serializable{
-	private String fileMaturelocation;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2861103145963037836L;
+	
+	private String inputFilelocation;
 
-	public String getFileMaturelocation() {
-		return fileMaturelocation;
+	public String getInputFilelocation() {
+		return inputFilelocation;
 	}
 
-	public void setFileMaturelocation(String fileMaturelocation) {
-		this.fileMaturelocation = fileMaturelocation;
+	public void setInputFilelocation(String inputFilelocation) {
+		this.inputFilelocation = inputFilelocation;
 	}
+
 
 }

@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -37,40 +37,32 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-
 import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
+import com.cognizant.devops.platformcommons.core.util.InsightsUtils;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphResponse;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jDBHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-
-import com.cognizant.devops.platformcommons.constants.ConfigOptions;
-import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 
 
 @SuppressWarnings("restriction")
 public class CalculateMaturity {
+	
+	private String ROOTNODENAME = "DEVOPSMATURITY";
+	private String cypherQuery = "";
 
 	public void calculateMaturity() {
-		String file_name = ApplicationConfigProvider.getInstance().getMaturityModelConfig().getFileMaturelocation();//filematurelocation
-		JsonArray excelData = getExcelDataAsJsonObject(file_name);
+		String fileName = ApplicationConfigProvider.getInstance().getMaturityModelConfig().getInputFilelocation();//filematurelocation
+		JsonArray excelData = getExcelDataAsJsonObject(fileName);
 		List<Questionnaire> questionList = initialize(excelData);
 		Map<String,Integer> vectorScore = new HashMap<>(5);
 		calculateVectorScore(questionList,vectorScore);
-		System.out.println("Vector scores "+vectorScore);
-		Integer totalmaturityScore = 0;
-		for(Map.Entry<String, Integer> entry :vectorScore.entrySet()) {
-			totalmaturityScore += entry.getValue();
-		}
-		System.out.println("Total Devops Maturity Score - "+totalmaturityScore);
 	}
 	
 	private void calculateVectorScore(List<Questionnaire> questionList,
@@ -122,7 +114,9 @@ public class CalculateMaturity {
 			tempVectorName = vector;
 			
 		}
-		//System.out.println(rulePassedQuestionList);
+		
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		
 		Map<String,Integer> scoreByVector = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
 														Collectors.summingInt(Questionnaire::getCurrentScore)));
 		
@@ -132,23 +126,73 @@ public class CalculateMaturity {
 		System.out.println("GroupB SUM"+scoreByVector);
 		System.out.println("GroupB Avr"+scoreAvgByVector);
 		
-		Map<String, Map<String,Set<String>>> mappingByVectorToActivityToCategory
-        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, Collectors.mapping(Questionnaire::getCategory,Collectors.toSet()))));
-		System.out.println(mappingByVectorToActivityToCategory);
+		Map<String, Map<String,Integer>> mappingByVectorToActivity
+        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
+        		Collectors.summingInt(Questionnaire::getCurrentScore))));
+		
+		gson.toJson(mappingByVectorToActivity, System.out);
+		
+		Map<String, Map<String,Double>> mappingByVectorToActivityAvg
+        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
+        		Collectors.averagingInt(Questionnaire::getCurrentScore))));
+		
+		gson.toJson(mappingByVectorToActivityAvg, System.out);
 		
 		Map<String, Map<String,Map<String,Integer>>> mappingByVectorToActivityToCategoryToScore
         = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
         		Collectors.groupingBy(Questionnaire::getCategory,Collectors.summingInt(Questionnaire::getCurrentScore)))));
 		
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-	    gson.toJson(mappingByVectorToActivityToCategoryToScore, System.out);
+		Map<String, Map<String,Map<String,Double>>> mappingByVectorToActivityToCategoryToScoreAverage
+        = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
+        		Collectors.groupingBy(Questionnaire::getCategory,Collectors.averagingInt(Questionnaire::getCurrentScore)))));
+		
+		//Store result in DB 		
+		Iterator<Entry<String, Map<String, Map<String, Double>>>> scoreItr = mappingByVectorToActivityToCategoryToScoreAverage.entrySet().iterator();
+		
+		while(scoreItr.hasNext()) {
+			Entry<String, Map<String, Map<String, Double>>> scoreEntry = scoreItr.next();
+			String vectorName = scoreEntry.getKey();
+			Map<String, Map<String, Double>> activityMap = scoreEntry.getValue();
+			Iterator<Entry<String, Map<String, Double>>> activityMapItr = activityMap.entrySet().iterator();
+			Map<String,Double> activityAvgMap = mappingByVectorToActivityAvg.get(vectorName);
+			while(activityMapItr.hasNext()) {
+				Map.Entry<String,Map<String,Double>> categoryMapEntry = activityMapItr.next();
+				String activityName = categoryMapEntry.getKey();
+				Double avgActivityScore = activityAvgMap.get(activityName);
+				Map<String,Double> categoryMap = categoryMapEntry.getValue();
+				categoryMap.put("avgActivityScore", avgActivityScore);
+				storeLatestMaturity(vectorName,activityName,categoryMap);
+			}
+		}
+		
+		
+	 /*   gson.toJson(mappingByVectorToActivityToCategoryToScore, System.out);
+	    System.out.println();
+	    gson.toJson(mappingByVectorToActivityToCategoryToScoreAverage, System.out);*/
 	    
-		//System.out.println(mappingByVectorToActivityToCategoryToScore);
-		
-		
-			vectorScore.put(tempVectorName, totalScore);
+	    
+		vectorScore.put(tempVectorName, totalScore);
 	}
 	
+	private void storeLatestMaturity(String nodeLabels, String activityName, Map<String, Double> categoryMap) {
+		try {
+			 
+			nodeLabels = ROOTNODENAME+":"+ nodeLabels;
+			JsonObject json = new GsonBuilder().setPrettyPrinting().create().toJsonTree(categoryMap).getAsJsonObject();
+			json.addProperty("activity", activityName);
+			json.addProperty("creationDate", InsightsUtils.getTodayTime());
+			
+			Neo4jDBHandler neo4jDBHandler = new Neo4jDBHandler();
+			neo4jDBHandler.createNodesWithLabel(json,nodeLabels);
+			
+			System.out.println("Label "+nodeLabels);
+			System.out.println(json);
+			
+		} catch (Exception e) {
+		}
+		
+	}
+
 	private String calculateScoreFromGraphDB(String query) {
 		try {
 			Neo4jDBHandler neo4jDBHandler = new Neo4jDBHandler();
@@ -256,7 +300,7 @@ public class CalculateMaturity {
 
 			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 
-				ArrayList<String> columnNames = new ArrayList<String>();
+				ArrayList<String> columnNames = new ArrayList<>();
 				Sheet sheet = workbook.getSheetAt(i);
 				if(!"Questionnaire".equals(sheet.getSheetName())) {
 					continue;

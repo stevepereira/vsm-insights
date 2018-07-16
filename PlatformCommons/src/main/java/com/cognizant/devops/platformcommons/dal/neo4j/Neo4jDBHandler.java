@@ -72,6 +72,26 @@ public class Neo4jDBHandler {
 		return buildResponseJson(response);
 	}
 
+	public JsonObject createNodesWithLabel(JsonObject data, String queryLabel)
+			throws GraphDBException {
+		if (data == null) {
+			return new JsonObject();
+		}
+		String cypherQuery = "CREATE (n:" + queryLabel + " {props}) return n";
+		
+		JsonObject requestJson = new JsonObject();
+		JsonArray statementArray = new JsonArray();
+		JsonObject statement = getCreateCypherQueryStatement(data, cypherQuery);
+		statementArray.add(statement);
+		requestJson.add("statements", statementArray);
+		
+		ClientResponse response = doCommitCall(requestJson);
+		if (response.getStatus() != 200) {
+			throw new GraphDBException(response);
+		}
+		return buildResponseJson(response);
+	}
+	
 	/**
 	 * @param dataList
 	 * @param labels
@@ -289,13 +309,10 @@ public class Neo4jDBHandler {
 	 */
 	private ClientResponse doCommitCall(JsonObject requestJson) {
 		WebResource resource = Client.create()
-				// .resource("http://localhost:7474/db/data/transaction/commit");
 				.resource(ApplicationConfigProvider.getInstance().getGraph().getEndpoint()
 						+ "/db/data/transaction/commit");
 		ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
 				.header("Authorization", ApplicationConfigProvider.getInstance().getGraph().getAuthToken())
-				// ClientResponse response = resource.accept( MediaType.APPLICATION_JSON
-				// ).header("Authorization", "Basic bmVvNGo6YWRtaW4=")
 				.type(MediaType.APPLICATION_JSON).entity(requestJson.toString()).post(ClientResponse.class);
 		return response;
 	}
