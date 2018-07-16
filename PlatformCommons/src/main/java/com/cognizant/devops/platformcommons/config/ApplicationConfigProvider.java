@@ -30,6 +30,7 @@ public class ApplicationConfigProvider implements Serializable {
 	private static ApplicationConfigProvider instance = new ApplicationConfigProvider();
 	private EndpointData endpointData = new EndpointData();
 	private SparkConfigurations sparkConfigurations = new SparkConfigurations();
+	private MaturityModel maturityModel = new MaturityModel();
 	private LDAPConfiguration ldapConfiguration = new LDAPConfiguration();
 	private GraphData graph = new GraphData();
 	private GrafanaData grafana = new GrafanaData();
