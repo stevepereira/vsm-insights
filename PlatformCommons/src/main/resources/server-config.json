@@ -3,7 +3,7 @@
 	{
 		"elasticSearchEndpoint": "http://localhost:9200"
 	},
-	"maturityModel": {
+	"maturityModelConfig": {
 		"fileMaturelocation": "/location/to/the/file/path"
 	},
 	"sparkConfigurations": 
