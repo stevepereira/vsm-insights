@@ -60,7 +60,7 @@ import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 public class CalculateMaturity {
 
 	public void calculateMaturity() {
-		String file_name = ApplicationConfigProvider.getInstance().getMaturityModel().getFileMaturelocation();//filematurelocation
+		String file_name = ApplicationConfigProvider.getInstance().getMaturityModelConfig().getFileMaturelocation();//filematurelocation
 		JsonArray excelData = getExcelDataAsJsonObject(file_name);
 		List<Questionnaire> questionList = initialize(excelData);
 		Map<String,Integer> vectorScore = new HashMap<>(5);
