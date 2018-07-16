@@ -30,7 +30,7 @@ public class ApplicationConfigProvider implements Serializable {
 	private static ApplicationConfigProvider instance = new ApplicationConfigProvider();
 	private EndpointData endpointData = new EndpointData();
 	private SparkConfigurations sparkConfigurations = new SparkConfigurations();
-	private MaturityModel maturityModel = new MaturityModel();
+	private MaturityModel maturityModelConfig = new MaturityModel();
 	private LDAPConfiguration ldapConfiguration = new LDAPConfiguration();
 	private GraphData graph = new GraphData();
 	private GrafanaData grafana = new GrafanaData();
@@ -65,12 +65,12 @@ public class ApplicationConfigProvider implements Serializable {
 			instance.refreshTime = new Date();
 		}
 	}
-	public MaturityModel getMaturityModel() {
-		return maturityModel;
+	public MaturityModel getMaturityModelConfig() {
+		return maturityModelConfig;
 	}
 
-	public void setMaturityModel(MaturityModel maturityModel) {
-		this.maturityModel = maturityModel;
+	public void setMaturityModelConfig(MaturityModel maturityModelConfig) {
+		this.maturityModelConfig = maturityModelConfig;
 	}
 	public static ApplicationConfigProvider getInstance() {
 		return instance;
