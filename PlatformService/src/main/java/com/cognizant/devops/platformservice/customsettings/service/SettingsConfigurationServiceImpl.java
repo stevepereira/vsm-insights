@@ -15,10 +15,17 @@
  *******************************************************************************/
 package com.cognizant.devops.platformservice.customsettings.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
+import com.cognizant.devops.platformcommons.core.enums.InsightsSettingTypes;
 import com.cognizant.devops.platformcommons.core.util.DataPurgingUtils;
+import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfigurationDAL;
 import com.google.gson.JsonObject;
@@ -30,30 +37,52 @@ public class SettingsConfigurationServiceImpl implements SettingsConfigurationSe
 	private static Logger LOG = Logger.getLogger(SettingsConfigurationServiceImpl.class);
 
 	@Override
-	public Boolean saveSettingsConfiguration(String settingsJson,String settingsType,String activeFlag,String lastModifiedByUser) {		
-		SettingsConfiguration settingsConfiguration = populateSettingsConfiguration(settingsJson,settingsType, activeFlag, lastModifiedByUser);
-		SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();		
-		return settingsConfigurationDAL.saveSettingsConfiguration(settingsConfiguration);		
+	public Boolean saveSettingsConfiguration(String settingsJson,String settingsType,String activeFlag,String lastModifiedByUser) {	
+		Boolean flag = Boolean.FALSE;
+		try {
+			SettingsConfiguration settingsConfiguration = populateSettingsConfiguration(settingsJson,settingsType, activeFlag, lastModifiedByUser);
+			SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();		
+			flag = settingsConfigurationDAL.saveSettingsConfiguration(settingsConfiguration);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}
+		return flag;
+				
 	}	
 
 	@Override
-	public SettingsConfiguration loadSettingsConfiguration(String settingsType) {
+	public SettingsConfiguration loadSettingsConfiguration(String settingsType)  throws InsightsCustomException{
 		SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();		
 		return settingsConfigurationDAL.loadSettingsConfiguration(settingsType);	
 	}
 	
 
 	private SettingsConfiguration populateSettingsConfiguration(String settingsJson, String settingsType,
-			String activeFlag, String lastModifiedByUser) {
+			String activeFlag, String lastModifiedByUser) throws InsightsCustomException {
 		SettingsConfiguration settingsConfiguration = new SettingsConfiguration();
 		String updatedSettingsJson = updateNextRunTimeValue(settingsJson);
 		settingsConfiguration.setSettingsJson(updatedSettingsJson);
 		settingsConfiguration.setSettingsType(settingsType);
 		settingsConfiguration.setActiveFlag(activeFlag);
 		settingsConfiguration.setLastModifiedByUser(lastModifiedByUser);
+		if(InsightsSettingTypes.DEVOPSMATURITY.getValue().equals(settingsType)) {
+			getDevopsMaturityFile(settingsConfiguration);
+		}
 		return settingsConfiguration;
 	}
 	
+	private void getDevopsMaturityFile(SettingsConfiguration settingsConfiguration) throws InsightsCustomException {
+		
+		byte[] array;
+		try {
+			array = Files.readAllBytes(new File(ApplicationConfigProvider.getInstance().getMaturityModelConfig().getInputFilelocation()).toPath());
+			settingsConfiguration.setSettingFile(array);
+		} catch (IOException e) {
+			LOG.error("Devops Maturity file reading issue", e);
+			throw new InsightsCustomException("Devops Maturity file reading issue");
+		}
+	}
+
 	/**
 	 * Updates settingJson string coming from UI with nextRunTime value
 	 * and saved into the database 
@@ -71,5 +100,4 @@ public class SettingsConfigurationServiceImpl implements SettingsConfigurationSe
 		}
 		return updatedSettingsJson;
 	}
-	
 }

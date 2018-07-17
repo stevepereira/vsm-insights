@@ -65,6 +65,9 @@ public class SettingsConfiguration {
 	
 	@Column(name = "LAST_MODIFIED_BY_USER")
 	private String lastModifiedByUser;
+	
+	@Column(name = "SETTINGFILE")
+	private byte [] settingFile;
 
 	public int getId() {
 		return id;
@@ -121,5 +124,14 @@ public class SettingsConfiguration {
 	public void setLastModifiedByUser(String lastModifiedByUser) {
 		this.lastModifiedByUser = lastModifiedByUser;
 	}
+
+	public byte[] getSettingFile() {
+		return settingFile;
+	}
+
+	public void setSettingFile(byte[] settingFile) {
+		this.settingFile = settingFile;
+	}
+
 }
 

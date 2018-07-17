@@ -47,6 +47,7 @@ public class SettingsConfigurationDAL extends BaseDAL {
 			settingsConfig.setActiveFlag(settingsConfiguration.getActiveFlag());
 			settingsConfig.setLastModifiedDate(Timestamp.valueOf(LocalDateTime.now()));
 			settingsConfig.setLastModifiedByUser(settingsConfiguration.getLastModifiedByUser());
+			settingsConfig.setSettingFile(settingsConfiguration.getSettingFile());
 			getSession().update(settingsConfig);
 		} else {
 			settingsConfiguration.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));

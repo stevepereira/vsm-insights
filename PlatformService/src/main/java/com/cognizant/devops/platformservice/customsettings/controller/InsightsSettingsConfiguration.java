@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.icon.Icon;
 import com.cognizant.devops.platformdal.icon.IconDAL;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
@@ -62,8 +63,14 @@ public class InsightsSettingsConfiguration {
 
 	@RequestMapping(value = "/loadSettingsConfiguration", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public @ResponseBody JsonObject loadSettingsConfiguration(@RequestParam String settingsType ) {
-		SettingsConfiguration settingsConfiguration = settingsConfigurationService.loadSettingsConfiguration(settingsType);		
-		return PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration);
+		SettingsConfiguration settingsConfiguration;
+		try {
+			settingsConfiguration = settingsConfigurationService.loadSettingsConfiguration(settingsType);
+			return PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration);
+		} catch (InsightsCustomException e) {
+			return PlatformServiceUtil.buildFailureResponse("Unable to load config setting for "+settingsType);
+		}		
+		
 	}
 
 	@RequestMapping(value = "/uploadCustomLogo",headers=("content-type=multipart/*"), method = RequestMethod.POST,

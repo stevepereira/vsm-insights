@@ -16,12 +16,13 @@
 
 package com.cognizant.devops.platformservice.customsettings.service;
 
+import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
 
 
 public interface SettingsConfigurationService {
 
 	public Boolean saveSettingsConfiguration(String settingsJson,String settingsType,String activeFlag,String lastModifiedByUser);
-	public SettingsConfiguration loadSettingsConfiguration(String settingsType);
+	public SettingsConfiguration loadSettingsConfiguration(String settingsType)  throws InsightsCustomException;
 }
  
