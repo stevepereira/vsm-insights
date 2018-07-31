@@ -133,6 +133,8 @@
                                         ng-controller="appSettingsController as appSettingsController" layout="vertical"></div>
                                     <div ng-if="homePageController.templateName == 'datapurgeSettings'" ng-include="'dist/modules/appSettings/view/dataPurgingView.html'"
                                         ng-controller="dataPurgingController as dataPurgingController" layout="vertical"></div>
+                                    <div ng-if="homePageController.templateName == 'devopsMaturitySettings'" ng-include="'dist/modules/devopsMaturity/view/devopsMaturityModelView.html'"
+                                        ng-controller="devopsMaturityController as devopsMaturityController" layout="vertical"></div>
                                   </md-content>
                             </md-tab>
 
@@ -142,8 +144,7 @@
                                     ng-controller="applicationManagementController as applicationManagementController" layout="vertical"></div>
                                 <div ng-if="homePageController.templateName == 'userOnboarding'" ng-include="'dist/modules/userOnboarding/view/userOnboardingView.html'"
                                     ng-controller="userOnboardingController as userOnboardingController" layout="vertical"></div>
-                                    <div ng-if="homePageController.templateName == 'devopsMaturitySettings'" ng-include="'dist/modules/devopsMaturity/view/devopsMaturityModelView.html'"
-                                        ng-controller="devopsMaturityController as devopsMaturityController" layout="vertical"></div>
+
                                 </md-content>
                             </md-tab>
                         </md-tabs>
