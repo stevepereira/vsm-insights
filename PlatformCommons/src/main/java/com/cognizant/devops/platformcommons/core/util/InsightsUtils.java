@@ -372,4 +372,23 @@ public class InsightsUtils {
 		Duration d = Duration.between(lastRunTimeInput, nextRunTimeInput);
 		return d.abs().toMillis();
 	}
+	
+	/**
+	 * This method parses a date represented in String into ZonedDateTime
+	 * and converts it into EpochSecond
+	 * @param inputDate
+	 * @return
+	 */
+	public static long parseDateIntoEpochSeconds(String inputDate,String pattern) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern).withZone(InsightsUtils.zoneId);
+		ZonedDateTime dateTime = null;
+		if (inputDate != null && !inputDate.isEmpty()) {
+			dateTime = ZonedDateTime.parse(inputDate, formatter);
+		}
+		if (dateTime != null) {
+			return dateTime.toEpochSecond();
+		}
+		return 0L;
+	}
+
 }

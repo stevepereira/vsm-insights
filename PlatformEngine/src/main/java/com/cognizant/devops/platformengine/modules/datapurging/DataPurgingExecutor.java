@@ -18,8 +18,6 @@ package com.cognizant.devops.platformengine.modules.datapurging;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +33,8 @@ import org.quartz.JobExecutionException;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.constants.ConfigOptions;
-import com.cognizant.devops.platformcommons.core.util.DataPurgingUtils;
+import com.cognizant.devops.platformcommons.core.enums.InsightsSettingTypes;
+import com.cognizant.devops.platformcommons.core.util.InsightsSettingsUtil;
 import com.cognizant.devops.platformcommons.core.util.InsightsUtils;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphDBException;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphResponse;
@@ -55,13 +54,16 @@ public class DataPurgingExecutor implements Job {
 	private static final double MAXIMUM_BACKUP_FILE_SIZE = 5.0000d;
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		if (ApplicationConfigProvider.getInstance().isEnableOnlineBackup() && checkDataPurgingJobSchedule()) {
-			performDataPurging();		
+		if (ApplicationConfigProvider.getInstance().isEnableOnlineBackup()) {
+			JsonObject configJsonObj = getSettingsJsonObject();
+			if(InsightsSettingsUtil.shouldExecuteJob(configJsonObj)) {
+				performDataPurging(configJsonObj);		
+			}
 		} 
 	}
 
 
-	public void performDataPurging()   {
+	public void performDataPurging(JsonObject configJsonObj)   {
 		String rowLimit = null ;
 		String backupFileLocation = null ;
 		long backupDurationInDays = 0;
@@ -72,7 +74,7 @@ public class DataPurgingExecutor implements Job {
 		 * To get Settings Configuration which is set by User from Insights application UI
 		 * is stored into Settings_Configuration table of PostGres database
 		 */
-		JsonObject configJsonObj = getSettingsJsonObject(); 
+		//JsonObject configJsonObj = getSettingsJsonObject(); 
 		if (configJsonObj != null) {
 			rowLimit = configJsonObj.get(ConfigOptions.ROW_LIMIT).getAsString();
 			backupFileLocation = configJsonObj.get(ConfigOptions.BACKUP_FILE_LOCATION).getAsString();	
@@ -111,7 +113,7 @@ public class DataPurgingExecutor implements Job {
 
 		try {
 			// Update lastRunTime and nextRunTine into the database as per dataArchivalFrequency	
-			updateRunTimeIntoDatabase();
+			updateRunTimeIntoDatabase(configJsonObj);
 		} catch (InsightsCustomException e) {
 			log.error("Exception occured while updating lastRunTime and nextRunTime in DataPurgingExecutor Job: " + e);
 		}
@@ -358,7 +360,7 @@ public class DataPurgingExecutor implements Job {
 	 */
 	private JsonObject getSettingsJsonObject() {
 		SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();	
-		String settingsJson = settingsConfigurationDAL.getSettingsJsonObject(ConfigOptions.DATAPURGING_SETTINGS_TYPE);
+		String settingsJson = settingsConfigurationDAL.getSettingsJsonObject(InsightsSettingTypes.DATAPURGING.name());
 		if (settingsJson != null && !settingsJson.isEmpty()) {
 			Gson gson = new Gson();
 			JsonElement jsonElement = gson.fromJson(settingsJson.trim(),JsonElement.class);
@@ -369,14 +371,14 @@ public class DataPurgingExecutor implements Job {
 
 	/**
 	 * Checks whether DataPurging job should be run or not as per nextRunTime
+	 * @param configJsonObj 
 	 * @return
 	 */
-	private Boolean checkDataPurgingJobSchedule() {
-		JsonObject settingsJsonObject = getSettingsJsonObject();
-		String lastRunTimeStr = DataPurgingUtils.getLastRunTime(settingsJsonObject);
-		String nextRunTimeStr = DataPurgingUtils.getNextRunTime(settingsJsonObject);
-		Long lastRunTime = parseDateIntoEpochSeconds(lastRunTimeStr);
-		Long nextRunTime = parseDateIntoEpochSeconds(nextRunTimeStr);
+	private Boolean checkDataPurgingJobSchedule(JsonObject configJsonObj) {
+		String lastRunTimeStr = InsightsSettingsUtil.getLastRunTime(configJsonObj);
+		String nextRunTimeStr = InsightsSettingsUtil.getNextRunTime(configJsonObj);
+		Long lastRunTime = InsightsUtils.parseDateIntoEpochSeconds(lastRunTimeStr,DATE_TIME_FORMAT);
+		Long nextRunTime = InsightsUtils.parseDateIntoEpochSeconds(nextRunTimeStr,DATE_TIME_FORMAT);
 		Long x = InsightsUtils.getDifferenceFromLastRunTime(lastRunTime);
 		Long y = InsightsUtils.getDifferenceFromNextRunTime(lastRunTime, nextRunTime);
 		if (x > y) {
@@ -386,44 +388,26 @@ public class DataPurgingExecutor implements Job {
 	}
 
 	/**
-	 * This method parses a date represented in String into ZonedDateTime
-	 * and converts it into EpochSecond
-	 * @param inputDate
-	 * @return
-	 */
-	private long parseDateIntoEpochSeconds(String inputDate) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT).withZone(InsightsUtils.zoneId);
-		ZonedDateTime dateTime = null;
-		if (inputDate != null && !inputDate.isEmpty()) {
-			dateTime = ZonedDateTime.parse(inputDate, formatter);
-		}
-		if (dateTime != null) {
-			return dateTime.toEpochSecond();
-		}
-		return 0L;
-	}
-
-		/**
 	 * Updates lastRunTime in db with current date time,
 	 * Calculates nextRunTime as per dataArchivalFrequency,
 	 * Updates nextRunTime into the database
+	 * @param settingsJsonObject 
 	 * @throws InsightsCustomException 
 	 */
-	private void updateRunTimeIntoDatabase() throws InsightsCustomException {
-		JsonObject settingsJsonObject = getSettingsJsonObject();
-		String dataArchivalFrequency = DataPurgingUtils.getDataArchivalFrequency(settingsJsonObject);
+	private void updateRunTimeIntoDatabase(JsonObject settingsJsonObject) throws InsightsCustomException {
+		String dataArchivalFrequency = InsightsSettingsUtil.getJobFrequency(settingsJsonObject);
 		//Captures current date time to update lastRunTime
 		String lastRunTime = InsightsUtils.getLocalDateTime(DATE_TIME_FORMAT);
-		String nextRunTime = DataPurgingUtils.calculateNextRunTime(dataArchivalFrequency);
-		settingsJsonObject = DataPurgingUtils.updateLastRunTime(settingsJsonObject,lastRunTime);
-		settingsJsonObject = DataPurgingUtils.updateNextRunTime(settingsJsonObject,nextRunTime);
+		String nextRunTime = InsightsSettingsUtil.calculateNextRunTime(dataArchivalFrequency);
+		settingsJsonObject = InsightsSettingsUtil.updateLastRunTime(settingsJsonObject,lastRunTime);
+		settingsJsonObject = InsightsSettingsUtil.updateNextRunTime(settingsJsonObject,nextRunTime);
 		String modifiedSettingsJson = null;
 		if (settingsJsonObject != null) {
 			modifiedSettingsJson = settingsJsonObject.toString();			
 		}
 		if (modifiedSettingsJson != null && !modifiedSettingsJson.isEmpty()){
 			SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();
-			settingsConfigurationDAL.updateSettingJson(modifiedSettingsJson);
+			settingsConfigurationDAL.updateSettingJson(modifiedSettingsJson,InsightsSettingTypes.DATAPURGING);
 		}
 	}
 }

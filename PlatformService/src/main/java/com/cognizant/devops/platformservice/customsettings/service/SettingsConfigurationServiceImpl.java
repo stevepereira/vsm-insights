@@ -16,15 +16,17 @@
 package com.cognizant.devops.platformservice.customsettings.service;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.core.enums.InsightsSettingTypes;
-import com.cognizant.devops.platformcommons.core.util.DataPurgingUtils;
+import com.cognizant.devops.platformcommons.core.util.InsightsSettingsUtil;
 import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfigurationDAL;
@@ -63,7 +65,7 @@ public class SettingsConfigurationServiceImpl implements SettingsConfigurationSe
 		String updatedSettingsJson = updateNextRunTimeValue(settingsJson);
 		settingsConfiguration.setSettingsJson(updatedSettingsJson);
 		settingsConfiguration.setSettingsType(settingsType);
-		settingsConfiguration.setActiveFlag(activeFlag);
+		settingsConfiguration.setActiveFlag(Boolean.TRUE);
 		settingsConfiguration.setLastModifiedByUser(lastModifiedByUser);
 		if(InsightsSettingTypes.DEVOPSMATURITY.getValue().equals(settingsType)) {
 			getDevopsMaturityFile(settingsConfiguration);
@@ -127,10 +129,10 @@ public class SettingsConfigurationServiceImpl implements SettingsConfigurationSe
 	 */
 	private String updateNextRunTimeValue(String settingsJson) {
 		String updatedSettingsJson = null;
-		JsonObject settingsJsonObject = DataPurgingUtils.convertSettingsJsonObject(settingsJson);
-		String dataArchivalFrequency = DataPurgingUtils.getDataArchivalFrequency(settingsJsonObject);
-		String nextRunTime = DataPurgingUtils.calculateNextRunTime(dataArchivalFrequency);
-		settingsJsonObject = DataPurgingUtils.updateNextRunTime(settingsJsonObject,nextRunTime);
+		JsonObject settingsJsonObject = InsightsSettingsUtil.convertSettingsJsonObject(settingsJson);
+		String dataArchivalFrequency = InsightsSettingsUtil.getJobFrequency(settingsJsonObject);
+		String nextRunTime = InsightsSettingsUtil.calculateNextRunTime(dataArchivalFrequency);
+		settingsJsonObject = InsightsSettingsUtil.updateNextRunTime(settingsJsonObject,nextRunTime);
 		if (settingsJsonObject != null) {
 		  updatedSettingsJson = settingsJsonObject.toString();			
 		}

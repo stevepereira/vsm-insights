@@ -55,7 +55,7 @@ public class SettingsConfiguration {
 	private String settingsType;
 	
 	@Column(name = "ACTIVE_FLAG")
-	private String activeFlag;
+	private boolean activeFlag;
 	
 	@Column(name = "CREATED_DATE")
 	private Date createdDate;
@@ -93,11 +93,11 @@ public class SettingsConfiguration {
 		this.settingsType = settingsType;
 	}
 
-	public String getActiveFlag() {
+	public boolean getActiveFlag() {
 		return activeFlag;
 	}
 
-	public void setActiveFlag(String activeFlag) {
+	public void setActiveFlag(boolean activeFlag) {
 		this.activeFlag = activeFlag;
 	}
 

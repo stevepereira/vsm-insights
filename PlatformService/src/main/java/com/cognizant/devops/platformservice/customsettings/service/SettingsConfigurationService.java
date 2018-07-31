@@ -16,6 +16,8 @@
 
 package com.cognizant.devops.platformservice.customsettings.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
 

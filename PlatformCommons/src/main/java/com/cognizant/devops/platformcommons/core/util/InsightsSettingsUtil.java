@@ -1,18 +1,3 @@
-/*******************************************************************************
- * Copyright 2017 Cognizant Technology Solutions
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License.  You may obtain a copy
- * of the License at
- * 
- *   http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
- * License for the specific language governing permissions and limitations under
- * the License.
- ******************************************************************************/
 package com.cognizant.devops.platformcommons.core.util;
 
 import java.time.DayOfWeek;
@@ -26,33 +11,50 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class DataPurgingUtils {
-
-	private static final String DATE_TIME_FORMAT = "yyyy/MM/dd hh:mm a";
+public class InsightsSettingsUtil {
 	
-	private DataPurgingUtils() {		
+	public static final String DATE_TIME_FORMAT = "yyyy/MM/dd hh:mm a";
+	
+	private InsightsSettingsUtil() {
+	}
+
+	/**
+	 * Checks whether DataPurging job should be run or not as per nextRunTime
+	 * @return
+	 */
+	public static Boolean shouldExecuteJob(JsonObject settingsJsonObject) {
+		String lastRunTimeStr = getLastRunTime(settingsJsonObject);
+		String nextRunTimeStr = getNextRunTime(settingsJsonObject);
+		Long lastRunTime = InsightsUtils.parseDateIntoEpochSeconds(lastRunTimeStr,DATE_TIME_FORMAT);
+		Long nextRunTime = InsightsUtils.parseDateIntoEpochSeconds(nextRunTimeStr,DATE_TIME_FORMAT);
+		Long x = InsightsUtils.getDifferenceFromLastRunTime(lastRunTime);
+		Long y = InsightsUtils.getDifferenceFromNextRunTime(lastRunTime, nextRunTime);
+		if (x > y) {
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
 	}
 	
 	/**
 	 * Calculates nextRunTime as per dataArchivalFrequency and job schedule
-	 * @param dataArchivalFrequency
+	 * @param jobFrequency
 	 * @return
 	 */
-	public static String calculateNextRunTime(String dataArchivalFrequency) {
+	public static String calculateNextRunTime(String jobFrequency) {
 		LocalDateTime currentDateTime = LocalDateTime.now();
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
 		String nextRunTime = null;
-		if(JobSchedule.DAILY.name().equalsIgnoreCase(dataArchivalFrequency)){
+		if(JobSchedule.DAILY.name().equalsIgnoreCase(jobFrequency)){
 			//Schedule daily at 01:00 am
 			LocalDateTime nextDaySchedule = currentDateTime.plusDays(1);
 			nextDaySchedule = nextDaySchedule.withHour(01).withMinute(00);
 			nextRunTime = dtf.format(nextDaySchedule);
-		} else if(JobSchedule.WEEKLY.name().equalsIgnoreCase(dataArchivalFrequency)){
+		} else if(JobSchedule.WEEKLY.name().equalsIgnoreCase(jobFrequency)){
 			//Schedule weekly every Monday at 01:00 am
 			LocalDateTime nextOrSameMonday = currentDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY ) ) ;
 			nextOrSameMonday = nextOrSameMonday.withHour(01).withMinute(00);
 			nextRunTime = dtf.format(nextOrSameMonday);
-		} else if(JobSchedule.MONTHLY.name().equalsIgnoreCase(dataArchivalFrequency)){
+		} else if(JobSchedule.MONTHLY.name().equalsIgnoreCase(jobFrequency)){
 			//Schedule monthly 01st day of every month at 01:00 AM
 			LocalDateTime firstDayOfNextMonth = currentDateTime.with(TemporalAdjusters.firstDayOfNextMonth()) ;
 			firstDayOfNextMonth = firstDayOfNextMonth.withHour(01).withMinute(00);
@@ -92,12 +94,12 @@ public class DataPurgingUtils {
 	 * @param settingsJsonObject
 	 * @return
 	 */
-	public static String getDataArchivalFrequency(JsonObject settingsJsonObject) {
-		String dataArchivalFrequency = null;
+	public static String getJobFrequency(JsonObject settingsJsonObject) {
+		String jobFrequency = null;
 		if (settingsJsonObject != null && settingsJsonObject.get(ConfigOptions.JOB_FREQUENCY)!= null) {
-			dataArchivalFrequency = settingsJsonObject.get(ConfigOptions.JOB_FREQUENCY).getAsString();
+			jobFrequency = settingsJsonObject.get(ConfigOptions.JOB_FREQUENCY).getAsString();
 		}
-		return dataArchivalFrequency;
+		return jobFrequency;
 	}
 	
 	/**
@@ -142,5 +144,4 @@ public class DataPurgingUtils {
 		return settingsJsonObject;
 	}
 	
-
 }

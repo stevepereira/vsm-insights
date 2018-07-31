@@ -15,8 +15,7 @@
  ******************************************************************************/
 package com.cognizant.devops.insights.maturity.excel;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -38,10 +38,14 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
-import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
+import com.cognizant.devops.platformcommons.core.enums.InsightsSettingTypes;
+import com.cognizant.devops.platformcommons.core.util.InsightsSettingsUtil;
 import com.cognizant.devops.platformcommons.core.util.InsightsUtils;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphResponse;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jDBHandler;
+import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
+import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
+import com.cognizant.devops.platformdal.settingsconfig.SettingsConfigurationDAL;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -54,15 +58,21 @@ import com.google.gson.reflect.TypeToken;
 @SuppressWarnings("restriction")
 public class CalculateMaturity {
 	
+	private static Logger LOG = Logger.getLogger(CalculateMaturity.class);
+	
 	private String ROOTNODENAME = "DEVOPSMATURITY";
-	private String cypherQuery = "";
 
-	public void calculateMaturity() {
-		String fileName = ApplicationConfigProvider.getInstance().getMaturityModelConfig().getInputFilelocation();//filematurelocation
-		JsonArray excelData = getExcelDataAsJsonObject(fileName);
-		List<Questionnaire> questionList = initialize(excelData);
-		Map<String,Integer> vectorScore = new HashMap<>(5);
-		calculateVectorScore(questionList,vectorScore);
+	public void calculateMaturity() throws InsightsCustomException {
+		SettingsConfiguration maturityConfigObj = getSettingsJsonObject();
+		JsonObject configObject = InsightsSettingsUtil.convertSettingsJsonObject(maturityConfigObj.getSettingsJson());
+		if(InsightsSettingsUtil.shouldExecuteJob(configObject)) {
+			JsonArray excelData = getExcelDataAsJsonObject(maturityConfigObj.getSettingFile());
+			List<Questionnaire> questionList = initialize(excelData);
+			Map<String,Integer> vectorScore = new HashMap<>(5);
+			calculateVectorScore(questionList,vectorScore);
+			updateRunTimeIntoDatabase(configObject);
+		}
+		
 	}
 	
 	private void calculateVectorScore(List<Questionnaire> questionList,
@@ -98,7 +108,7 @@ public class CalculateMaturity {
 				if(operation(operation, leftHandValue, rightHandValue,comparisonDataType)) {
 					totalScore += inputScore;
 					currentScore = inputScore;
-					System.out.println(operation(operation, leftHandValue, rightHandValue,comparisonDataType) + " -- " + rightHandValue );
+					LOG.debug(operation(operation, leftHandValue, rightHandValue,comparisonDataType) + " -- " + rightHandValue );
 					
 					rulePassedQuestionList.add(data);
 				}
@@ -123,8 +133,8 @@ public class CalculateMaturity {
 		Map<String,Double> scoreAvgByVector = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,
 				Collectors.averagingInt(Questionnaire::getCurrentScore)));
 		
-		System.out.println("GroupB SUM"+scoreByVector);
-		System.out.println("GroupB Avr"+scoreAvgByVector);
+		LOG.debug("GroupB SUM"+scoreByVector);
+		LOG.debug("GroupB Avr"+scoreAvgByVector);
 		
 		Map<String, Map<String,Integer>> mappingByVectorToActivity
         = questionList.stream().collect(Collectors.groupingBy(Questionnaire::getVector,Collectors.groupingBy(Questionnaire::getActivity, 
@@ -167,7 +177,7 @@ public class CalculateMaturity {
 		
 		
 	 /*   gson.toJson(mappingByVectorToActivityToCategoryToScore, System.out);
-	    System.out.println();
+	    LOG.debug();
 	    gson.toJson(mappingByVectorToActivityToCategoryToScoreAverage, System.out);*/
 	    
 	    
@@ -185,8 +195,8 @@ public class CalculateMaturity {
 			Neo4jDBHandler neo4jDBHandler = new Neo4jDBHandler();
 			neo4jDBHandler.createNodesWithLabel(json,nodeLabels);
 			
-			System.out.println("Label "+nodeLabels);
-			System.out.println(json);
+			LOG.debug("Label "+nodeLabels);
+			LOG.debug(json);
 			
 		} catch (Exception e) {
 		}
@@ -278,7 +288,7 @@ public class CalculateMaturity {
 				break;
 				
 			default :
-				System.out.println();
+				LOG.debug("In default");
 			}
 		} catch (Exception e) {
 			
@@ -291,11 +301,47 @@ public class CalculateMaturity {
 		return Double.valueOf(value);
 	}
 
-	public JsonArray getExcelDataAsJsonObject(String excelFileName) {
+	
+
+	/**
+	 * Loads SettingConfiguration detail from database for DataPurging setting type
+	 * and returns settingJson string and converts into jsonobject
+	 * @return JsonObject
+	 */
+	private SettingsConfiguration getSettingsJsonObject() {
+		SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();	
+		return settingsConfigurationDAL.loadSettingsConfiguration(InsightsSettingTypes.DEVOPSMATURITY.name());
+	}
+	
+	/**
+	 * Updates lastRunTime in db with current date time,
+	 * Calculates nextRunTime as per dataArchivalFrequency,
+	 * Updates nextRunTime into the database
+	 * @param settingsJsonObject 
+	 * @throws InsightsCustomException 
+	 */
+	private void updateRunTimeIntoDatabase(JsonObject settingsJsonObject) throws InsightsCustomException {
+		String dataArchivalFrequency = InsightsSettingsUtil.getJobFrequency(settingsJsonObject);
+		//Captures current date time to update lastRunTime
+		String lastRunTime = InsightsUtils.getLocalDateTime(InsightsSettingsUtil.DATE_TIME_FORMAT);
+		String nextRunTime = InsightsSettingsUtil.calculateNextRunTime(dataArchivalFrequency);
+		settingsJsonObject = InsightsSettingsUtil.updateLastRunTime(settingsJsonObject,lastRunTime);
+		settingsJsonObject = InsightsSettingsUtil.updateNextRunTime(settingsJsonObject,nextRunTime);
+		String modifiedSettingsJson = null;
+		if (settingsJsonObject != null) {
+			modifiedSettingsJson = settingsJsonObject.toString();			
+		}
+		if (modifiedSettingsJson != null && !modifiedSettingsJson.isEmpty()){
+			SettingsConfigurationDAL settingsConfigurationDAL = new SettingsConfigurationDAL();
+			settingsConfigurationDAL.updateSettingJson(modifiedSettingsJson,InsightsSettingTypes.DATAPURGING);
+		}
+	}
+	
+	public JsonArray getExcelDataAsJsonObject(byte[] fileBytes) {
 		
 		JsonObject sheetsJsonObject = new JsonObject();
 		JsonArray sheetArray = new JsonArray();
-		try (InputStream excelFile = new FileInputStream(new File(excelFileName));
+		try (InputStream excelFile = new ByteArrayInputStream(fileBytes);
 				Workbook workbook = WorkbookFactory.create(excelFile);) {
 
 			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
@@ -342,7 +388,7 @@ public class CalculateMaturity {
 
 			}
 		} catch (InvalidFormatException | IOException e) {
-			System.out.println(e);
+			LOG.debug(e);
 		} 
 		return sheetArray;
 
@@ -365,13 +411,13 @@ public class CalculateMaturity {
 			}
 			break;
 		case FORMULA:
-			System.out.print(cell.getCellFormula());
+			LOG.debug(cell.getCellFormula());
 			break;
 		case BLANK:
-			System.out.print("");
+			LOG.debug("FORMULA");
 			break;
 		default:
-			System.out.print("");
+			LOG.debug("createCellValue() default");
 		}
 	}
 	
@@ -381,13 +427,13 @@ public class CalculateMaturity {
 		try {
 			Gson gson = new Gson();
 			questions = gson.fromJson(sheetArray.toString(), listType);
-		} catch (JsonIOException e) {
-		} catch (JsonSyntaxException e) {
-		}
+		} catch (JsonIOException|JsonSyntaxException e) {
+			LOG.error("Exception in reading excel", e);
+		} 
 		return questions;
 	}
 
-	public static void main(String... args) {
+	public static void main(String... args) throws InsightsCustomException {
 		ApplicationConfigCache.loadConfigCache();
 		CalculateMaturity maturity = new CalculateMaturity();
 		maturity.calculateMaturity();

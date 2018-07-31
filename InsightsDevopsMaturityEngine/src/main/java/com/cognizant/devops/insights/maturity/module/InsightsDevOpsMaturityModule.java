@@ -20,15 +20,20 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.cognizant.devops.insights.maturity.excel.CalculateMaturity;
+import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 
-public class InsightsDevOpsMaturityModule implements Job{
+public class InsightsDevOpsMaturityModule implements Job {
 	private static boolean isEngineMaturityModuleInProgress = false;
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		System.out.println("Inside InsightsDevOpsMaturityModule");
 		if(!isEngineMaturityModuleInProgress) {
 			isEngineMaturityModuleInProgress = true;
 			CalculateMaturity calculateMaturity = new CalculateMaturity();
-			calculateMaturity.calculateMaturity();
+			try {
+				calculateMaturity.calculateMaturity();
+			} catch (InsightsCustomException e) {
+				e.printStackTrace();
+			}
 			isEngineMaturityModuleInProgress = false;
 		}
 	}

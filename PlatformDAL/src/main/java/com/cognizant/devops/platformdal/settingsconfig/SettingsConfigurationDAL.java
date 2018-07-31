@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.query.Query;
 
 import com.cognizant.devops.platformcommons.constants.ConfigOptions;
+import com.cognizant.devops.platformcommons.core.enums.InsightsSettingTypes;
 import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.core.BaseDAL;
 
@@ -60,7 +61,7 @@ public class SettingsConfigurationDAL extends BaseDAL {
 	}
 
 	public SettingsConfiguration loadSettingsConfiguration(String settingsType) {
-		Query<SettingsConfiguration> loadQuery = getSession().createQuery("FROM SettingsConfiguration SC WHERE SC.settingsType = :settingsType", SettingsConfiguration.class);
+		Query<SettingsConfiguration> loadQuery = getSession().createQuery("FROM SettingsConfiguration SC WHERE SC.settingsType = :settingsType AND SC.activeFlag = 'true'", SettingsConfiguration.class);
 		loadQuery.setParameter("settingsType", settingsType);
 		List<SettingsConfiguration> results = loadQuery.getResultList();
 		SettingsConfiguration settingsConfiguration = null;
@@ -73,24 +74,17 @@ public class SettingsConfigurationDAL extends BaseDAL {
 	}
 	
 	public String getSettingsJsonObject(String settingsType) {
-		Query<SettingsConfiguration> createQuery = getSession().createQuery(
-				"FROM SettingsConfiguration SC WHERE SC.settingsType = :settingsType",
-				SettingsConfiguration.class);
-		createQuery.setParameter("settingsType",settingsType );
-		List<SettingsConfiguration> results = createQuery.getResultList();
-		SettingsConfiguration settingsConfiguration = null;
-		if (results != null && !results.isEmpty()) {
-			settingsConfiguration = results.get(0);
-			if (settingsConfiguration != null) {
-				return settingsConfiguration.getSettingsJson();				
-			}
-		}		
+		
+		SettingsConfiguration settingsConfiguration = loadSettingsConfiguration(settingsType);
+		if (settingsConfiguration != null) {
+			return settingsConfiguration.getSettingsJson();				
+		}
 		return null;
 	}
 	
-	public void updateSettingJson(String modifiedSettingJson)throws InsightsCustomException {
+	public void updateSettingJson(String modifiedSettingJson,InsightsSettingTypes settingType)throws InsightsCustomException {
 		try {
-			SettingsConfiguration settingsConfiguration = loadSettingsConfiguration(ConfigOptions.DATAPURGING_SETTINGS_TYPE);
+			SettingsConfiguration settingsConfiguration = loadSettingsConfiguration(settingType.name());
 			getSession().beginTransaction();
 			if (settingsConfiguration != null) {
 				settingsConfiguration.setSettingsJson(modifiedSettingJson);
