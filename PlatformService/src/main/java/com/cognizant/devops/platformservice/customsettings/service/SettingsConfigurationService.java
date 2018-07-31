@@ -24,5 +24,7 @@ public interface SettingsConfigurationService {
 
 	public Boolean saveSettingsConfiguration(String settingsJson,String settingsType,String activeFlag,String lastModifiedByUser);
 	public SettingsConfiguration loadSettingsConfiguration(String settingsType)  throws InsightsCustomException;
+	public boolean createDevopsDataMaturity(MultipartFile file);
+	public byte[] downloadMaturityFile();
 }
  

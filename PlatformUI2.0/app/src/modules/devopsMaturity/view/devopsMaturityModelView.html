@@ -1,0 +1,97 @@
+<!--
+ *******************************************************************************
+ * Copyright 2017 Cognizant Technology Solutions
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License.  You may obtain a copy
+ * of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ ******************************************************************************
+ -->
+
+<!-- THIS IS THE EXTRA PART FOR THE FILE UPLOAD -->
+<div layout="column" class="layout" style="width: 100%;">
+	<div ng-controller="devopsMaturityController" style="min-height: 450px" data-ng-init="listData()">
+		<div style="width: 100%;">
+			<div class="contentCss">
+				<h4
+					style="color: #38840C; font-family: proxima_novaregular; font-size: 16px">Customize
+					your DevOps Maturity settings.</h4>
+				<div ng-if="saveView">
+					<div class="panel panel-default">
+						<form name="frmdatapurging">
+							<div layout="row" layout-align="space-between start" layout-wrap
+								layout-margin layout-padding class="applicationContentCss"
+								style="margin-left: 8px"></div>
+							<div layout="row" layout-align="space-between start"
+								layout-margin layout-padding>
+								<div flex="35" ng-model="placeholderStr">
+									<span>Frequency of DevOps Maturity</span>
+									<md-select
+										class="searchApplicationBoxContData inputApplicationBox dataBoardingFieldName"
+										md-no-asterisk="true" ng-model="dataFreq"
+										style="margin-left: 0px;margin-top: 0px;margin-bottom:10px; width:94% !important;"
+										required placeholder="Select Frequency"> 
+										<md-option value="Daily">Daily</md-option> 
+										<md-option value="Weekly">Weekly</md-option>
+										<md-option value="Monthly">Monthly</md-option> 
+									</md-select>
+								</div>
+								<div flex="30" layout="column">
+									<span style="margin-top: 18px; margin-bottom: 6px;">Last
+										Run Time: {{settingData.lastRunTime}} </span> 
+										<span>Next Run
+										Time: {{nextRunTime}} </span>
+										<span style="margin-top: 18px; margin-bottom: 6px;">Last File Upload Date: {{lastModifiedDate}}</span>
+								</div>
+								<!-- <div flex="25" style="margin-top: 37px;">
+									<span>Next Run Time: </span>
+									<span></span>
+								</div>	 -->
+								<!--Click here to upload files<input type="file" id="fileInput" /><br>
+								 <div ng-if="fileUploadSuccessMessage"
+									style="color: green; margin-left: 35%; margin-top: 5px">File
+									uploaded successfully</div>-->
+
+								<label for="myFileField"
+									style="font-size: 14px; color: #666666; font-weight: normal; font-family: proxima_novaregular; font-weight: bold; margin-bottom: 10px">Please
+									select file to upload.<input type="file" id="fileInput" />
+								</label>
+
+
+
+
+
+							</div>
+							      <div ng-if="showFiledownloadError" style="color: red; max-height:40px;margin-top:0px; margin-left: 50%%">File is not present.</div>
+							<div layout layout-align="end end">
+								<md-button type="submit"
+									class="md-raised md-primary configureBut"
+									ng-click="saveData(); uploadFile()" ng-disabled="frmdatapurging.$invalid"> Save &
+								Upload</md-button>
+
+      <md-button style="max-height:40px;margin-top:0px" ng-click="downloadFile()"
+        class="md-raised md-primary configureBut md-button md-ink-ripple">
+        Download file
+      </md-button>
+<a href="/admin/settings/downloadMaturityFile">Download</a>
+
+      
+							</div>
+					<div ng-if="fileUploadSuccessMessage"
+						style="color: green; margin-left: 35%; margin-top: 5px">Settings
+						uploaded successfully</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

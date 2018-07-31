@@ -72,7 +72,50 @@ public class InsightsSettingsConfiguration {
 		}		
 		
 	}
+	@RequestMapping(value = "/uploadDevopsMaturityModule", headers = ("content-type=multipart/*"), method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public @ResponseBody JsonObject uploadHierarchyDetailsMaturity(@RequestParam("file") MultipartFile file,
+			@RequestParam String action) throws InsightsCustomException {
+		boolean status = false;
+		if (null != action && action.equals("upload")) {
+			status = settingsConfigurationService.createDevopsDataMaturity(file);
+		}
+		if (!status) {
+			return PlatformServiceUtil.buildFailureResponse("Unable to upload DevOps Maturity File.");
+		}
 
+		return PlatformServiceUtil.buildSuccessResponse();
+
+	}
+	@RequestMapping(value = "/downloadMaturityFile", method = RequestMethod.GET)
+	public HttpEntity<byte[]> downloadMaturityFile() {
+		SettingsConfiguration settingsConfiguration;
+		/*try {
+			settingsConfiguration = settingsConfigurationService.loadSettingsConfiguration("DEVOPSMATURITY");
+			JsonElement responseJson = PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration).get("data");
+			JsonObject jobject = responseJson.getAsJsonObject();
+			JsonElement maturityFileContent = jobject.get("settingFile");
+			JsonArray jarray = maturityFileContent.getAsJsonArray();
+			byte[] excelContent = new byte[jarray.size()];
+			for(int i = 0; i < jarray.size(); i++) {
+				//System.out.println(jarray.get(i) + " " + (byte) jarray.get(i).getAsInt());
+				excelContent[i] = (byte) jarray.get(i).getAsInt();
+			}
+			
+			
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+			header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=my_file.xls");
+			header.setContentLength(excelContent.length);
+			return new HttpEntity<byte[]>(excelContent, header);
+			//return excelContent;
+			
+		} catch (InsightsCustomException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		return null;
+	}
 	@RequestMapping(value = "/uploadCustomLogo",headers=("content-type=multipart/*"), method = RequestMethod.POST,
 			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public @ResponseBody JsonObject handleFileUpload(@RequestParam("file") MultipartFile file) {

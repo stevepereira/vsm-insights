@@ -70,6 +70,42 @@ public class SettingsConfigurationServiceImpl implements SettingsConfigurationSe
 		}
 		return settingsConfiguration;
 	}
+	@Override
+	public boolean createDevopsDataMaturity(MultipartFile file) {
+		boolean status = false;
+		try {
+			File csvfile = saveToFile(file);
+			status = true;
+		} catch (IOException ex) {
+			LOG.debug("Exception while creating MaturityFile on server", ex);
+			status = true;
+		}
+		return status;
+	}
+	private File saveToFile(MultipartFile multipartFile) throws IOException {
+		File file = new File(multipartFile.getOriginalFilename());
+		System.out.println(file);
+		String file_name = ApplicationConfigProvider.getInstance().getMaturityModelConfig().getInputFilelocation();
+		System.out.println(file_name);
+		try (FileOutputStream fos = new FileOutputStream(file_name)) {
+			fos.write(multipartFile.getBytes());
+		}
+		return file;
+	}
+	@Override
+	public byte[] downloadMaturityFile() {
+		byte[] array = null;
+		try {
+			array = Files.readAllBytes(new File(ApplicationConfigProvider.getInstance().getMaturityModelConfig().getInputFilelocation()).toPath());
+			String str = new String(array);
+			//System.out.println(str);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(array);
+		return array;
+	}
 	
 	private void getDevopsMaturityFile(SettingsConfiguration settingsConfiguration) throws InsightsCustomException {
 		
