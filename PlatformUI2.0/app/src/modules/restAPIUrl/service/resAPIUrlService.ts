@@ -104,13 +104,6 @@ module ISightApp {
           this.addEndPoint("UPLOAD_HIERARCHY_DETAILS", '/PlatformService/admin/hierarchyDetails/uploadHierarchyDetails');
           this.addEndPoint("GET_METADATA", '/PlatformService/admin/hierarchyDetails/getMetaData');
           this.addEndPoint("GET_HIERARCHY_PROPERTIES", '/PlatformService/admin/hierarchyDetails/getHierarchyProperties');
-		  
-		  //---------------------------------------------------------------------------------------------------------------------------
-		  this.addEndPoint("DEVOPS_MATURITY_MODEL", '/PlatformService/admin/settings/uploadDevopsMaturityModule');
-		  this.addEndPoint("SAVE_DEVOPS_MATURITY_SETTING",'/PlatformService/admin/settings/saveSettingsConfiguration');
-		  this.addEndPoint("LIST_DEVOPS_MATURITY_SETTING",'/PlatformService/admin/settings/loadSettingsConfiguration');
-		  this.addEndPoint("DOWNLOAD_MATURITY_FILE",'/PlatformService/admin/settings/downloadMaturityFile');
-		  //---------------------------------------------------------------------------------------------------------------------------
             
 		  this.addEndPoint("INSIGHTS_GET",'/PlatformService/insights/inferences');
 		  this.addEndPoint("INSIGHTS_COMP_STATUS",'/PlatformService/ServicesHealthStatus/getStatus');
