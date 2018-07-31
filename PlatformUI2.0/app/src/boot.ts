@@ -41,6 +41,7 @@ module ISightApp {
         .service('insightsService', InsightsService)
         .service('platformServiceStatusService', PlatformServiceStatusService)
         .service('appSettingsService', AppSettingsService)
+		.service('devopsMaturityService', DevopsMaturityService)
 
         .controller('pipelineController', PipelineController)
         .controller('homePageController', HomePageController)
@@ -61,6 +62,7 @@ module ISightApp {
         .controller('appSettingsController', AppSettingsController)
         .controller('insightsController', InsightsController)
 		.controller('dataPurgingController', DataPurgingController)
+		.controller('devopsMaturityController', devopsMaturityController)
 
         .controller('uninstallAgentDialogController', UninstallAgentDialogController)
         .component('footer', {
