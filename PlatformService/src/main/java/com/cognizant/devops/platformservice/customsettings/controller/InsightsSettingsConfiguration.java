@@ -22,10 +22,14 @@ import java.util.Base64;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,31 +52,35 @@ public class InsightsSettingsConfiguration {
 
 	private static final Logger LOG = Logger.getLogger(InsightsSettingsConfiguration.class);
 
-	@Autowired	
+	@Autowired
 	SettingsConfigurationService settingsConfigurationService;
 
 	@RequestMapping(value = "/saveSettingsConfiguration", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody JsonObject saveSettingsConfiguration(@RequestParam String settingsJson, @RequestParam String settingsType,
-													@RequestParam String activeFlag,@RequestParam String lastModifiedByUser) {
-		Boolean result = settingsConfigurationService.saveSettingsConfiguration(settingsJson,settingsType,activeFlag,lastModifiedByUser);
+	public @ResponseBody JsonObject saveSettingsConfiguration(@RequestParam String settingsJson,
+			@RequestParam String settingsType, @RequestParam String activeFlag,
+			@RequestParam String lastModifiedByUser) {
+		Boolean result = settingsConfigurationService.saveSettingsConfiguration(settingsJson, settingsType, activeFlag,
+				lastModifiedByUser);
 		if (result) {
 			return PlatformServiceUtil.buildSuccessResponse();
 		} else {
-			return PlatformServiceUtil.buildFailureResponse("Unable to save or update Setting Configuration for the request");
+			return PlatformServiceUtil
+					.buildFailureResponse("Unable to save or update Setting Configuration for the request");
 		}
 	}
 
 	@RequestMapping(value = "/loadSettingsConfiguration", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody JsonObject loadSettingsConfiguration(@RequestParam String settingsType ) {
+	public @ResponseBody JsonObject loadSettingsConfiguration(@RequestParam String settingsType) {
 		SettingsConfiguration settingsConfiguration;
 		try {
 			settingsConfiguration = settingsConfigurationService.loadSettingsConfiguration(settingsType);
 			return PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration);
 		} catch (InsightsCustomException e) {
-			return PlatformServiceUtil.buildFailureResponse("Unable to load config setting for "+settingsType);
-		}		
-		
+			return PlatformServiceUtil.buildFailureResponse("Unable to load config setting for " + settingsType);
+		}
+
 	}
+
 	@RequestMapping(value = "/uploadDevopsMaturityModule", headers = ("content-type=multipart/*"), method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public @ResponseBody JsonObject uploadHierarchyDetailsMaturity(@RequestParam("file") MultipartFile file,
 			@RequestParam String action) throws InsightsCustomException {
@@ -87,38 +95,38 @@ public class InsightsSettingsConfiguration {
 		return PlatformServiceUtil.buildSuccessResponse();
 
 	}
+
 	@RequestMapping(value = "/downloadMaturityFile", method = RequestMethod.GET)
 	public HttpEntity<byte[]> downloadMaturityFile() {
 		SettingsConfiguration settingsConfiguration;
-		/*try {
-			settingsConfiguration = settingsConfigurationService.loadSettingsConfiguration("DEVOPSMATURITY");
-			JsonElement responseJson = PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration).get("data");
-			JsonObject jobject = responseJson.getAsJsonObject();
-			JsonElement maturityFileContent = jobject.get("settingFile");
-			JsonArray jarray = maturityFileContent.getAsJsonArray();
-			byte[] excelContent = new byte[jarray.size()];
-			for(int i = 0; i < jarray.size(); i++) {
-				//System.out.println(jarray.get(i) + " " + (byte) jarray.get(i).getAsInt());
-				excelContent[i] = (byte) jarray.get(i).getAsInt();
-			}
-			
-			
-			HttpHeaders header = new HttpHeaders();
-			header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-			header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=my_file.xls");
-			header.setContentLength(excelContent.length);
-			return new HttpEntity<byte[]>(excelContent, header);
-			//return excelContent;
-			
-		} catch (InsightsCustomException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		*/
+		/*
+		 * try { settingsConfiguration =
+		 * settingsConfigurationService.loadSettingsConfiguration("DEVOPSMATURITY");
+		 * JsonElement responseJson =
+		 * PlatformServiceUtil.buildSuccessResponseWithData(settingsConfiguration).get(
+		 * "data"); JsonObject jobject = responseJson.getAsJsonObject(); JsonElement
+		 * maturityFileContent = jobject.get("settingFile"); JsonArray jarray =
+		 * maturityFileContent.getAsJsonArray(); byte[] excelContent = new
+		 * byte[jarray.size()]; for(int i = 0; i < jarray.size(); i++) {
+		 * //System.out.println(jarray.get(i) + " " + (byte) jarray.get(i).getAsInt());
+		 * excelContent[i] = (byte) jarray.get(i).getAsInt(); }
+		 * 
+		 * 
+		 * HttpHeaders header = new HttpHeaders(); header.setContentType(new
+		 * MediaType("application",
+		 * "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+		 * header.set(HttpHeaders.CONTENT_DISPOSITION,
+		 * "attachment; filename=my_file.xls");
+		 * header.setContentLength(excelContent.length); return new
+		 * HttpEntity<byte[]>(excelContent, header); //return excelContent;
+		 * 
+		 * } catch (InsightsCustomException e) { // TODO Auto-generated catch block
+		 * e.printStackTrace(); }
+		 */
 		return null;
 	}
-	@RequestMapping(value = "/uploadCustomLogo",headers=("content-type=multipart/*"), method = RequestMethod.POST,
-			produces = MediaType.APPLICATION_JSON_UTF8_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+	@RequestMapping(value = "/uploadCustomLogo", headers = ("content-type=multipart/*"), method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public @ResponseBody JsonObject handleFileUpload(@RequestParam("file") MultipartFile file) {
 		InputStream inputStream = null;
 		String originalFilename = file.getOriginalFilename();
@@ -128,9 +136,9 @@ public class InsightsSettingsConfiguration {
 			inputStream = new BufferedInputStream(file.getInputStream());
 			imageBytes = IOUtils.toByteArray(inputStream);
 		} catch (IOException e) {
-			LOG.error("Unable to upload custom logo",e);
+			LOG.error("Unable to upload custom logo", e);
 		}
-			
+
 		Icon icon = new Icon();
 		icon.setIconId("logo");
 		icon.setImage(imageBytes);
@@ -145,5 +153,28 @@ public class InsightsSettingsConfiguration {
 		return PlatformServiceUtil.buildSuccessResponseWithData(imgResp);
 	}
 
+	@RequestMapping(value = "/download/{settingsType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+	public ResponseEntity<byte[]> downloadReportFile(@PathVariable String settingsType) {
+		LOG.debug("REST request to download report file");
+
+		try {
+			SettingsConfiguration settingsConfiguration = settingsConfigurationService
+					.loadSettingsConfiguration(settingsType);
+			byte[] base64Bytes = settingsConfiguration.getSettingFile();
+
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(new MediaType("application", "xlsx"));
+			header.set("Content-Disposition", "inline; filename= devopsmaturityexcel.xlsx");
+			header.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+			header.setContentLength(base64Bytes.length);
+			header.add("filename", "devopsmaturityexcel.xlsx");
+
+			return ResponseEntity.ok().headers(header).body(base64Bytes);
+		} catch (InsightsCustomException e) {
+			LOG.error("Failed to download file ", e);
+			return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body(null);
+		}
+
+	}
 
 }

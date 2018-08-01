@@ -16,20 +16,21 @@
 
 module ISightApp {
 	export class devopsMaturityController {
-		
-		        static $inject = ['$location', '$window', '$mdDialog','$scope',
-  '$filter','devopsMaturityService', '$resource', '$http', '$route', '$cookies', 'restAPIUrlService'];
-        constructor(private $location, private $window, private $mdDialog, private $scope, private $filter,private devopsMaturityService, private $resource, private $http, private $route,private $cookies, private restAPIUrlService:IRestAPIUrlService) {
-           
-            var self = this;
-            var elem = document.querySelector('#homePageTemplateContainer');
-            var homePageControllerScope = angular.element(elem).scope();
-            var homePageController = homePageControllerScope['homePageController'];
-            self.homeController = homePageController;
-            
-            
-            this.init($scope, $filter,devopsMaturityService, $resource, $http, $route,$window,homePageController,self.homeController,$cookies,restAPIUrlService);
-        }
+
+		static $inject = ['$location', '$window', '$mdDialog', '$scope',
+			'$filter', 'devopsMaturityService', '$resource', '$http', '$route', '$cookies', 'restAPIUrlService'];
+		constructor(private $location, private $window, private $mdDialog, private $scope, private $filter, private devopsMaturityService, private $resource, private $http, private $route, private $cookies, private restAPIUrlService: IRestAPIUrlService) {
+
+			var self = this;
+			var elem = document.querySelector('#homePageTemplateContainer');
+			var homePageControllerScope = angular.element(elem).scope();
+			var homePageController = homePageControllerScope['homePageController'];
+			self.homeController = homePageController;
+
+
+			this.init($scope, $filter, devopsMaturityService, $resource, $http, $route, $window, homePageController, self.homeController, $cookies, restAPIUrlService);
+		}
+
 		homeController: HomePageController;
 		backupDatatype: string;
 		fileLocation: string;
@@ -53,7 +54,7 @@ module ISightApp {
 		editIconSrc = "dist/icons/svg/userOnboarding/Edit_icon_MouseOver.svg";
 		showTble: boolean = true;
 		dataFreq: string;
-        selectedType: string = "";
+		selectedType: string = "";
 		showTextArea: boolean = true;
 		files = [];
 		headers = [];
@@ -64,315 +65,321 @@ module ISightApp {
 		showFiledownloadError: boolean = false;
 		filename: string = "";
 		fileUploadSuccessMessage: boolean = false;
-        selectedImage: string = 'logo';
+		selectedImage: string = 'logo';
 		lastModifiedDate: string = '';
 		arr = [];
-       
-       maxSizeErr: boolean = false;
+		maturityFileDownloadPath = "/PlatformService/admin/settings/download/DEVOPSMATURITY";
+		maxSizeErr: boolean = false;
+		isDevOpsMaturityFilePresent: boolean = false;
 
-       init($scope, $filter, devopsMaturityService, $resource, $http, $route, $window,homePageController,homeController,$cookies,restAPIUrlService) : void{
+		init($scope, $filter, devopsMaturityService, $resource, $http, $route, $window, homePageController, homeController, $cookies, restAPIUrlService): void {
 			$scope.placeholderStr = "Select Frequency";
-		   addData();
-		   //listData();
-		   console.log($scope);
-		function addData() {
-			//$scope.placeholderStr = "Select Frequency";
-			$scope.listView = false;
-			$scope.saveView = true;
-			console.log("This is from devops maturity controller " + $scope.saveView);
-		};
-        $scope.changeSelected = function() {
-                if ($scope.selectedType && $scope.selectedType.length > 0) {
-                    $scope.showTextArea = true;
-                }
+			addData();
+			//listData();
+			console.log($scope);
+			function addData() {
+				//$scope.placeholderStr = "Select Frequency";
+				$scope.listView = false;
+				$scope.saveView = true;
+				console.log("This is from devops maturity controller " + $scope.saveView);
+			};
+			$scope.changeSelected = function () {
+				if ($scope.selectedType && $scope.selectedType.length > 0) {
+					$scope.showTextArea = true;
+				}
 
-		};
-	   
-		$scope.saveData = function() {
-			//console.log($scope.homeController);
+			};
 
-			var self = this;
-			$scope.listView = true;
-			$scope.saveView = true;
+			$scope.saveData = function () {
+				//console.log($scope.homeController);
 
-			$scope.settingsType = "DEVOPSMATURITY";
-			$scope.activeFlag = "Y";
-			//$scope.lastModifiedByUser = $scope.homeController.userName;
-			$scope.lastModifiedByUser = "Admin";
-			$scope.settingJsonObj = {
-				"dataArchivalFrequency": $scope.dataFreq,
-				"lastRunTime": $scope.lastRunTime,
-				"nextRunTime": ''
-			}
-			console.log($scope.settingJsonObj);
-			$scope.settingJsonstring = encodeURIComponent(JSON.stringify($scope.settingJsonObj));
+				var self = this;
+				$scope.listView = true;
+				$scope.saveView = true;
 
-			devopsMaturityService.saveDevopsMaturity($scope.settingsType, $scope.activeFlag, $scope.lastModifiedByUser, $scope.settingJsonstring)
-				.then(function (data) {
+				$scope.settingsType = "DEVOPSMATURITY";
+				$scope.activeFlag = "Y";
+				//$scope.lastModifiedByUser = $scope.homeController.userName;
+				$scope.lastModifiedByUser = "Admin";
+				$scope.settingJsonObj = {
+					"dataArchivalFrequency": $scope.dataFreq,
+					"lastRunTime": $scope.lastRunTime,
+					"nextRunTime": ''
+				}
+				console.log($scope.settingJsonObj);
+				$scope.settingJsonstring = encodeURIComponent(JSON.stringify($scope.settingJsonObj));
 
-					if (data.status == "success") {
-						$scope.showConfirmMessage = "Saved successfully";
-						$scope.fileUploadSuccessMessage=true;
-						homePageController.templateName = 'devopsMaturitySettings';
-					} else {
+				devopsMaturityService.saveDevopsMaturity($scope.settingsType, $scope.activeFlag, $scope.lastModifiedByUser, $scope.settingJsonstring)
+					.then(function (data) {
+
+						if (data.status == "success") {
+							$scope.showConfirmMessage = "Saved successfully";
+							$scope.fileUploadSuccessMessage = true;
+							homePageController.templateName = 'devopsMaturitySettings';
+						} else {
+							$scope.showConfirmMessage = "Failed to save settings";
+						}
+						$scope.listData();
+					})
+					.catch(function (data) {
+						$scope.listView = false;
+						$scope.saveView = true;
 						$scope.showConfirmMessage = "Failed to save settings";
-					}
-					$scope.listData();
-				})
-				.catch(function (data) {
-					$scope.listView = false;
-					$scope.saveView = true;
-					$scope.showConfirmMessage = "Failed to save settings";
-					$scope.listData();
-				});
-		};
-	   $scope.listData = function(){
-		   console.log("This is coming from list data DEVOPSMATURITY model.=");
-		   	$scope.listView = true;
-			$scope.saveView = true;
-			devopsMaturityService.listDevopsMaturity("DEVOPSMATURITY")
-				.then(function (response) {
+						$scope.listData();
+					});
+			};
+			$scope.listData = function () {
+				console.log("This is coming from list data DEVOPSMATURITY model.=");
+				$scope.listView = true;
+				$scope.saveView = true;
+				devopsMaturityService.listDevopsMaturity("DEVOPSMATURITY")
+					.then(function (response) {
 
-					$scope.showThrobber = false;
-					if (response.status == "success") {
+						$scope.showThrobber = false;
+						if (response.status == "success") {
 
-						if (response.hasOwnProperty('data')) {
-							$scope.showTble = false;
-							$scope.datalist = response.data;
-							console.log(response.data);
-							$scope.settingData = JSON.parse($scope.datalist['settingsJson']);
-							$scope.lastModifiedDate = $scope.datalist['lastModifiedDate'];
-							/*
-							if ($scope.settingData.dataFreq == undefined)
-							{
-								console.log("----------");
-								console.log($scope.lastModifiedDate);
-								$scope.placeholderStr = "Select Frequency";
+							if (response.hasOwnProperty('data')) {
+								$scope.showTble = false;
+								$scope.datalist = response.data;
+								console.log(response.data);
+								console.log(response.data.settingFile.length);
+								if (response.data.settingFile.length > 0) {
+									console.log("true");
+									$scope.isDevOpsMaturityFilePresent = true;
+								}
+								$scope.settingData = JSON.parse($scope.datalist['settingsJson']);
+								$scope.lastModifiedDate = $scope.datalist['lastModifiedDate'];
+								/*
+								if ($scope.settingData.dataFreq == undefined)
+								{
+									console.log("----------");
+									console.log($scope.lastModifiedDate);
+									$scope.placeholderStr = "Select Frequency";
+								}
+								else
+								{
+									$scope.placeholderStr = $scope.dataFreq;
+									console.log("********");
+									
+								}
+								*/
+								$scope.$apply();
+								//console.log($scope.datalist);
+								console.log($scope);
+
+
+
+							} else {
+								$scope.showTble = true;
 							}
-							else
-							{
-								$scope.placeholderStr = $scope.dataFreq;
-								console.log("********");
-								
-							}
-							*/
-							$scope.$apply();
-							//console.log($scope.datalist);
-							console.log($scope);
-							
-							
-							
-						} else {
-							$scope.showTble = true;
 						}
-					}
-					else {
+						else {
+							$scope.showConfirmMessage = "Something wrong with service, please try again";
+						}
+
+					})
+					.catch(function (response) {
+						$scope.showThrobber = false;
 						$scope.showConfirmMessage = "Something wrong with service, please try again";
-					}
+					});
 
-				})
-				.catch(function (response) {
-					$scope.showThrobber = false;
-					$scope.showConfirmMessage = "Something wrong with service, please try again";
-				});
+				setTimeout(function () {
+					$scope.showConfirmMessage = "";
+					document.getElementById('confrmMsg').innerHTML = "";
+				}, 3500);
 
-			setTimeout(function () {
-				$scope.showConfirmMessage = "";
-				document.getElementById('confrmMsg').innerHTML = "";
-			}, 3500);
-		   
-	   };
-		/*function listData() {
-			console.log("This is coming from list data DEVOPSMATURITY model.");
-			//var $scope = this;
-
-			$scope.listView = true;
-			$scope.saveView = true;
-
-			devopsMaturityService.listDevopsMaturity("DEVOPSMATURITY")
-				.then(function (response) {
-
-					$scope.showThrobber = false;
-					if (response.status == "success") {
-
-						if (response.hasOwnProperty('data')) {
-							$scope.showTble = false;
-							$scope.datalist = response.data;
-							$scope.settingData = JSON.parse($scope.datalist['settingsJson']);
-
-							if ($scope.settingData.dataFreq == undefined)
-							{
-								console.log("----------");
-
-								$scope.placeholderStr = "Select Frequency----";
-							}
-							else
-							{
-								$scope.placeholderStr = $scope.dataFreq;
-								console.log("********");
+			};
+			/*function listData() {
+				console.log("This is coming from list data DEVOPSMATURITY model.");
+				//var $scope = this;
+	
+				$scope.listView = true;
+				$scope.saveView = true;
+	
+				devopsMaturityService.listDevopsMaturity("DEVOPSMATURITY")
+					.then(function (response) {
+	
+						$scope.showThrobber = false;
+						if (response.status == "success") {
+	
+							if (response.hasOwnProperty('data')) {
+								$scope.showTble = false;
+								$scope.datalist = response.data;
+								$scope.settingData = JSON.parse($scope.datalist['settingsJson']);
+	
+								if ($scope.settingData.dataFreq == undefined)
+								{
+									console.log("----------");
+	
+									$scope.placeholderStr = "Select Frequency----";
+								}
+								else
+								{
+									$scope.placeholderStr = $scope.dataFreq;
+									console.log("********");
+									
+								}
+								$scope.$apply();
+								//console.log($scope);
 								
+							} else {
+								$scope.showTble = true;
 							}
-							$scope.$apply();
-							//console.log($scope);
-							
-						} else {
-							$scope.showTble = true;
 						}
-					}
-					else {
+						else {
+							$scope.showConfirmMessage = "Something wrong with service, please try again";
+						}
+	
+					})
+					.catch(function (response) {
+						$scope.showThrobber = false;
 						$scope.showConfirmMessage = "Something wrong with service, please try again";
-					}
+					});
+	
+				setTimeout(function () {
+					$scope.showConfirmMessage = "";
+					document.getElementById('confrmMsg').innerHTML = "";
+				}, 3500);
+			};*/
+			$scope.previewData = function () {
+				console.log("coming here");
+				var self = this;
+				var inputFileById = (<HTMLInputElement>document.getElementById("fileInput"));
+				var uploadedFile = inputFileById.files[0];
+				let reader: FileReader = new FileReader();
+				console.log(uploadedFile);
+				reader.readAsText(uploadedFile);
+				reader.onload = (e) => {
+					let csv: string = reader.result;
+					let allTextLines = csv.split(/\r|\n|\r/);
+					allTextLines[0] = allTextLines[0].replace(/"/g, "");
+					let headers = allTextLines[0].split(',');
+					$scope.headers = headers;
+					$scope.lines = [];
+					for (let i = 1; i < allTextLines.length; i++) {
+						// split content based on comma
 
-				})
-				.catch(function (response) {
-					$scope.showThrobber = false;
-					$scope.showConfirmMessage = "Something wrong with service, please try again";
-				});
-
-			setTimeout(function () {
-				$scope.showConfirmMessage = "";
-				document.getElementById('confrmMsg').innerHTML = "";
-			}, 3500);
-		};*/
-		$scope.previewData = function(){
-			console.log("coming here");
-			var self = this;
-			var inputFileById = (<HTMLInputElement>document.getElementById("fileInput"));
-			var uploadedFile = inputFileById.files[0];
-			let reader: FileReader = new FileReader();
-			console.log(uploadedFile);
-			reader.readAsText(uploadedFile);
-			reader.onload = (e) => {
-				let csv: string = reader.result;
-				let allTextLines = csv.split(/\r|\n|\r/);
-				allTextLines[0] = allTextLines[0].replace(/"/g, "");
-				let headers = allTextLines[0].split(',');
-				$scope.headers = headers;
-				$scope.lines = [];
-				for (let i = 1; i < allTextLines.length; i++) {
-					// split content based on comma
-
-					allTextLines[i] = allTextLines[i].replace(/"/g, "");
-					let data = allTextLines[i].split(',');
-					if (data.length === headers.length) {
-						let tarr = {};
-						for (let j = 0; j < headers.length; j++) {
-							tarr[headers[j]] = data[j];
+						allTextLines[i] = allTextLines[i].replace(/"/g, "");
+						let data = allTextLines[i].split(',');
+						if (data.length === headers.length) {
+							let tarr = {};
+							for (let j = 0; j < headers.length; j++) {
+								tarr[headers[j]] = data[j];
+							}
+							console.log(tarr);
+							$scope.lines.push(tarr);
 						}
-						console.log(tarr);
-						$scope.lines.push(tarr);
 					}
 				}
-			}
-			
-			
-			
-            };
-            $scope.uploadFile = function () {
+
+
+
+			};
+			$scope.uploadFile = function () {
 				console.log($scope.dataFreq);
 				var inputFileById = (<HTMLInputElement>document.getElementById("fileInput"));
 				var uploadedFile = inputFileById.files[0];
-                var fd = new FormData();
-                fd.append("file", inputFileById.files[0])
-                fd.append("action", "upload");
-                $scope.showThrobber = true;
-                var authToken = $cookies.get('Authorization');
-                var restCallUrl = restAPIUrlService.getRestCallUrl("DEVOPS_MATURITY_MODEL");
+				var fd = new FormData();
+				fd.append("file", inputFileById.files[0])
+				fd.append("action", "upload");
+				$scope.showThrobber = true;
+				var authToken = $cookies.get('Authorization');
+				var restCallUrl = restAPIUrlService.getRestCallUrl("DEVOPS_MATURITY_MODEL");
 				console.log(restCallUrl);
 				console.log(fd);
-                $scope.showDisabled = true;
-                $http.post(restCallUrl, fd, {
-                    headers: {
-                        'Content-Type': undefined,
-                        'Authorization': authToken
-                    },
-                    transformRequest: angular.identity
-                }).then(function (data, status, headers, config) {
-                    $scope.showThrobber = false;
-                    $scope.showDisabled = false;
-                    if (data.data.status == "failure") {
-						
-                        $scope.showError = true;
-                        $scope.showErrorMessage = data.data.message;
-                        $window.scrollTo(0, 0);
-                    } else {
-						
+				$scope.showDisabled = true;
+				$http.post(restCallUrl, fd, {
+					headers: {
+						'Content-Type': undefined,
+						'Authorization': authToken
+					},
+					transformRequest: angular.identity
+				}).then(function (data, status, headers, config) {
+					$scope.showThrobber = false;
+					$scope.showDisabled = false;
+					if (data.data.status == "failure") {
+
+						$scope.showError = true;
+						$scope.showErrorMessage = data.data.message;
+						$window.scrollTo(0, 0);
+					} else {
+
 						console.log(data);
-                        $scope.fileUploadSuccessMessage=true;
+						$scope.fileUploadSuccessMessage = true;
 						$scope.showConfirmMessage = "Saved successfully";
 						homePageController.templateName = 'devopsMaturitySettings';
-                    }
-
-                }, function (data) {
-					
-                    $scope.showThrobber = false;
-                    $scope.showDisabled = false;
-                    $scope.showError = true;
-
-                });
-
-
-            };
-            $scope.downloadFile = function () {
-			devopsMaturityService.maturityFileDonwload()
-				.then(function (response) {
-					console.log("----------------------");
-					console.log(response);
-					console.log(response.Resource);
-								var uri = 'data:text/xls;charset=utf-8,' + encodeURI(response);
-								var link = <HTMLAnchorElement>document.createElement("a");
-								link.href = uri;
-								link.download = "my_file.xls";
-								document.body.appendChild(link);
-								link.click();
-								document.body.removeChild(link);
-					/*
-					let arr: any[] = [];
-					console.log("----------------------");
-					console.log(response);
-					for (let i = 1; i < response.data['settingFile'].length; i++) {
-						arr[i] = response.data['settingFile'][i];
-						
 					}
-					console.log(arr.length);
-					let headers: HttpHeaders = new HttpHeaders();
-*/
-					
-					/*
+
+				}, function (data) {
 
 					$scope.showThrobber = false;
-					if (response.status == "success") {
+					$scope.showDisabled = false;
+					$scope.showError = true;
 
-						if (response.hasOwnProperty('data')) {
-							$scope.showTble = false;
-							$scope.datalist = response.data;
-							console.log($scope.datalist['settingFile']);
-							var uri = 'data:text/xlsx;charset=utf-8,' + encodeURI($scope.datalist['settingFile']);
-							//var uri = 'data:application/vnd.ms-excel;base64,'+ encodeURI($scope.datalist['settingFile']);
-							var uri = 'data:application/vnd.ms-excel,'+ encodeURI($scope.datalist['settingFile']);
-								var link = <HTMLAnchorElement>document.createElement("a");
-								link.href = uri;
-								link.download = "Maturity.xlsx";
-								document.body.appendChild(link);
-								link.click();
-								document.body.removeChild(link);
-							
-						} else {
+				});
+
+
+			};
+			$scope.downloadFile = function () {
+				devopsMaturityService.maturityFileDonwload()
+					.then(function (response) {
+						console.log("----------------------");
+						console.log("Response:" + response);
+						console.log(response.Resource);
+						var uri = 'data:text/xlsx;charset=utf-8,' + encodeURI(response);
+						var link = <HTMLAnchorElement>document.createElement("a");
+						link.href = uri;
+						link.download = "DevOpsMaturity.xlsx";
+						document.body.appendChild(link);
+						link.click();
+						document.body.removeChild(link);
+						/*
+						let arr: any[] = [];
+						console.log("----------------------");
+						console.log(response);
+						for (let i = 1; i < response.data['settingFile'].length; i++) {
+							arr[i] = response.data['settingFile'][i];
 							
 						}
-					}
-					else {
-						
-					}
-*/
-				})
-				.catch(function (response) {
-					console.log("**********");
-					//console.log(response);
+						console.log(arr.length);
+						let headers: HttpHeaders = new HttpHeaders();
+	*/
 
+						/*
+	
+						$scope.showThrobber = false;
+						if (response.status == "success") {
+	
+							if (response.hasOwnProperty('data')) {
+								$scope.showTble = false;
+								$scope.datalist = response.data;
+								console.log($scope.datalist['settingFile']);
+								var uri = 'data:text/xlsx;charset=utf-8,' + encodeURI($scope.datalist['settingFile']);
+								//var uri = 'data:application/vnd.ms-excel;base64,'+ encodeURI($scope.datalist['settingFile']);
+								var uri = 'data:application/vnd.ms-excel,'+ encodeURI($scope.datalist['settingFile']);
+									var link = <HTMLAnchorElement>document.createElement("a");
+									link.href = uri;
+									link.download = "Maturity.xlsx";
+									document.body.appendChild(link);
+									link.click();
+									document.body.removeChild(link);
+								
+							} else {
+								
+							}
+						}
+						else {
 							
-				});
-				
+						}
+	*/
+					})
+					.catch(function (response) {
+						console.log("**********");
+						//console.log(response);
+
+
+					});
+
 
 				/*
 				var ctx = "";
@@ -404,8 +411,8 @@ module ISightApp {
 				.catch(function (data) {
 							console.log("entered here function mismatch");
 				});*/
-				
-				
+
+
 				/*
 				//$scope.filename="C:\\Users\\Administrator\\Desktop\\sample.py";
 				var fileName = "Maturity";
@@ -423,13 +430,13 @@ module ISightApp {
                     document.body.removeChild(link);
 */
 
-            };
-		
+			};
 
-	   }
-	   
-		
-		
+
+		}
+
+
+
 	}
 
 }
