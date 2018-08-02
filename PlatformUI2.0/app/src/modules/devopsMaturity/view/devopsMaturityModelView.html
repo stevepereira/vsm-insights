@@ -31,7 +31,7 @@
 								<div flex="35" ng-model="placeholderStr">
 									<span>Frequency of DevOps Maturity</span>
 									<md-select class="searchApplicationBoxContData inputApplicationBox dataBoardingFieldName" md-no-asterisk="true" ng-model="dataFreq"
-									 style="margin-left: 0px;margin-top: 0px;margin-bottom:10px; width:94% !important;" required placeholder="Select Frequency">
+									 style="margin-left: 0px;margin-top: 0px;margin-bottom:10px; width:94% !important;" required placeholder={{placeholderStr}}>
 										<md-option value="Daily">Daily</md-option>
 										<md-option value="Weekly">Weekly</md-option>
 										<md-option value="Monthly">Monthly</md-option>
@@ -39,7 +39,7 @@
 								</div>
 								<div flex="30" layout="column">
 									<span style="margin-top: 18px; margin-bottom: 6px;">Last Run Time: {{settingData.lastRunTime}} </span>
-									<span>Next Run Time: {{nextRunTime}} </span>
+									<span>Next Run Time: {{settingData.nextRunTime}} </span>
 									<span style="margin-top: 18px; margin-bottom: 6px;">Last File Upload Date: {{lastModifiedDate}}</span>
 								</div>
 								<!-- <div flex="25" style="margin-top: 37px;">
@@ -62,7 +62,7 @@
 							</div>
 							<div ng-if="!isDevOpsMaturityFilePresent" style="color: red; max-height:40px;margin-top:0px; margin-left: 50%">No settings file found. Please upload a file!</div>
 							<div layout layout-align="end end">
-								<md-button type="submit" class="md-raised md-primary configureBut" ng-click="saveData(); uploadFile()">
+								<md-button type="submit" class="md-raised md-primary configureBut" ng-click="saveData(); uploadFile()" ng-disabled="frmdatapurging.$invalid">
 									Save & Upload
 								</md-button>
 

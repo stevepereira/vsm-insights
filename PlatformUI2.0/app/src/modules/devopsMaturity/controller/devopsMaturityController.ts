@@ -74,6 +74,7 @@ module ISightApp {
 
 		init($scope, $filter, devopsMaturityService, $resource, $http, $route, $window, homePageController, homeController, $cookies, restAPIUrlService): void {
 			$scope.placeholderStr = "Select Frequency";
+			$scope.dataFreq = "";
 			addData();
 			//listData();
 			console.log($scope);
@@ -102,7 +103,7 @@ module ISightApp {
 				//$scope.lastModifiedByUser = $scope.homeController.userName;
 				$scope.lastModifiedByUser = "Admin";
 				$scope.settingJsonObj = {
-					"dataArchivalFrequency": $scope.dataFreq,
+					"dataArchivalFrequency": self.dataFreq,
 					"lastRunTime": $scope.lastRunTime,
 					"nextRunTime": ''
 				}
@@ -131,6 +132,7 @@ module ISightApp {
 			$scope.listData = function () {
 				console.log("This is coming from list data DEVOPSMATURITY model.=");
 				$scope.listView = true;
+				var self = this;
 				$scope.saveView = true;
 				devopsMaturityService.listDevopsMaturity("DEVOPSMATURITY")
 					.then(function (response) {
@@ -149,6 +151,15 @@ module ISightApp {
 								}
 								$scope.settingData = JSON.parse($scope.datalist['settingsJson']);
 								$scope.lastModifiedDate = $scope.datalist['lastModifiedDate'];
+								if ($scope.settingData.dataArchivalFrequency == undefined)
+								{
+									self.placeholderStr = "Select Frequency";
+								}
+								else
+								{
+									self.placeholderStr = $scope.settingData.dataArchivalFrequency;
+									
+								}
 								/*
 								if ($scope.settingData.dataFreq == undefined)
 								{
