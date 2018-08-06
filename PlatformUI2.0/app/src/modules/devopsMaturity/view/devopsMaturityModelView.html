@@ -24,62 +24,72 @@
 				<h4 style="color: #38840C; font-family: proxima_novaregular; font-size: 16px">Customize your DevOps Maturity settings.</h4>
 				<div ng-if="saveView">
 					<div class="panel panel-default">
-						<form name="frmdatapurging">
-							<div layout="row" layout-align="space-between start" layout-wrap layout-margin layout-padding class="applicationContentCss"
-							 style="margin-left: 8px"></div>
-							<div layout="row" layout-align="space-between start" layout-margin layout-padding>
-								<div flex="35" ng-model="placeholderStr">
-									<span>Frequency of DevOps Maturity</span>
-									<md-select class="searchApplicationBoxContData inputApplicationBox dataBoardingFieldName" md-no-asterisk="true" ng-model="dataFreq"
-									 style="margin-left: 0px;margin-top: 0px;margin-bottom:10px; width:94% !important;" required placeholder={{placeholderStr}}>
-										<md-option value="Daily">Daily</md-option>
-										<md-option value="Weekly">Weekly</md-option>
-										<md-option value="Monthly">Monthly</md-option>
-									</md-select>
-								</div>
-								<div flex="30" layout="column">
-									<span style="margin-top: 18px; margin-bottom: 6px;">Last Run Time: {{settingData.lastRunTime}} </span>
-									<span>Next Run Time: {{settingData.nextRunTime}} </span>
-									<span style="margin-top: 18px; margin-bottom: 6px;">Last File Upload Date: {{lastModifiedDate}}</span>
-								</div>
-								<!-- <div flex="25" style="margin-top: 37px;">
+
+						<div class="agentConfigTable" layout layout-align="center center" ng-if="!isDevOpsMaturityFilePresent && !devopsMaturityController.isUploadDataConfirmation"
+						 style="flex-direction: column">
+							<div>
+								<h3 class="dataDictionaryMessages">No DevOps Maturity Settings Found! Please Configure Settings.</h3>
+							</div>
+							<div style="margin-bottom: 70px">
+								<md-button type="submit" class="md-raised md-primary configureBut" ng-click="devopsMaturityController.uploadDataConfirmation()">
+									Configure Settings
+								</md-button>
+							</div>
+						</div>
+						<div ng-if="isDevOpsMaturityFilePresent || devopsMaturityController.isUploadDataConfirmation">
+							<form name="frmdatapurging">
+								<div layout="row" layout-align="space-between start" layout-wrap layout-margin layout-padding class="applicationContentCss"
+								 style="margin-left: 8px"></div>
+								<div layout="row" layout-align="space-between start" layout-margin layout-padding>
+									<div flex="35">
+										<span>Frequency of DevOps Maturity</span>
+										<md-select class="searchApplicationBoxContData inputApplicationBox dataBoardingFieldName" md-no-asterisk="true" ng-model="dataFreq"
+										 style="margin-left: 0px;margin-top: 0px;margin-bottom:10px; width:94% !important;" required placeholder={{placeholderStr}}>
+											<md-option value="Daily">Daily</md-option>
+											<md-option value="Weekly">Weekly</md-option>
+											<md-option value="Monthly">Monthly</md-option>
+										</md-select>
+									</div>
+									<div flex="30" layout="column">
+										<span style="margin-top: 18px; margin-bottom: 6px;">Last Run Time: {{settingData.lastRunTime}} </span>
+										<span>Next Run Time: {{settingData.nextRunTime}} </span>
+										<span style="margin-top: 18px; margin-bottom: 6px;">Last File Upload Date: {{lastModifiedDate}}</span>
+									</div>
+									<!-- <div flex="25" style="margin-top: 37px;">
 									<span>Next Run Time: </span>
 									<span></span>
 								</div>	 -->
-								<!--Click here to upload files<input type="file" id="fileInput" /><br>
+									<!--Click here to upload files<input type="file" id="fileInput" /><br>
 								 <div ng-if="fileUploadSuccessMessage"
 									style="color: green; margin-left: 35%; margin-top: 5px">File
 									uploaded successfully</div>-->
+									<div layout="column">
+										<label for="myFileField" style="font-size: 14px; color: #666666; font-weight: normal; font-family: proxima_novaregular; font-weight: bold; margin-bottom: 10px">Please select file to upload.
+											<input type="file" id="fileInput" />
+										</label>
+										<span ng-if="!isDevOpsMaturityFilePresent" style="color: red; max-height:40px;margin-top:25px; flex-direction: column">No settings file found. Please upload a file!</span>
+										<span ng-if="fileUploadSuccessMessage" style="color: green; max-height:40px;margin-top:25px; flex-direction: column">{{showFileUploadConfirmMessage}}</span>
+									</div>
+								</div>
 
-								<label for="myFileField" style="font-size: 14px; color: #666666; font-weight: normal; font-family: proxima_novaregular; font-weight: bold; margin-bottom: 10px">Please select file to upload.
-									<input type="file" id="fileInput" />
-								</label>
+								<div layout layout-align="end end" style="margin-top: -20px">
+									<md-button type="submit" class="md-raised md-primary configureBut" ng-click="saveData(); uploadFile()" ng-disabled="frmdatapurging.$invalid">
+										Save & Upload
+									</md-button>
 
-
-
-
-
-							</div>
-							<div ng-if="!isDevOpsMaturityFilePresent" style="color: red; max-height:40px;margin-top:0px; margin-left: 50%">No settings file found. Please upload a file!</div>
-							<div layout layout-align="end end">
-								<md-button type="submit" class="md-raised md-primary configureBut" ng-click="saveData(); uploadFile()" ng-disabled="frmdatapurging.$invalid">
-									Save & Upload
-								</md-button>
-
-								<!--<md-button style="max-height:40px;margin-top:0px" ng-click="downloadFile()" class="md-raised md-primary configureBut md-button md-ink-ripple">
+									<!--<md-button style="max-height:40px;margin-top:0px" ng-click="downloadFile()" class="md-raised md-primary configureBut md-button md-ink-ripple">
 									Download file
 								</md-button>-->
-								<a ng-disabled="!isDevOpsMaturityFilePresent" href="{{devopsMaturityController.maturityFileDownloadPath}}" download>
-									<md-button ng-disabled="!isDevOpsMaturityFilePresent" style="max-height:40px;margin-top:0px" ng-click="" class="md-raised md-primary configureBut md-button md-ink-ripple">
-										Download file
-									</md-button>
-								</a>
-
-
-							</div>
-							<div ng-if="fileUploadSuccessMessage" style="color: green; margin-left: 35%; margin-top: 5px">Settings uploaded successfully</div>
+									<a ng-disabled="!isDevOpsMaturityFilePresent" href="{{devopsMaturityController.maturityFileDownloadPath}}" download>
+										<md-button ng-disabled="!isDevOpsMaturityFilePresent" style="max-height:40px;margin-top:0px" ng-click="" class="md-raised md-primary configureBut md-button md-ink-ripple">
+											Download file
+										</md-button>
+									</a>
+								</div>
+							</form>
+						</div>
 					</div>
-					</form>
+
 				</div>
 			</div>
 		</div>
