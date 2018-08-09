@@ -1,0 +1,1 @@
+Login is working with curl -X POST -u admin:admin --header "Authorization: Basic token" http://ip_address:8080/PlatformService/user/authenticate
