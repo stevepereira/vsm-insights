@@ -25,6 +25,12 @@ then
    if test "$res" != "0";
    then
       echo "Tomcat is not running" >> login.log
+      err=$(grep 'ERROR' $TOMCAT_HOME/logs/catalina.out|tail -10)
+      if [[ -z "$err" ]]; then
+         echo "No error found" >> login.log
+      else
+         echo -e "Error found:\n$err" >> login.log
+      fi
    else
       if [ -f "$TOMCAT_HOME/webapps/PlatformService.war" ]
       then
@@ -43,7 +49,7 @@ else
     echo "TimeStamp : " $(date '+%F %T')""   >> login.log
     echo "IP: ${myextip}, PORT : 8080, User: admin, Password: admin" >> login.log
 
-   curl_command="curl -X POST -u admin:admin --header \"Authorization: Basic YWRtaW46YWRtaW4=\" http://${myextip}:8080/P                                                       latformService/user/authenticate"
+   curl_command="curl -X POST -u admin:admin --header \"Authorization: Basic YWRtaW46YWRtaW4=\" http://${myextip}:8080/PlatformService/user/authenticate"
    RESPONSE=`$curl_command`
 
    if [[ $RESPONSE = *"\"status\":\"SUCCESS\""* ]]; then
