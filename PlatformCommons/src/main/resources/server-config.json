@@ -73,7 +73,8 @@
 		"adminUserName": "admin",
 		"adminUserPassword": "admin",
 		"dbUserName": "grafana",
-		"dbPassword": "password"
+		"dbPassword": "password",
+	    "grafanaVersion":"5.2.2"
 	},
 
 	"postgre": 
