@@ -1,9 +1,0 @@
-Neo4j Health Check started 
-***** Script run  at  2018-08-14 12:22:47*****
-Host localhost PORT 7474 USER  neo4j
- Response of curl command is :  200
-	Neo4j is installed and Running fine
-	Neo4j curl is working 
-API call for Neo4j 
-	Neo4j User Detail are : { "columns" : [ "username", "flags" ], "data" : [ [ "neo4j", [ ] ] ] }
-	Neo4j Record record detail : { "columns" : [ "count(n)" ], "data" : [ [ 11 ] ] }

@@ -1,8 +1,0 @@
-PlatformService STATUS CHECK
-TimeStamp :  2018-08-10 13:07:03
-IP: ip_address, PORT : 8080, User: admin, Password: admin
-        Login is not working { "error" : { "message" : "Invalid Credentials"}}
-PlatformService STATUS CHECK
-TimeStamp :  2018-08-10 13:07:40
-IP: ip_address, PORT : 8080, User: admin, Password: admin
-        Login is working with curl -X POST -u user_id:password --header "Authorization: Basic YWRtaW46YWRtaW4=" http://ip_address:8080/PlatformService/user/authenticate
