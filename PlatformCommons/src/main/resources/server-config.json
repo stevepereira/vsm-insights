@@ -3,9 +3,11 @@
 	{
 		"elasticSearchEndpoint": "http://localhost:9200"
 	},
+	
 	"maturityModelConfig": {
 		"inputFilelocation": "/location/to/the/file/path"
 	},
+
 	"sparkConfigurations": 
 	{
 		"appName": "inSights",
@@ -22,7 +24,7 @@
 
 	"queryCache": 
 	{
-		"esCacheIndex": "neo4j-cached-results/querycacheresult"
+		"esCacheIndex": "neo4j-cached-results"
 	},
 
 	"emailConfiguration": 
@@ -75,7 +77,8 @@
 		"adminUserName": "admin",
 		"adminUserPassword": "admin",
 		"dbUserName": "grafana",
-		"dbPassword": "password"
+		"dbPassword": "password",
+	    "grafanaVersion":"5.2.2"
 	},
 
 	"postgre": 
@@ -84,6 +87,13 @@
 		"password": "password",
 		"insightsDBUrl": "jdbc:postgresql://127.0.0.1:5432/insight",
 		"grafanaDBUrl": "jdbc:postgresql://127.0.0.1:5432/grafana"
+	},
+	
+	"mysql":
+	{
+		"userName":"root",
+		"password":"D#v)ps@2o!6",
+		"dbUrl":"jdbc:mysql://10.155.237.162:3306/_stage"
 	},
 
 	"messageQueue": 

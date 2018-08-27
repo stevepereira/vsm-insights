@@ -39,6 +39,7 @@ public class ApplicationConfigProvider implements Serializable {
 	private boolean disableAuth = false;
 	private String insightsTimeZone = "US/Central";
 	private PostgreData postgre;
+	private MySqlData mysql;
 	private String userId;
 	private String password;
 	private String proxyHost;
@@ -150,6 +151,14 @@ public class ApplicationConfigProvider implements Serializable {
 
 	public void setPostgre(PostgreData postgre) {
 		this.postgre = postgre;
+	}
+	
+	public MySqlData getMysql() {
+		return mysql;
+	}
+
+	public void setMysql(MySqlData mysql) {
+		this.mysql = mysql;
 	}
 
 	public String getUserId() {

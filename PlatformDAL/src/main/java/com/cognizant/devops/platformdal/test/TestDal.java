@@ -16,6 +16,7 @@
 package com.cognizant.devops.platformdal.test;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -24,25 +25,45 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
+import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
+import com.cognizant.devops.platformdal.config.PlatformDALSessionFactoryProvider;
+
+import org.hibernate.cfg.Configuration;
+
+
 public class TestDal {
 	final static Logger logger = Logger.getLogger(TestDal.class);
 	public static void main(String[] args) {
-		/*Configuration configuration = new Configuration();
-		configuration.configure("hibernate.cfg.xml");
-		configuration.setProperty("hibernate.connection.username","grafana123");
-		ServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).configure().build();*/
-		ServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().configure().build();
-		MetadataSources sources = new MetadataSources( standardRegistry );
-		sources.addAnnotatedClass( Test.class );
-		Metadata metadata = sources.getMetadataBuilder().applyImplicitNamingStrategy(ImplicitNamingStrategyJpaCompliantImpl.INSTANCE).build();
-		SessionFactory sessionFactory = metadata.buildSessionFactory();
-		Session session = sessionFactory.openSession();
-		session.beginTransaction();
-		Test s = new Test();
-		s.setName("12Vishal123");
-		session.save(s);
-		session.getTransaction().commit();
-		session.close();
-		sessionFactory.close();
+		try {
+			ApplicationConfigCache.loadConfigCache();
+			/*Configuration configuration = new Configuration();
+			configuration.configure("hibernate.cfg.xml");
+			configuration.setProperty("hibernate.connection.username","grafana123");
+			ServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).configure().build();
+			ServiceRegistry standardRegistry = new StandardServiceRegistryBuilder().configure().build();
+			MetadataSources sources = new MetadataSources( standardRegistry );
+			sources.addAnnotatedClass( Test.class );
+			Metadata metadata = sources.getMetadataBuilder().applyImplicitNamingStrategy(ImplicitNamingStrategyJpaCompliantImpl.INSTANCE).build();
+			SessionFactory sessionFactory = metadata.buildSessionFactory();
+			Session session = sessionFactory.openSession();
+			session.beginTransaction();
+			Test s = new Test();
+			s.setName("12Vishal123");
+			session.save(s);
+			session.getTransaction().commit();
+			session.close();
+			sessionFactory.close();*/
+			logger.info(" Testing mySql Connection");
+			
+			Configuration  configuration = new Configuration().configure( "hibernate_mysql.cfg.xml");
+			//PlatformDALSessionFactoryProvider.initMySqlDAL();
+			SessionFactory sessionFactory =configuration.buildSessionFactory();    //  PlatformDALSessionFactoryProvider.getMySqlSessionFactory();
+			logger.info(" session factory "+sessionFactory.toString());
+			Session session=sessionFactory.openSession();
+			logger.info(" session "+session );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
