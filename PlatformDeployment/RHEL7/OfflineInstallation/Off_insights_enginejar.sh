@@ -13,21 +13,19 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 #-------------------------------------------------------------------------------
-# Set InSights Home
-# Set InSights Home
-echo "#################### Setting up Insights Home ####################"
-cd /usr/
-sudo mkdir INSIGHTS_HOME
-cd INSIGHTS_HOME
-sudo wget http://platform.cogdevops.com/insights_install/installationScripts/latest/RHEL/InSightsConfig.zip
-sudo unzip InSightsConfig.zip && sudo rm -rf InSightsConfig.zip
-sudo cp -R InSightsConfig/.InSights/ .
-export INSIGHTS_HOME=`pwd`
-sudo echo INSIGHTS_HOME=`pwd` | sudo tee -a /etc/environment
-sudo echo "export" INSIGHTS_HOME=`pwd` | sudo tee -a /etc/profile
-sudo chmod -R 777 /usr/INSIGHTS_HOME/
+# get insights engine jar
+# get insights engine jar
+
+
+echo "#################### Getting Insights Engine Jar ####################"
+sudo mkdir /opt/insightsengine
+cd /opt/insightsengine
+export INSIGHTS_ENGINE=`pwd`
+sudo echo INSIGHTS_ENGINE=`pwd` | sudo tee -a /etc/environment
+sudo echo "export" INSIGHTS_ENGINE=`pwd` | sudo tee -a /etc/profile
 source /etc/environment
 source /etc/profile
-myextip=$(wget -qO- icanhazip.com)
-echo $myextip
-sed -i -e "s|localhost:3000|${myextip}:3000|g" /usr/INSIGHTS_HOME/.InSights/server-config.json
+sudo cp /usr/Offline_Installation/Insight_Components/PlatformEngine.jar ./
+sleep 2
+sudo nohup java -jar PlatformEngine.jar &
+

@@ -96,7 +96,7 @@ class BaseAgent(object):
     
     def buildTimeFormatLengthMapping(self):
         self.timeFormatLengthMapping = {}
-        timeFieldMapping = self.config.get('timeFieldMapping', None)
+        timeFieldMapping = self.config.get('dynamicTemplate', {}).get('timeFieldMapping', None)
         if timeFieldMapping:
             for field in timeFieldMapping:
                 self.timeFormatLengthMapping[field] = len(self.epochStartDateTime.strftime(timeFieldMapping[field]))
@@ -193,7 +193,7 @@ class BaseAgent(object):
         if data:
             self.addExecutionId(data, self.executionId)
             self.addTimeStampField(data, timeStampField, timeStampFormat, isEpochTime)
-            self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', None), metadata)
+            self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', 100), metadata)
             self.logIndicator(self.PUBLISH_START, self.config.get('isDebugAllowed', False))
 
     def publishHealthData(self, data):
@@ -207,7 +207,7 @@ class BaseAgent(object):
             timeStampFormat = self.config.get('timeStampFormat')
         if not isEpochTime:
             isEpochTime = self.config.get('isEpochTimeFormat', False)
-        timeFieldMapping = self.config.get('timeFieldMapping', None)
+        timeFieldMapping = self.config.get('dynamicTemplate', {}).get('timeFieldMapping', None)
         for d in data:
             eventTime = d.get(timeStampField, None)
             if eventTime != None:

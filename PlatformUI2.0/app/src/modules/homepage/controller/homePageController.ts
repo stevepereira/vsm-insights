@@ -18,8 +18,8 @@
 
 module ISightApp {
     export class HomePageController {
-        static $inject = ['$location', '$window', '$cookies', '$rootScope', 'authenticationService', 'restEndpointService', '$sce', '$timeout', '$mdDialog', 'aboutService', '$resource', 'restAPIUrlService'];
-        constructor(private $location, private $window, private $cookies, private $rootScope, private authenticationService: IAuthenticationService, private restEndpointService: IRestEndpointService, private $sce, private $timeout, private $mdDialog, private aboutService: IAboutService, private $resource, private restAPIUrlService: IRestAPIUrlService) {
+        static $inject = ['$location', '$window', '$cookies', '$rootScope', 'authenticationService', 'restEndpointService', '$sce', '$timeout', '$mdDialog', 'aboutService', '$resource', 'restAPIUrlService', 'userOnboardingService'];
+        constructor(private $location, private $window, private $cookies, private $rootScope, private authenticationService: IAuthenticationService, private restEndpointService: IRestEndpointService, private $sce, private $timeout, private $mdDialog, private aboutService: IAboutService, private $resource, private restAPIUrlService: IRestAPIUrlService, private userOnboardingService: IUserOnboardingService) {
             var self = this;
             this.authenticationService.validateSession();
             this.isValidUser = true;
@@ -87,7 +87,7 @@ module ISightApp {
 
             //self.selectedIndex = 2;
             //self.templateName = 'dashboards';
-
+            self.loadDataDictionaryURL();
             let location = this.$location;
             let uiConfigJsonUrl: string = location.absUrl().replace(location.path(), "");
             if (uiConfigJsonUrl.length > uiConfigJsonUrl.lastIndexOf('/')) {
@@ -126,6 +126,7 @@ module ISightApp {
 
             });
 
+            self.getGrafanaVersion();
 
         }
         isValidUser: boolean = false;
@@ -169,6 +170,9 @@ module ISightApp {
         imageSrc: string = "dist/icons/svg/landingPage/Cognizant_Insights.svg";
         showDefaultImg: boolean = false;
         showTrackingJsonUploadButton: boolean = false;
+        trackingJsonLocation: string = '';
+        dataDictionaryURL: string = '';
+        grafanaVersion: Number;
 
         public redirect(iconId: string): void {
             if (iconId == 'dashboard') {
@@ -209,6 +213,19 @@ module ISightApp {
         public closeDialog() {
             this.$mdDialog.cancel();
             this.$mdDialog.hide();
+        }
+
+        showDataDictionary() {
+            var self = this;
+            self.$mdDialog.show({
+                controller: DataDictionaryController,
+                controllerAs: 'dataDictionaryController',
+                templateUrl: './dist/modules/dataDictionary/view/dataDictionaryView.html',
+                parent: angular.element(document.body),
+                preserveScope: true,
+                clickOutsideToClose: true,
+                bindToController: true
+            })
         }
 
         selectAct(tabName: string): void {
@@ -324,5 +341,25 @@ module ISightApp {
             }
             this.$location.path('/iSight/login');
         }
+
+        loadDataDictionaryURL() {
+            var self = this;
+            let location = self.$location;
+            let dataDictionaryUrl: string = location.absUrl().replace(location.path(), "/InSights/dataDictionary");
+            if (dataDictionaryUrl.length > dataDictionaryUrl.lastIndexOf('/')) {
+                dataDictionaryUrl = dataDictionaryUrl.substr(0, dataDictionaryUrl.lastIndexOf('/'));
+            }
+            self.dataDictionaryURL = dataDictionaryUrl + "/dataDictionary";
+        }
+
+        getGrafanaVersion() {
+            var self = this;
+            self.userOnboardingService.getGrafanaCurrentVersion()
+                .then(function (response) {
+                    var version = response.data.version;
+                    self.grafanaVersion = parseInt(version);
+                });
+        }
+
     }
 }
