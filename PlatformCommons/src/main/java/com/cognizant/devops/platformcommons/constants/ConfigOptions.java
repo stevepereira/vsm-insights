@@ -53,6 +53,7 @@ public interface ConfigOptions {
 	String BACKUP_FILE_NAME = "backupFileName";
 	String BACKUP_DURATION_IN_DAYS = "backupRetentionInDays";
 	String DATA_ARCHIVAL_FREQUENCY = "dataArchivalFrequency";
+	String JOB_FREQUENCY= "jobFrequency";
 	String LAST_RUN_TIME = "lastRunTime";
 	String NEXT_RUN_TIME = "nextRunTime";
 	String BACKUP_FILE_FORMAT = "backupFileFormat";

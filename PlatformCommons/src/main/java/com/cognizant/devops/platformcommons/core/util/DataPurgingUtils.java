@@ -26,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+@Deprecated
 public class DataPurgingUtils {
 
 	private static final String DATE_TIME_FORMAT = "yyyy/MM/dd hh:mm a";
