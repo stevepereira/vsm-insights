@@ -78,8 +78,6 @@ module ISightApp {
             this.addEndPoint("DISTINCT_HIERARCHY", '/PlatformService/admin/hierarchyDetails/fetchDistinctHierarchyName');
 
 
-<<<<<<< .mine
-
             this.addEndPoint("TOOL_DATA_READ", '/PlatformService/admin/tools/read');
             this.addEndPoint("TOOL_CONFIG_SAVE", '/PlatformService/admin/toolsConfig/update');
             this.addEndPoint("TOOL_CONFIG_READ", '/PlatformService/admin/toolsConfig/read');
@@ -128,57 +126,13 @@ module ISightApp {
             this.addEndPoint("SAVE_DEVOPS_MATURITY_SETTING", '/PlatformService/admin/settings/saveSettingsConfiguration');
             this.addEndPoint("LIST_DEVOPS_MATURITY_SETTING", '/PlatformService/admin/settings/loadSettingsConfiguration');
             this.addEndPoint("DOWNLOAD_MATURITY_FILE", '/PlatformService/admin/settings/download/DEVOPSMATURITY');
-=======
 
-            this.addEndPoint("TOOL_DATA_READ", '/PlatformService/admin/tools/read');
-            this.addEndPoint("TOOL_CONFIG_SAVE", '/PlatformService/admin/toolsConfig/update');
-            this.addEndPoint("TOOL_CONFIG_READ", '/PlatformService/admin/toolsConfig/read');
-            this.addEndPoint("AGENT_CONFIG_DOWNLOAD", '/PlatformService/admin/toolsConfig/download');
-            this.addEndPoint("TOOL_CONFIG_DELETE", '/PlatformService/admin/toolsConfig/delete');
-            this.addEndPoint("TOOL_LAYOUT_READ", '/PlatformService/admin/toollayout/read');
-            this.addEndPoint("ALL_TOOLS_CONFIGURATION_READ", '/PlatformService/admin/toolsConfig/readAll');
-
-            this.addEndPoint("ORG_USERS_GET", '/PlatformService/admin/userMgmt/getOrgUsers');
-            this.addEndPoint("USER_ADD", '/PlatformService/admin/userMgmt/addUser');
-            this.addEndPoint("ALL_USERS", '/PlatformService/admin/userMgmt/getAllUsers');
-            this.addEndPoint("USER_TO_ORG_ADD", '/PlatformService/admin/userMgmt/addUserToOrg');
-            this.addEndPoint("ORG_CREATE", '/PlatformService/admin/userMgmt/createOrg');
-            this.addEndPoint("USER_ORG_DELETE", '/PlatformService/admin/userMgmt/removeUserFromOrg');
-            this.addEndPoint("USER_ROLE_INORG_UPDATE", '/PlatformService/admin/userMgmt/updateUserRoleInOrg');
-
-            this.addEndPoint("ACCESS_GROUP_MANAGEMENT_GET_ORGS", '/PlatformService/accessGrpMgmt/getOrgs');
-            this.addEndPoint("ACCESS_GROUP_MANAGEMENT_GET_CURRENT_USER_ORGS", '/PlatformService/accessGrpMgmt/getCurrentUserOrgs');
-            this.addEndPoint("ACCESS_GROUP_MANAGEMENT_SWITCH_ORGS", '/PlatformService/accessGrpMgmt/switchUserOrg');
-            this.addEndPoint("ACCESS_GROUP_MANAGEMENT_GET_USERS", '/PlatformService/accessGrpMgmt/getUser');
             this.addEndPoint("GET_GRAFANA_VERSION", "/PlatformService/accessGrpMgmt/getGrafanaVersion");
-
-            this.addEndPoint("HIERARCHY_ALL_DETAILS_GET", '/PlatformService/admin/hierarchyDetails/getAllHierarchyDetails');
-            this.addEndPoint("UPLOAD_HIERARCHY_DETAILS", '/PlatformService/admin/hierarchyDetails/uploadHierarchyDetails');
-            this.addEndPoint("GET_METADATA", '/PlatformService/admin/hierarchyDetails/getMetaData');
-            this.addEndPoint("GET_HIERARCHY_PROPERTIES", '/PlatformService/admin/hierarchyDetails/getHierarchyProperties');
-
-            this.addEndPoint("INSIGHTS_GET", '/PlatformService/insights/inferences');
-            this.addEndPoint("INSIGHTS_COMP_STATUS", '/PlatformService/ServicesHealthStatus/getStatus');
-
-            this.addEndPoint("UPLOAD_IMAGE", '/PlatformService/admin/settings/uploadCustomLogo');
-            this.addEndPoint("GET_LOGO_IMAGE", '/PlatformService/settings/getLogoImage');
-
-            this.addEndPoint("SAVE_DATAPURGING_SETTING", '/PlatformService/admin/settings/saveSettingsConfiguration');
-            this.addEndPoint("LIST_DATAPURGING_SETTING", '/PlatformService/admin/settings/loadSettingsConfiguration');
-
-            this.addEndPoint("AGENT_REGISTER", '/PlatformService/admin/agentConfiguration/registerAgent');
-            this.addEndPoint("AGENT_UPDATE", '/PlatformService/admin/agentConfiguration/updateAgent');
-            this.addEndPoint("AGENT_START_STOP", '/PlatformService/admin/agentConfiguration/startStopAgent');
-            this.addEndPoint("DOCROOT_AGENT_VERSION_TOOLS", '/PlatformService/admin/agentConfiguration/getSystemAvailableAgentList');
-            this.addEndPoint("DOCROOT_AGENT_TOOL_CONFIG_DETAILS", '/PlatformService/admin/agentConfiguration/getToolRawConfigFile');
-            this.addEndPoint("DB_AGENTS_LIST", '/PlatformService/admin/agentConfiguration/getRegisteredAgents');
-            this.addEndPoint("DB_AGENT_CONFIG_DETAILS", '/PlatformService/admin/agentConfiguration/getRegisteredAgentDetail');
-            this.addEndPoint("AGENT_UNINSTALL", '/PlatformService/admin/agentConfiguration/uninstallAgent');
 
             this.addEndPoint("DATA_DICTIONARY_TOOLS_AND_CATEGORY", '/PlatformService/datadictionary/getToolsAndCategories');
             this.addEndPoint("DATA_DICTIONARY_TOOL_PROPERTIES", '/PlatformService/datadictionary/getToolProperties');
             this.addEndPoint("DATA_DICTIONARY_TOOLS_RELATIONSHIPS", '/PlatformService/datadictionary/getToolsRelationshipAndProperties');
->>>>>>> .theirs
+
         }
 
         addEndPoint(name: string, url: string) {
