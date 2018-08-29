@@ -15,19 +15,33 @@
  ******************************************************************************/
 package com.cognizant.devops.platformdal.maturity.dal;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import com.cognizant.devops.platformdal.config.PlatformDALSessionFactoryProvider;
 
 public class GenericMySqlDAL {
-	final static Logger logger = Logger.getLogger(MaturityMySQLDAL.class);
+	final static Logger logger = Logger.getLogger(GenericMySqlDAL.class);
 	private Session session;
-	private SessionFactory sessionFactory =PlatformDALSessionFactoryProvider.getMySqlSessionFactory();
+	private SessionFactory sessionFactory ;
+	
+	public GenericMySqlDAL(){
+		if(sessionFactory==null) {
+			sessionFactory=PlatformDALSessionFactoryProvider.getMySqlSessionFactory();
+		}
+	}
 
 	public Session getSession(){
 		if(session == null || !session.isOpen()){
@@ -51,18 +65,22 @@ public class GenericMySqlDAL {
 		session.close();
 	}
 	
-    public <T> T save(final T o){
+    public <T> int save(final T o){
     	Object objReturn;
     	Session session = sessionFactory.openSession();
-    	objReturn= (T) session.save(o);
+    	session.beginTransaction();
+    	objReturn= session.save(o);
+    	session.getTransaction().commit();
     	closeSession(session);
-        return (T) objReturn;
+        return (int) objReturn;
       }
 
 
       public void delete(final Object object){
     	  Session session = sessionFactory.openSession();
+    	  session.beginTransaction();
     	  session.delete(object);
+    	  session.getTransaction().commit();
     	  closeSession(session);
       }
 
@@ -92,8 +110,43 @@ public class GenericMySqlDAL {
 
       public <T> List<T> getAll(final Class<T> type) {
         Session session = sessionFactory.openSession();
-         Criteria crit = session.createCriteria(type);
-        return crit.list();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<T> criteria = builder.createQuery(type);
+        criteria.select(criteria.from(type));
+        Query<T> q=session.createQuery(criteria);
+        return q.getResultList();
       }
+      
+      public <T> T getRecordById(Class<T> type,String key,Object value) {
+          Session session = sessionFactory.openSession();
+          CriteriaBuilder builder = session.getCriteriaBuilder();
+          CriteriaQuery<T> criteria = builder.createQuery(type);
+          Root<T> root =criteria.from(type);
+          criteria.select(root);
+          criteria.where(builder.equal(root.get(key),value));
+          System.out.println(" criteria "+criteria.toString());
+          Query<T> q=session.createQuery(criteria);
+          return q.getSingleResult();
+        }
+      
+      public <T> List<T> getListByParameters(Class<T> type,Map<Object,Object> parameterList,Boolean isAnd) {
+          Session session = sessionFactory.openSession();
+          CriteriaBuilder builder = session.getCriteriaBuilder();
+          CriteriaQuery<T> criteria = builder.createQuery(type);
+          List<Predicate> predicateList=new ArrayList<Predicate>(0);
+          Root<T> root =criteria.from(type);
+          criteria.select(root);
+          for (Entry<Object,Object> parameter : parameterList.entrySet()) {
+        	  predicateList.add(builder.equal(root.get(parameter.getKey().toString()),parameter.getValue()));
+          }
+          if(isAnd) {
+        	  criteria.where(builder.and(predicateList.toArray(new Predicate[predicateList.size()])));
+          }else {
+        	  criteria.where(builder.or(predicateList.toArray(new Predicate[predicateList.size()])));
+          }
+          System.out.println(" criteria "+criteria.toString());
+          Query<T> q=session.createQuery(criteria);
+          return q.getResultList();
+        }
 	
 }

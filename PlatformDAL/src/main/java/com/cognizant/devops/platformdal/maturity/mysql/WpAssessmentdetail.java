@@ -31,20 +31,21 @@ public class WpAssessmentdetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
-	private int createdby;
+	private Integer createdby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdon;
 
-	@Lob
+	@Column(name = "description", nullable = false, columnDefinition="TEXT")
 	private String description;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date enddate;
 
-	private int modifiedby;
+	private Integer modifiedby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedon;
@@ -52,29 +53,29 @@ public class WpAssessmentdetail implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date startdate;
 
-	private int status;
+	private Integer status;
 
 	private String surveyname;
 
-	@Lob
+	@Column(name = "thankyoutext", nullable = false, columnDefinition="TEXT")
 	private String thankyoutext;
 
 	public WpAssessmentdetail() {
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getCreatedby() {
+	public Integer getCreatedby() {
 		return this.createdby;
 	}
 
-	public void setCreatedby(int createdby) {
+	public void setCreatedby(Integer createdby) {
 		this.createdby = createdby;
 	}
 
@@ -102,11 +103,11 @@ public class WpAssessmentdetail implements Serializable {
 		this.enddate = enddate;
 	}
 
-	public int getModifiedby() {
+	public Integer getModifiedby() {
 		return this.modifiedby;
 	}
 
-	public void setModifiedby(int modifiedby) {
+	public void setModifiedby(Integer modifiedby) {
 		this.modifiedby = modifiedby;
 	}
 
@@ -126,11 +127,11 @@ public class WpAssessmentdetail implements Serializable {
 		this.startdate = startdate;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 

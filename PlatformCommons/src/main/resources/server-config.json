@@ -92,8 +92,8 @@
 	"mysql":
 	{
 		"userName":"root",
-		"password":"D#v)ps@2o!6",
-		"dbUrl":"jdbc:mysql://10.155.237.162:3306/_stage"
+		"password":"root",
+		"dbUrl":"jdbc:mysql://127.0.0.1:3306/devops_stage?zeroDateTimeBehavior=convertToNull"
 	},
 
 	"messageQueue": 

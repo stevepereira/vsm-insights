@@ -30,7 +30,8 @@ public class WpAssessmentContactusDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int idAssessment;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer idAssessment;
 
 	private String applicationName;
 
@@ -43,11 +44,11 @@ public class WpAssessmentContactusDetail implements Serializable {
 
 	private String horizontal;
 
-	private int id;
+	private Integer id;
 
 	private String invites;
 
-	private int projectID;
+	private Integer projectID;
 
 	private String status;
 
@@ -56,11 +57,11 @@ public class WpAssessmentContactusDetail implements Serializable {
 	public WpAssessmentContactusDetail() {
 	}
 
-	public int getIdAssessment() {
+	public Integer getIdAssessment() {
 		return this.idAssessment;
 	}
 
-	public void setIdAssessment(int idAssessment) {
+	public void setIdAssessment(Integer idAssessment) {
 		this.idAssessment = idAssessment;
 	}
 
@@ -104,11 +105,11 @@ public class WpAssessmentContactusDetail implements Serializable {
 		this.horizontal = horizontal;
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -120,11 +121,11 @@ public class WpAssessmentContactusDetail implements Serializable {
 		this.invites = invites;
 	}
 
-	public int getProjectID() {
+	public Integer getProjectID() {
 		return this.projectID;
 	}
 
-	public void setProjectID(int projectID) {
+	public void setProjectID(Integer projectID) {
 		this.projectID = projectID;
 	}
 

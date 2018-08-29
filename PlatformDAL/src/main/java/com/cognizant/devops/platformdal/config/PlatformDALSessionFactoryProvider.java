@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.cognizant.devops.platformdal.config;
 
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -41,6 +42,7 @@ import com.cognizant.devops.platformdal.tools.layout.ToolsLayout;
 import com.cognizant.devops.platformdal.user.UserPortfolio;
 
 public class PlatformDALSessionFactoryProvider {
+	final static Logger logger = Logger.getLogger(PlatformDALSessionFactoryProvider.class);
 	private static SessionFactory sessionFactory;
 	private static SessionFactory grafanaSessionFactory;
 	private static SessionFactory mySqlSessionFactory;
@@ -100,27 +102,27 @@ public class PlatformDALSessionFactoryProvider {
 	public static void initMySqlDAL() {
 		if (mySqlSessionFactory == null) {
 			try {
-				Configuration configuration = new Configuration().configure();
-				configuration.addAnnotatedClass(WpAssessmentanswer.class);
-				configuration.addAnnotatedClass(WpAssessmentdetail.class);
-				configuration.addAnnotatedClass(WpAssessmentinvitation.class);
-				configuration.addAnnotatedClass(WpAssessmentquestion.class);
-				configuration.addAnnotatedClass(WpAssessmentvector.class);
-				configuration.addAnnotatedClass(WpAssessmentContactusDetail.class);
 				MySqlData mySql = ApplicationConfigProvider.getInstance().getMysql();
-				System.out.println(" mysql detail " + mySql.toString());
+				logger.info(" mysql detail " + mySql.toString());
 				if (mySql != null) {
-
+					Configuration configuration = new Configuration().configure("hibernate_mysql.cfg.xml");
+					configuration.addAnnotatedClass(WpAssessmentanswer.class);
+					configuration.addAnnotatedClass(WpAssessmentdetail.class);
+					configuration.addAnnotatedClass(WpAssessmentinvitation.class);
+					configuration.addAnnotatedClass(WpAssessmentquestion.class);
+					configuration.addAnnotatedClass(WpAssessmentvector.class);
+					configuration.addAnnotatedClass(WpAssessmentContactusDetail.class);
+					
 					configuration.setProperty("hibernate.connection.username", mySql.getUserName());
-					configuration.setProperty("hibernate.connection.password", mySql.getPassword());
+					configuration.setProperty("hibernate.connection.password",mySql.getPassword() );
 					configuration.setProperty("hibernate.connection.url", mySql.getDbUrl());
 					configuration.setProperty("hbm2ddl.auto", "validate");
+					StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
+							.applySettings(configuration.getProperties());
+					mySqlSessionFactory = configuration.buildSessionFactory(builder.build());
 				}
-				StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder()
-						.applySettings(configuration.getProperties());
-				mySqlSessionFactory = configuration.buildSessionFactory(builder.build());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				logger.error("Error while creating MySQL session factory");
 				e.printStackTrace();
 			}
 
@@ -136,6 +138,9 @@ public class PlatformDALSessionFactoryProvider {
 	}
 
 	public static SessionFactory getMySqlSessionFactory() {
+		if (mySqlSessionFactory==null) {
+			initMySqlDAL();
+		}
 		return mySqlSessionFactory;
 	}
 

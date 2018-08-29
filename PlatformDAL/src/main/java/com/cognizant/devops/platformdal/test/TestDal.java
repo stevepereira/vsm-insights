@@ -16,23 +16,19 @@
 package com.cognizant.devops.platformdal.test;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.service.ServiceRegistry;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 import com.cognizant.devops.platformdal.config.PlatformDALSessionFactoryProvider;
-
-import org.hibernate.cfg.Configuration;
+import com.cognizant.devops.platformdal.maturity.dal.MaturityMySQLDAL;
 
 
 public class TestDal {
 	final static Logger logger = Logger.getLogger(TestDal.class);
+	/**
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		try {
 			ApplicationConfigCache.loadConfigCache();
@@ -55,12 +51,24 @@ public class TestDal {
 			sessionFactory.close();*/
 			logger.info(" Testing mySql Connection");
 			
-			Configuration  configuration = new Configuration().configure( "hibernate_mysql.cfg.xml");
+			
+			// Mysql Testing for Maturity Model 
+			//Configuration  configuration = new Configuration().configure( "hibernate_mysql.cfg.xml");
 			//PlatformDALSessionFactoryProvider.initMySqlDAL();
-			SessionFactory sessionFactory =configuration.buildSessionFactory();    //  PlatformDALSessionFactoryProvider.getMySqlSessionFactory();
+			MaturityMySQLDAL maturityDal=new MaturityMySQLDAL();
+			SessionFactory sessionFactory =PlatformDALSessionFactoryProvider.getMySqlSessionFactory();    //  configuration.buildSessionFactory();
 			logger.info(" session factory "+sessionFactory.toString());
 			Session session=sessionFactory.openSession();
 			logger.info(" session "+session );
+			maturityDal.addAssementInvitation();
+			maturityDal.getAllWpAssessmentinvitationList();
+			maturityDal.getAllWpAssessmentanswerList();
+			maturityDal.getAllWpAssessmentContactusDetailList();
+			maturityDal.getAllWpAssessmentdetailList();
+			maturityDal.getAllWpAssessmentquestionList();
+			maturityDal.getAllWpAssessmentvectorList();
+			maturityDal.getAssessentInvitationById(74);
+			maturityDal.getAssessentInvitationByFilter();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

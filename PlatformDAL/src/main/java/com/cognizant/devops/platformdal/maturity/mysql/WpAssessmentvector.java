@@ -31,40 +31,41 @@ public class WpAssessmentvector implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
-	private int createdby;
+	private Integer createdby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdon;
 
-	private int invitationid;
+	private Integer invitationid;
 
-	private int modifiedby;
+	private Integer modifiedby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedon;
 
-	private int status;
+	private Integer status;
 
-	private int vectorid;
+	private Integer vectorid;
 
 	public WpAssessmentvector() {
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getCreatedby() {
+	public Integer getCreatedby() {
 		return this.createdby;
 	}
 
-	public void setCreatedby(int createdby) {
+	public void setCreatedby(Integer createdby) {
 		this.createdby = createdby;
 	}
 
@@ -76,19 +77,19 @@ public class WpAssessmentvector implements Serializable {
 		this.createdon = createdon;
 	}
 
-	public int getInvitationid() {
+	public Integer getInvitationid() {
 		return this.invitationid;
 	}
 
-	public void setInvitationid(int invitationid) {
+	public void setInvitationid(Integer invitationid) {
 		this.invitationid = invitationid;
 	}
 
-	public int getModifiedby() {
+	public Integer getModifiedby() {
 		return this.modifiedby;
 	}
 
-	public void setModifiedby(int modifiedby) {
+	public void setModifiedby(Integer modifiedby) {
 		this.modifiedby = modifiedby;
 	}
 
@@ -100,19 +101,19 @@ public class WpAssessmentvector implements Serializable {
 		this.modifiedon = modifiedon;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-	public int getVectorid() {
+	public Integer getVectorid() {
 		return this.vectorid;
 	}
 
-	public void setVectorid(int vectorid) {
+	public void setVectorid(Integer vectorid) {
 		this.vectorid = vectorid;
 	}
 

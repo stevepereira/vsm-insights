@@ -32,20 +32,21 @@ public class WpAssessmentinvitation implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
 	@Column(name="active_flag")
-	private int activeFlag;
+	private Integer activeFlag;
 
 	@Column(name="asses_status")
-	private int assesStatus;
+	private Integer assesStatus;
 
-	private int assesid;
+	private Integer assesid;
 
 	@Column(name="completion_flag")
-	private int completionFlag;
+	private Integer completionFlag;
 
-	private int createdby;
+	private Integer createdby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdon;
@@ -60,16 +61,16 @@ public class WpAssessmentinvitation implements Serializable {
 	private String invitationurl;
 
 	@Column(name="mail_sent")
-	private int mailSent;
+	private Integer mailSent;
 
-	private int modifiedby;
+	private Integer modifiedby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedon;
 
 	private String name;
 
-	private int page;
+	private Integer page;
 
 	private String projectid;
 
@@ -84,58 +85,58 @@ public class WpAssessmentinvitation implements Serializable {
 	private String surveySession;
 
 	@Column(name="survey_userid")
-	private int surveyUserid;
+	private Integer surveyUserid;
 
 	private String vertical;
 
 	public WpAssessmentinvitation() {
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getActiveFlag() {
+	public Integer getActiveFlag() {
 		return this.activeFlag;
 	}
 
-	public void setActiveFlag(int activeFlag) {
+	public void setActiveFlag(Integer activeFlag) {
 		this.activeFlag = activeFlag;
 	}
 
-	public int getAssesStatus() {
+	public Integer getAssesStatus() {
 		return this.assesStatus;
 	}
 
-	public void setAssesStatus(int assesStatus) {
+	public void setAssesStatus(Integer assesStatus) {
 		this.assesStatus = assesStatus;
 	}
 
-	public int getAssesid() {
+	public Integer getAssesid() {
 		return this.assesid;
 	}
 
-	public void setAssesid(int assesid) {
+	public void setAssesid(Integer assesid) {
 		this.assesid = assesid;
 	}
 
-	public int getCompletionFlag() {
+	public Integer getCompletionFlag() {
 		return this.completionFlag;
 	}
 
-	public void setCompletionFlag(int completionFlag) {
+	public void setCompletionFlag(Integer completionFlag) {
 		this.completionFlag = completionFlag;
 	}
 
-	public int getCreatedby() {
+	public Integer getCreatedby() {
 		return this.createdby;
 	}
 
-	public void setCreatedby(int createdby) {
+	public void setCreatedby(Integer createdby) {
 		this.createdby = createdby;
 	}
 
@@ -179,19 +180,19 @@ public class WpAssessmentinvitation implements Serializable {
 		this.invitationurl = invitationurl;
 	}
 
-	public int getMailSent() {
+	public Integer getMailSent() {
 		return this.mailSent;
 	}
 
-	public void setMailSent(int mailSent) {
+	public void setMailSent(Integer mailSent) {
 		this.mailSent = mailSent;
 	}
 
-	public int getModifiedby() {
+	public Integer getModifiedby() {
 		return this.modifiedby;
 	}
 
-	public void setModifiedby(int modifiedby) {
+	public void setModifiedby(Integer modifiedby) {
 		this.modifiedby = modifiedby;
 	}
 
@@ -211,11 +212,11 @@ public class WpAssessmentinvitation implements Serializable {
 		this.name = name;
 	}
 
-	public int getPage() {
+	public Integer getPage() {
 		return this.page;
 	}
 
-	public void setPage(int page) {
+	public void setPage(Integer page) {
 		this.page = page;
 	}
 
@@ -251,11 +252,11 @@ public class WpAssessmentinvitation implements Serializable {
 		this.surveySession = surveySession;
 	}
 
-	public int getSurveyUserid() {
+	public Integer getSurveyUserid() {
 		return this.surveyUserid;
 	}
 
-	public void setSurveyUserid(int surveyUserid) {
+	public void setSurveyUserid(Integer surveyUserid) {
 		this.surveyUserid = surveyUserid;
 	}
 
@@ -265,6 +266,18 @@ public class WpAssessmentinvitation implements Serializable {
 
 	public void setVertical(String vertical) {
 		this.vertical = vertical;
+	}
+
+	
+	@Override
+	public String toString() {
+		return "WpAssessmentinvitation [id=" + id + ", activeFlag=" + activeFlag + ", assesStatus=" + assesStatus
+				+ ", assesid=" + assesid + ", completionFlag=" + completionFlag + ", createdby=" + createdby
+				+ ", createdon=" + createdon + ", customerName=" + customerName + ", email=" + email + ", horizontal="
+				+ horizontal + ", invitationurl=" + invitationurl + ", mailSent=" + mailSent + ", modifiedby="
+				+ modifiedby + ", modifiedon=" + modifiedon + ", name=" + name + ", page=" + page + ", projectid="
+				+ projectid + ", sentOn=" + sentOn + ", startDate=" + startDate + ", surveySession=" + surveySession
+				+ ", surveyUserid=" + surveyUserid + ", vertical=" + vertical + "]";
 	}
 
 }

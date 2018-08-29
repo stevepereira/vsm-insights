@@ -32,15 +32,16 @@ public class WpAssessmentquestion implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
 
-	private int activityid;
+	private Integer activityid;
 
-	private int assesid;
+	private Integer assesid;
 
-	private int comments;
+	private Integer comments;
 
-	private int createdby;
+	private Integer createdby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdon;
@@ -51,68 +52,68 @@ public class WpAssessmentquestion implements Serializable {
 	@Column(name="future_score")
 	private BigDecimal futureScore;
 
-	private int modifiedby;
+	private Integer modifiedby;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedon;
 
-	@Lob
+	@Column(name="question",nullable = false,columnDefinition="TEXT")
 	private String question;
 
-	@Lob
-	@Column(name="question_description")
+	
+	@Column(name="question_description",nullable = false,columnDefinition="TEXT")
 	private String questionDescription;
 
-	private int questionid;
+	private Integer questionid;
 
 	private BigDecimal response;
 
-	private int status;
+	private Integer status;
 
-	private int typeid;
+	private Integer typeid;
 
-	private int vectorid;
+	private Integer vectorid;
 
 	public WpAssessmentquestion() {
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-	public int getActivityid() {
+	public Integer getActivityid() {
 		return this.activityid;
 	}
 
-	public void setActivityid(int activityid) {
+	public void setActivityid(Integer activityid) {
 		this.activityid = activityid;
 	}
 
-	public int getAssesid() {
+	public Integer getAssesid() {
 		return this.assesid;
 	}
 
-	public void setAssesid(int assesid) {
+	public void setAssesid(Integer assesid) {
 		this.assesid = assesid;
 	}
 
-	public int getComments() {
+	public Integer getComments() {
 		return this.comments;
 	}
 
-	public void setComments(int comments) {
+	public void setComments(Integer comments) {
 		this.comments = comments;
 	}
 
-	public int getCreatedby() {
+	public Integer getCreatedby() {
 		return this.createdby;
 	}
 
-	public void setCreatedby(int createdby) {
+	public void setCreatedby(Integer createdby) {
 		this.createdby = createdby;
 	}
 
@@ -140,11 +141,11 @@ public class WpAssessmentquestion implements Serializable {
 		this.futureScore = futureScore;
 	}
 
-	public int getModifiedby() {
+	public Integer getModifiedby() {
 		return this.modifiedby;
 	}
 
-	public void setModifiedby(int modifiedby) {
+	public void setModifiedby(Integer modifiedby) {
 		this.modifiedby = modifiedby;
 	}
 
@@ -172,11 +173,11 @@ public class WpAssessmentquestion implements Serializable {
 		this.questionDescription = questionDescription;
 	}
 
-	public int getQuestionid() {
+	public Integer getQuestionid() {
 		return this.questionid;
 	}
 
-	public void setQuestionid(int questionid) {
+	public void setQuestionid(Integer questionid) {
 		this.questionid = questionid;
 	}
 
@@ -188,27 +189,27 @@ public class WpAssessmentquestion implements Serializable {
 		this.response = response;
 	}
 
-	public int getStatus() {
+	public Integer getStatus() {
 		return this.status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Integer status) {
 		this.status = status;
 	}
 
-	public int getTypeid() {
+	public Integer getTypeid() {
 		return this.typeid;
 	}
 
-	public void setTypeid(int typeid) {
+	public void setTypeid(Integer typeid) {
 		this.typeid = typeid;
 	}
 
-	public int getVectorid() {
+	public Integer getVectorid() {
 		return this.vectorid;
 	}
 
-	public void setVectorid(int vectorid) {
+	public void setVectorid(Integer vectorid) {
 		this.vectorid = vectorid;
 	}
 
