@@ -20,7 +20,7 @@
 
 	"queryCache": 
 	{
-		"esCacheIndex": "neo4j-cached-results/querycacheresult"
+		"esCacheIndex": "neo4j-cached-results"
 	},
 
 	"emailConfiguration": 
@@ -73,7 +73,8 @@
 		"adminUserName": "admin",
 		"adminUserPassword": "admin",
 		"dbUserName": "grafana",
-		"dbPassword": "password"
+		"dbPassword": "password",
+	    "grafanaVersion":"5.2.2"
 	},
 
 	"postgre": 
