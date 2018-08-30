@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  ******************************************************************************/
-package com.cognizant.devops.platformdal.maturity.dal;
+package com.cognizant.devops.platformdal.dal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class GenericMySqlDAL {
     	session.beginTransaction();
     	objReturn= session.save(o);
     	session.getTransaction().commit();
-    	closeSession(session);
+    	session.close();
         return (int) objReturn;
       }
 
@@ -81,7 +81,7 @@ public class GenericMySqlDAL {
     	  session.beginTransaction();
     	  session.delete(object);
     	  session.getTransaction().commit();
-    	  closeSession(session);
+    	  session.close();
       }
 
       /***/
@@ -89,7 +89,7 @@ public class GenericMySqlDAL {
     	Object objReturn;
     	Session session = sessionFactory.openSession();
     	objReturn = (T) session.get(type, id);
-    	closeSession(session);
+    	session.close();
         return (T) objReturn;
       }
 
@@ -98,7 +98,7 @@ public class GenericMySqlDAL {
     	  Object objReturn;
     	  Session session = sessionFactory.openSession();
     	  objReturn =(T) session.merge(o);
-    	  closeSession(session);
+    	  session.close();
           return (T) objReturn;
       }
 

@@ -31,6 +31,7 @@ import com.cognizant.devops.platformdal.hierarchy.details.HierarchyDetails;
 import com.cognizant.devops.platformdal.icon.Icon;
 import com.cognizant.devops.platformdal.mapping.hierarchy.HierarchyMapping;
 import com.cognizant.devops.platformdal.mapping.projects.ProjectMapping;
+import com.cognizant.devops.platformdal.maturity.mysql.WpActivitytype;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentContactusDetail;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentanswer;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentdetail;
@@ -112,6 +113,7 @@ public class PlatformDALSessionFactoryProvider {
 					configuration.addAnnotatedClass(WpAssessmentquestion.class);
 					configuration.addAnnotatedClass(WpAssessmentvector.class);
 					configuration.addAnnotatedClass(WpAssessmentContactusDetail.class);
+					configuration.addAnnotatedClass(WpActivitytype.class);
 					
 					configuration.setProperty("hibernate.connection.username", mySql.getUserName());
 					configuration.setProperty("hibernate.connection.password",mySql.getPassword() );

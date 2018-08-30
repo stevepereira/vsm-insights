@@ -24,6 +24,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import com.cognizant.devops.platformdal.dal.GenericMySqlDAL;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentContactusDetail;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentanswer;
 import com.cognizant.devops.platformdal.maturity.mysql.WpAssessmentdetail;
