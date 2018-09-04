@@ -105,7 +105,7 @@ module ISightApp {
 				//$scope.lastModifiedByUser = $scope.homeController.userName;
 				$scope.lastModifiedByUser = "Admin";
 				$scope.settingJsonObj = {
-					"dataArchivalFrequency": self.dataFreq,
+					"jobFrequency": self.dataFreq,
 					"lastRunTime": $scope.lastRunTime,
 					"nextRunTime": ''
 				}
