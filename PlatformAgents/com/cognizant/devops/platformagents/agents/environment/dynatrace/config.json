@@ -1,0 +1,63 @@
+{
+  "mqConfig": {
+    "user": "iSight",
+    "password": "iSight",
+    "host": "127.0.0.1",
+    "exchange": "iSight",
+    "agentControlXchg": "iAgent"
+  },
+  "subscribe": {
+    "config": "ENVIRONMENT.DYNATRACE.config",
+    "agentCtrlQueue" : "dynatrace-2321312"
+  },
+  "publish": {
+    "data": "ENVIRONMENT.DYNATRACE.DATA",
+    "health": "ENVIRONMENT.DYNATRACE.HEALTH"
+  },
+  "communication": {
+    "type": "REST",
+    "sslVerify": false,
+    "responseType": "JSON"
+  },
+  "dynamicTemplate" : {
+  		"responseTemplate" : {
+  			"hostInfo": {
+  				"hostListURL" : "https://lvg60268.live.dynatrace.com/api/v1/entity/infrastructure/hosts",
+  				"relevantHostFields" : {
+  					"entityId" : "entityId",
+  					"displayName":"displayName",
+  					"customizedName": "customizedName",
+  					"osType": "osType",
+					"osArchitecture": "osArchitecture",
+					"osVersion": "osVersion",
+					"hypervisorType": "hypervisorType"
+  				}
+  			},
+  			"timeFieldMapping" : {
+				"startDate" : "%Y-%m-%d"
+  			}
+  		}
+   },	
+  "toolCategory": "ENVIRONMENT",
+  "enableDataValidation": true,
+  "toolsTimeZone": "GMT",
+  "insightsTimeZone": "Asia/Kolkata",
+  "useResponseTemplate": true,
+  "auth": "base64",
+  "runSchedule": 2,
+  "timeStampField": "launchTime",
+  "timeStampFormat": "epoch",
+  "isEpochTimeFormat" : false,
+  "pattern": "%Y-%m-%dT%H:%M:%S.%fZ",
+  "apiToken": "OZ9jv5aIQVSOhCSz-iacv",
+  "secret_access_key": "#secret_key#",
+  "startFrom" : "2018-08-10 15:46:33",
+  "isDebugAllowed": false,
+  "enableValueArray": false,
+  "agentId" : "dynatrace-2321312",
+  "loggingSetting": {
+    "logLevel": "WARN",
+	"maxBytes" : 5000000,
+	"backupCount" : 1000
+  }
+}
