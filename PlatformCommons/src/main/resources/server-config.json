@@ -3,6 +3,10 @@
 	{
 		"elasticSearchEndpoint": "http://localhost:9200"
 	},
+	
+	"maturityModelConfig": {
+		"inputFilelocation": "D:\\Project\\Insights\\InSights_Windows\\maturityFiles\\Instructions.docx"
+	},
 
 	"sparkConfigurations": 
 	{
@@ -20,7 +24,7 @@
 
 	"queryCache": 
 	{
-		"esCacheIndex": "neo4j-cached-results"
+		"esCacheIndex": "neo4j-cached-results/querycacheresult"
 	},
 
 	"emailConfiguration": 
@@ -61,7 +65,7 @@
 	"graph": 
 	{
 		"endpoint": "http://localhost:7474",
-		"authToken": "",
+		"authToken": "bmVvNGo6QzBnbml6YW50QDE=",
 		"boltEndPoint": "bolt://localhost:7687",
 		"maxIdleConnections": 25
 	},
@@ -73,32 +77,39 @@
 		"adminUserName": "admin",
 		"adminUserPassword": "admin",
 		"dbUserName": "grafana",
-		"dbPassword": "password",
-	    "grafanaVersion":"5.2.2"
+		"dbPassword": "C0gnizant@1"
 	},
 
 	"postgre": 
 	{
 		"userName": "grafana",
-		"password": "password",
-		"insightsDBUrl": "jdbc:postgresql://127.0.0.1:5432/insight",
-		"grafanaDBUrl": "jdbc:postgresql://127.0.0.1:5432/grafana"
+		"password": "C0gnizant@1",
+		"insightsDBUrl": "jdbc:postgresql://localhost:5432/insight",
+		"grafanaDBUrl": "jdbc:postgresql://localhost:5432/grafana"
 	},
-
+	
+	"mysql":
+	{
+		"userName":"root",
+		"password":"root",
+		"dbUrl":"jdbc:mysql://localhost:3306/devops_stage?zeroDateTimeBehavior=convertToNull"
+	},
+	
 	"messageQueue": 
 	{
 		"host": "localhost",
 		"user": "iSight",
 		"password": "iSight",
-		"prefetchCount" : 10
+		"prefetchCount" : 50
+		
 	},
 
 	"agentDetails": 
 	{
 		"isOnlineRegistration": true,
-		"docrootUrl": "https://platform.cogdevops.com/insights_install/release",
-		"offlineAgentPath": "D://download//agents",
-		"unzipPath": "D://download",
+		"docrootUrl": "http://platform.cogdevops.com/insights_install/release/",
+		"offlineAgentPath": "D:\\Project\\Insights\\InSights_Windows\\Agents\\offlineAgent",
+		"unzipPath": "C:\\Users\\716660\\Downloads\\offlineAgent",
 		"agentExchange": "iAgent",
 		"agentPkgQueue": "INSIGHTS.AGENTS.PACKAGE"
 	},
@@ -107,8 +118,8 @@
 	"disableAuth": false,
 	"enableNativeUsers": true,
 	"insightsTimeZone": "Asia/Kolkata",
-	"userId": "UserID",
-	"password": "Passwd",
+	"userId": "admin",
+	"password": "admin",
 	"refreshTime": "Jan 22, 2017 5:04:25 PM",
 	"enableOnlineDatatagging": false,
 	"trustedHosts": 
