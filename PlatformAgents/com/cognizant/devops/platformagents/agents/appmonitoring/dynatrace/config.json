@@ -7,12 +7,12 @@
     "agentControlXchg": "iAgent"
   },
   "subscribe": {
-    "config": "ENVIRONMENT.DYNATRACE.config",
+    "config": "APPMONITORING.DYNATRACE.config",
     "agentCtrlQueue" : "dynatrace-2321312"
   },
   "publish": {
-    "data": "ENVIRONMENT.DYNATRACE.DATA",
-    "health": "ENVIRONMENT.DYNATRACE.HEALTH"
+    "data": "APPMONITORING.DYNATRACE.DATA",
+    "health": "APPMONITORING.DYNATRACE.HEALTH"
   },
   "communication": {
     "type": "REST",
@@ -21,7 +21,7 @@
   },
   "dynamicTemplate" : {
   		"responseTemplate" : {
-  			"hostInfo": {
+  			"Host": {
   				"hostListURL" : "https://lvg60268.live.dynatrace.com/api/v1/entity/infrastructure/hosts",
   				"relevantHostFields" : {
   					"entityId" : "entityId",
@@ -33,8 +33,29 @@
 					"hypervisorType": "hypervisorType"
   				}
   			},
-  			"timeFieldMapping" : {
-				"startDate" : "%Y-%m-%d"
+  			"Event": {
+  				"eventListURL" : "https://lvg60268.live.dynatrace.com/api/v1/events",
+  				"relevantEventFields" : {
+  					"eventId" : "eventId",
+  					"entityId" : "entityId",
+  					"entityName":"displayName",
+  					"severityLevel": "severityLevel",
+				    "impactLevel": "impactLevel",
+				    "eventType": "eventType",
+				    "eventStatus": "eventStatus"
+  				}
+  			},
+  			"Problem": {
+  				"hostListURL" : "https://lvg60268.live.dynatrace.com/api/v1/problem/feed",
+  				"relevantHostFields" : {
+  					"entityId" : "entityId",
+  					"displayName":"displayName",
+  					"customizedName": "customizedName",
+  					"osType": "osType",
+					"osArchitecture": "osArchitecture",
+					"osVersion": "osVersion",
+					"hypervisorType": "hypervisorType"
+  				}
   			}
   		}
    },	
@@ -47,10 +68,9 @@
   "runSchedule": 2,
   "timeStampField": "launchTime",
   "timeStampFormat": "epoch",
-  "isEpochTimeFormat" : false,
+  "isEpochTimeFormat" : true,
   "pattern": "%Y-%m-%dT%H:%M:%S.%fZ",
-  "apiToken": "OZ9jv5aIQVSOhCSz-iacv",
-  "secret_access_key": "#secret_key#",
+  "apiToken": "OZ9jv5aIQVSO",
   "startFrom" : "2018-08-10 15:46:33",
   "isDebugAllowed": false,
   "enableValueArray": false,
