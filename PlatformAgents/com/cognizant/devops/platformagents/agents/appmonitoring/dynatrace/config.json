@@ -2,7 +2,7 @@
   "mqConfig": {
     "user": "iSight",
     "password": "iSight",
-    "host": "127.0.0.1",
+    "host": "localhost",
     "exchange": "iSight",
     "agentControlXchg": "iAgent"
   },
@@ -27,10 +27,7 @@
   					"entityId" : "entityId",
   					"displayName":"displayName",
   					"customizedName": "customizedName",
-  					"osType": "osType",
-					"osArchitecture": "osArchitecture",
-					"osVersion": "osVersion",
-					"hypervisorType": "hypervisorType"
+  					"osVersion": "osVersion"
   				}
   			},
   			"Event": {
@@ -38,7 +35,7 @@
   				"relevantEventFields" : {
   					"eventId" : "eventId",
   					"entityId" : "entityId",
-  					"entityName":"displayName",
+  					"entityName":"entityName",
   					"severityLevel": "severityLevel",
 				    "impactLevel": "impactLevel",
 				    "eventType": "eventType",
@@ -70,8 +67,8 @@
   "timeStampFormat": "epoch",
   "isEpochTimeFormat" : true,
   "pattern": "%Y-%m-%dT%H:%M:%S.%fZ",
-  "apiToken": "OZ9jv5aIQVSOhCSz",
-  "startFrom" : "2018-08-10 15:46:33",
+  "apiToken": "OZ9jv5aIQVSOhCSz-iacv",
+  "startFrom" : "2018-10-02 15:46:33",
   "isDebugAllowed": false,
   "enableValueArray": false,
   "agentId" : "dynatrace-2321312",
