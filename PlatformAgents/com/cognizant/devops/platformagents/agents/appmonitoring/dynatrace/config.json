@@ -7,8 +7,7 @@
     "agentControlXchg": "iAgent"
   },
   "subscribe": {
-    "config": "APPMONITORING.DYNATRACE.config",
-    "agentCtrlQueue" : "dynatrace-2321312"
+    "config": "APPMONITORING.DYNATRACE.config"
   },
   "publish": {
     "data": "APPMONITORING.DYNATRACE.DATA",
@@ -56,7 +55,7 @@
   			}
   		}
    },	
-  "toolCategory": "ENVIRONMENT",
+  "toolCategory": "APPMONITORING",
   "enableDataValidation": true,
   "toolsTimeZone": "GMT",
   "insightsTimeZone": "Asia/Kolkata",
@@ -67,11 +66,10 @@
   "timeStampFormat": "epoch",
   "isEpochTimeFormat" : true,
   "pattern": "%Y-%m-%dT%H:%M:%S.%fZ",
-  "apiToken": "OZ9jv5aIQVSOhCSz-iacv",
+  "apiToken": "APIToken",
   "startFrom" : "2018-10-02 15:46:33",
   "isDebugAllowed": false,
   "enableValueArray": false,
-  "agentId" : "dynatrace-2321312",
   "loggingSetting": {
     "logLevel": "WARN",
 	"maxBytes" : 5000000,
