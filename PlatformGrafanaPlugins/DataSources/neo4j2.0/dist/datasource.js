@@ -136,8 +136,9 @@ System.register([], function(exports_1) {
                 Neo4jDatasource.prototype.executeCypherQuery = function (cypherQuery, targets, options) {
                     var deferred = this.$q.defer();
                     var flag = this.checkCypherQueryModificationKeyword(cypherQuery);
+                    var flagToShowErrorMessage = false;
                     if (flag == true) {
-                        options.targets[0].checkQuery = false;
+                        flagToShowErrorMessage = false;
                         var self = this;
                         this.backendSrv.datasourceRequest({
                             url: this.url,
@@ -160,9 +161,12 @@ System.register([], function(exports_1) {
                         });
                     }
                     else {
-                        options.targets[0].checkQuery = true;
+                        flagToShowErrorMessage = true;
                         deferred.resolve({ status: "failure", message: "Cannot run modification query in neo4j", title: "Failure" });
                         console.log("It has create//delete/set/update keyword.");
+                    }
+                    if (options != null) {
+                        options.targets[0].checkQuery = flagToShowErrorMessage;
                     }
                     return deferred.promise;
                 };
@@ -174,23 +178,23 @@ System.register([], function(exports_1) {
                     var j;
                     for (j in keywords) {
                         var query = (cypherQuery.statements[0].statement.toString()).toLowerCase();
-                        if (query.indexOf(" " + keywords[j]) >= 0) {
-                            console.log("1st");
+                        if (query.indexOf(" " + keywords[j] + " ") >= 0) {
+                            console.log(keywords[j] + " is present as an individual word.");
                             flag = 1;
                             break;
                         }
-                        if (query.indexOf(keywords[j] + " ") >= 0) {
-                            console.log("2nd");
+                        if (query.indexOf("\n" + keywords[j]) >= 0 && query.indexOf("\n" + keywords[j] + " ") >= 0) {
+                            console.log(keywords[j] + " is present after new line.");
                             flag = 1;
                             break;
                         }
-                        if (query.indexOf(keywords[j] + ")") >= 0) {
-                            console.log("3rd");
-                            flag = 1;
-                            break;
-                        }
-                        if (query.indexOf(keywords[j] + "(") >= 0) {
-                            console.log("4th");
+                        if (query.indexOf(keywords[j] + ")") >= 0
+                            || query.indexOf(keywords[j] + "(") >= 0
+                            || query.indexOf(")" + keywords[j]) >= 0
+                            || query.indexOf("(" + keywords[j]) >= 0
+                            || query.indexOf(" " + keywords[j] + "\n") >= 0
+                            || query.indexOf("\n" + keywords[j] + "\n") >= 0) {
+                            console.log(keywords[j] + " is present.");
                             flag = 1;
                             break;
                         }

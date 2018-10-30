@@ -100,13 +100,14 @@
 	{
 		"host": "localhost",
 		"user": "iSight",
-		"password": "iSight"
+		"password": "iSight",
+		"prefetchCount" : 10
 	},
 
 	"agentDetails": 
 	{
 		"isOnlineRegistration": true,
-		"docrootUrl": "http://platform.cogdevops.com/insights_install/release",
+		"docrootUrl": "https://platform.cogdevops.com/insights_install/release",
 		"offlineAgentPath": "D://download//agents",
 		"unzipPath": "D://download",
 		"agentExchange": "iAgent",

@@ -26,15 +26,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.config.CorrelationConfig;
 import com.cognizant.devops.platformcommons.constants.ConfigOptions;
+import com.cognizant.devops.platformcommons.constants.PlatformServiceConstants;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphDBException;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphResponse;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jDBHandler;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jFieldIndexRegistry;
+import com.cognizant.devops.platformengine.message.core.EngineStatusLogger;
 import com.cognizant.devops.platformengine.modules.correlation.model.Correlation;
 import com.cognizant.devops.platformengine.modules.correlation.model.CorrelationNode;
 import com.google.gson.Gson;
@@ -46,7 +49,7 @@ import com.google.gson.JsonObject;
  * @author Vishal Ganjare (vganjare)
  */
 public class CorrelationExecutor {
-	private static final Logger log = Logger.getLogger(CorrelationExecutor.class);
+	private static final Logger log = LogManager.getLogger(CorrelationExecutor.class);
 	private long maxCorrelationTime;
 	private long lastCorrelationTime;
 	private long currentCorrelationTime;
@@ -80,7 +83,7 @@ public class CorrelationExecutor {
 				removeRawLabel(correlation.getDestination());
 			}
 		}else {
-			log.info("Correlation configuration is not provided.");
+			log.error("Correlation configuration is not provided.");
 		}
 	}
 	
@@ -229,6 +232,7 @@ public class CorrelationExecutor {
 			log.debug("Correlated "+destination.getToolName()+" records: "+processedRecords+" in: "+(System.currentTimeMillis() - st) + " ms");
 		} catch (GraphDBException e) {
 			log.error("Error occured while executing correlations for relation "+relationName+".", e);
+			EngineStatusLogger.getInstance().createEngineStatusNode(" Error occured while executing correlations for relation "+e.getMessage(),PlatformServiceConstants.FAILURE);
 		}
 		return processedRecords;
 	}

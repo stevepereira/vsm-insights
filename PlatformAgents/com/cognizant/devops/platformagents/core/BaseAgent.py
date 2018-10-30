@@ -60,15 +60,21 @@ class BaseAgent(object):
     
     def resolveConfigPath(self):
         filePresent = os.path.isfile('config.json')
-        if filePresent:
+        agentDir = os.path.dirname(sys.modules[self.__class__.__module__].__file__) + os.path.sep
+        if "INSIGHTS_HOME" in os.environ:
+            logDirPath = os.environ['INSIGHTS_HOME']+'/logs/PlatformAgent'
+            if not os.path.exists(logDirPath):
+                os.makedirs(logDirPath)
+        else:
+            logDirPath = agentDir
+	if filePresent:
             self.configFilePath = 'config.json'
             self.trackingFilePath = 'tracking.json'
-            self.logFilePath = 'log_'+type(self).__name__+'.log'
+            self.logFilePath = logDirPath +'/'+ 'log_'+type(self).__name__+'.log'            
         else:
-            agentDir = os.path.dirname(sys.modules[self.__class__.__module__].__file__) + os.path.sep
             self.configFilePath = agentDir+'config.json'
-            self.trackingFilePath = agentDir+'tracking.json'
-            self.logFilePath = agentDir+'log_'+type(self).__name__+'.log'
+            self.trackingFilePath = agentDir+'tracking.json' 
+	    self.logFilePath = logDirPath + '/'+'log_'+type(self).__name__+'.log'	    
         trackingFilePresent = os.path.isfile(self.trackingFilePath)
         if not trackingFilePresent:
             self.updateTrackingJson({})
@@ -78,7 +84,7 @@ class BaseAgent(object):
         maxBytes = loggingSetting.get('maxBytes', 1000 * 1000 * 5)
         backupCount = loggingSetting.get('backupCount', 1000)
         handler = logging.handlers.RotatingFileHandler(self.logFilePath, maxBytes=maxBytes, backupCount=backupCount)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(lineno)s - %(funcName)s - %(message)s')
         handler.setFormatter(formatter)
         logging.getLogger().setLevel(loggingSetting.get('logLevel',logging.WARN))
         logging.getLogger().addHandler(handler)
@@ -197,6 +203,7 @@ class BaseAgent(object):
                 data = self.validateData(data)
             self.addExecutionId(data, self.executionId)
             self.addTimeStampField(data, timeStampField, timeStampFormat, isEpochTime)
+            logging.info(data)
             self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', 100), metadata)
             self.logIndicator(self.PUBLISH_START, self.config.get('isDebugAllowed', False))
             

@@ -17,18 +17,22 @@ package com.cognizant.devops.platformengine.modules.mapper;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.cognizant.devops.platformcommons.constants.PlatformServiceConstants;
 import com.cognizant.devops.platformcommons.dal.neo4j.GraphDBException;
 import com.cognizant.devops.platformcommons.dal.neo4j.Neo4jDBHandler;
 import com.cognizant.devops.platformdal.mapping.projects.ProjectMapping;
 import com.cognizant.devops.platformdal.mapping.projects.ProjectMappingDAL;
+import com.cognizant.devops.platformengine.message.core.EngineStatusLogger;
+import com.cognizant.devops.platformengine.modules.users.EngineUsersModule;
 
 public class ProjectMapperModule implements Job {
-	private static Logger log = Logger.getLogger(ProjectMapperModule.class.getName());
+	private static Logger log = LogManager.getLogger(ProjectMapperModule.class.getName());
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		executeProjectMapping();
@@ -47,5 +51,6 @@ public class ProjectMapperModule implements Job {
 				}
 			}
 		}
+		EngineStatusLogger.getInstance().createEngineStatusNode("Project Mapper Module run successfully",PlatformServiceConstants.SUCCESS);
 	}
 }
