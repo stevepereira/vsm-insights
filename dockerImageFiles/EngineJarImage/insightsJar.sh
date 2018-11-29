@@ -14,7 +14,7 @@ cd /usr/ && mkdir INSIGHTS_HOME
 cd INSIGHTS_HOME
 wget $insightsConfig
 unzip InSightsConfig.zip && rm -rf InSightsConfig.zip
-cp -R InSightsConfig/.InSights/ .
+cp -R InSightsConfig/.InSights/ . && rm -rf InSightsConfig
 export INSIGHTS_HOME=/usr/INSIGHTS_HOME
 mkdir /opt/insightsengine
 cd /opt/insightsengine

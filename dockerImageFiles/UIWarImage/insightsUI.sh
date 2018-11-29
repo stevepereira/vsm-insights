@@ -9,7 +9,7 @@ yum install -y  wget unzip
 cd /usr/ &&  mkdir INSIGHTS_HOME
 cd /usr/INSIGHTS_HOME && wget $insightsConfigURL
 cd /usr/INSIGHTS_HOME && unzip InSightsConfig.zip && rm -rf InSightsConfig.zip
-cd /usr/INSIGHTS_HOME && cp -R InSightsConfig/.InSights/ .
+cd /usr/INSIGHTS_HOME && cp -R InSightsConfig/.InSights/ . && rm -rf InSightsConfig
 cd /usr/INSIGHTS_HOME
 export INSIGHTS_HOME=/usr/INSIGHTS_HOME
 echo INSIGHTS_HOME=/usr/INSIGHTS_HOME | tee -a /etc/environment
@@ -71,23 +71,24 @@ sed -i 's/\r$//g' $configPath
 
 
 #GRAFANA
-cd -
-mkdir grafana-v4.6.2 && cd grafana-v4.6.2
+cd /opt
+mkdir grafana-v5.2.2 && cd grafana-v5.2.2
 wget $grafanaURL
-tar -zxvf grafana-4.6.2.linux-x64.tar.gz
+tar -zxvf grafana-5.2.2.tar.gz
 wget $grafanaLDAP
-cp ldap.toml ./grafana-4.6.2/conf/ldap.toml
+cp ldap.toml ./grafana-5.2.2/conf/ldap.toml
 wget $grafanaDefaults
-cp defaults.ini ./grafana-4.6.2/conf/defaults.ini
-export GRAFANA_HOME=/opt/grafana-v4.6.2/
-sed -i -e "s/host = localhost:5432/host = $postgresIP:5432/g"  ./grafana-4.6.2/conf/defaults.ini
-cd grafana-4.6.2 && nohup ./bin/grafana-server &
+cp defaults.ini ./grafana-5.2.2/conf/defaults.ini
+export GRAFANA_HOME=/opt/grafana-v5.2.2/
+sed -i -e "s/host = localhost:5432/host = $postgresIP:5432/g"  ./grafana-5.2.2/conf/defaults.ini
+cd grafana-5.2.2 && nohup ./bin/grafana-server &
 sleep 40
 echo $hostIP
 echo $! > grafana-pid.txt
 curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{"name":"PowerUser","email":"PowerUser@PowerUser.com","login":"PowerUser","password":"C0gnizant@1"}' http://$hostIP:3000/api/admin/users
 sleep 10
 echo "GRAFANA URL :"$hostIP:3000
+
 
 
 #TOMCAT
@@ -97,7 +98,7 @@ sleep 20
 wget $insightsWar
 wget $tomcatURL
 tar -zxvf apache-tomcat-8.5.27.tar.gz && rm -rf apache-tomcat-8.5.27.tar.gz
-cp -R InSightsUI/app /opt/apache-tomcat-8.5.27/webapps/
+cp -R app /opt/apache-tomcat-8.5.27/webapps/ && rm -rf app
 cp PlatformService.war /opt/apache-tomcat-8.5.27/webapps/
 cd apache-tomcat-8.5.27 && chmod -R 755 /opt/apache-tomcat-8.5.27
 rm -rf /opt/PlatformService.war
