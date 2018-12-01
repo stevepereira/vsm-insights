@@ -24,6 +24,7 @@ import requests
 import xml.etree.ElementTree as ET
 from requests.auth import HTTPBasicAuth
 from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+import re
 
 class JenkinsAgent(BaseAgent):
     def process(self):
@@ -37,6 +38,7 @@ class JenkinsAgent(BaseAgent):
         self.responseTemplate = self.getResponseTemplate()
         self.useAllBuildsApi = self.config.get("useAllBuildsApi", False)
         self.buildsApiName = "builds"
+        self.scanFolders = self.config.get("scanFolders", "r'[a-z0-9]'")
         if self.useAllBuildsApi:
             self.buildsApiName = "allBuilds"
         self.data = []
@@ -46,10 +48,10 @@ class JenkinsAgent(BaseAgent):
         if jenkinsMasters:
             for jenkinsMaster in jenkinsMasters:
                 self.currentJenkinsMaster = jenkinsMaster
-                self.processFolder(jenkinsMasters[jenkinsMaster])
+                self.processFolder(jenkinsMasters[jenkinsMaster],splitLoad=True)
         else:
             self.currentJenkinsMaster = 'master'
-            self.processFolder(self.BaseUrl)
+            self.processFolder(self.BaseUrl,splitLoad=True)
         #self.publishToolsData(self.data)
         self.updateTrackingJson(self.tracking)
 
@@ -65,22 +67,29 @@ class JenkinsAgent(BaseAgent):
             self.tracking = {'master' : self.tracking}
             self.updateTrackingJson(self.tracking)
 
-    def processFolder(self,url):
+    def processFolder(self,url,splitLoad):
         restUrl = url + 'api/json?tree=jobs[name,url,buildable,lastBuild[number]]'
         jenkinsProjects = self.getResponse(restUrl, 'GET', self.userid, self.passwd, None)
         jobs = jenkinsProjects.get('jobs', None);
         if jobs:
             for job in jobs:
                 url = job.get('url')
-                if job.get('buildable', False):
-                    lastBuild = job.get('lastBuild', None)
-                    if lastBuild:
-                        jobName = job.get('name', None)
-                        lastBuildNumber = lastBuild.get('number', None)
-                        if lastBuildNumber:
-                            self.getJobDetails(url, lastBuildNumber, jobName)
+                if splitLoad:
+                    name = job.get('name')
+                    matchFolder = re.match(self.scanFolders, name, re.I)
                 else:
-                    self.processFolder(url)
+                    matchFolder = True
+                if matchFolder:
+                    if job.get('buildable', False):
+                        lastBuild = job.get('lastBuild', None)
+                        splitLoad = False
+                        if lastBuild:
+                            jobName = job.get('name', None)
+                            lastBuildNumber = lastBuild.get('number', None)
+                            if lastBuildNumber:
+                                self.getJobDetails(url, lastBuildNumber, jobName)
+                    else:
+                        self.processFolder(url,splitLoad=False)
             #for projects in range(len(jenkinsProjects["jobs"])):
             #   if "buildable" in jenkinsProjects["jobs"][projects]:
             #        jobUrl = jenkinsProjects["jobs"][projects]["url"]
