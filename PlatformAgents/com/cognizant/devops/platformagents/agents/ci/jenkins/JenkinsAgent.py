@@ -37,8 +37,8 @@ class JenkinsAgent(BaseAgent):
         self.startFrom = long(startFrom * 1000)
         self.responseTemplate = self.getResponseTemplate()
         self.useAllBuildsApi = self.config.get("useAllBuildsApi", False)
+        self.scanFolders = self.config.get("scanFolders", "[a-z0-9]")
         self.buildsApiName = "builds"
-        self.scanFolders = self.config.get("scanFolders", "r'[a-z0-9]'")
         if self.useAllBuildsApi:
             self.buildsApiName = "allBuilds"
         self.data = []
@@ -82,7 +82,6 @@ class JenkinsAgent(BaseAgent):
                 if matchFolder:
                     if job.get('buildable', False):
                         lastBuild = job.get('lastBuild', None)
-                        splitLoad = False
                         if lastBuild:
                             jobName = job.get('name', None)
                             lastBuildNumber = lastBuild.get('number', None)
@@ -169,15 +168,6 @@ class JenkinsAgent(BaseAgent):
                 if not trackingUpdated:
                     self.updateTrackingDetails(url, completedBuilds[0]["number"])
                     trackingUpdated = True
-                    '''
-		    if 'number' in completedBuilds[0]:
-                        self.updateTrackingDetails(url, completedBuilds[0]["number"])
-                        trackingUpdated = True
-                    else:
-                        self.updateTrackingDetails(url, buildDetails[0]["buildNumber"])
-			trackingUpdated = True
-		    '''
-                    
             start = start + 100
     
     def processLogParsing(self, buildDetails):
