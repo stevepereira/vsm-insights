@@ -78,6 +78,8 @@ export default class Neo4jDatasource {
 			for (let i in targets) {
 			  let target = targets[i];
 			  let result = results[i];
+			  console.log("---------------------------");
+			  console.log(result);
 			  if (target.timeSeries) {
 				let datapoints = [];
 				let targetResponse = {
@@ -107,9 +109,14 @@ export default class Neo4jDatasource {
 							finalResponse[values] = response;						
 						}
 				}
-						return response;
+						//return response;
 			  }
 			}
+		console.log(response);
+		if(response.length > 0)
+		{
+			return response;
+		}
 		return null;		
 	}
   /*

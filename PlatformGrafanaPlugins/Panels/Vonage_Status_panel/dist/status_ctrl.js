@@ -207,18 +207,35 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 						}
 						/*	Added Code on top of grafana status panel code.	*/
 						//	Checking weather query is modified or not.
+
 						if (this.panel.targets.length == 1 && this.previousQuery != '') {
 							if (this.previousQuery != this.panel.targets[0].target) {
 								this.measurementArray = [];
 								this.panel.inSightsStatusData = [];
 							}
 						}
-						if (this.panel.targets.length == 1 && this.measurementArray.length == 0) {
+						if (this.panel.targets.length > 0 && this.measurementArray.length < this.series.length) {
+							console.log("inside if loop");
+
+							var _loop = function _loop(i) {
+								console.log(_this3.series[i]);
+								var result = _this3.measurementArray.find(function (fruit) {
+									return fruit.label === _this3.series[i].label;
+								});
+								if (result == undefined) {
+									obj = Object.assign(_this3.series[i], _this3.panel.targets[0]);
+
+									_this3.measurementArray.push(obj);
+								}
+							};
+
 							for (var i = 0; i < this.series.length; i++) {
-								var obj = Object.assign(this.series[i], this.panel.targets[0]);
-								this.measurementArray.push(obj);
+								var obj;
+
+								_loop(i);
 							}
 						}
+						console.log(this.measurementArray);
 						//	Assigning the query to static variable to check modification of query in next iteration.
 						if (this.panel.targets.length == 1) {
 							this.previousQuery = this.panel.targets[0].target;

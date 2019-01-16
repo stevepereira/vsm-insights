@@ -142,6 +142,7 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
 		}
 		/*	Added Code on top of grafana status panel code.	*/
 		//	Checking weather query is modified or not.
+		
 		if(this.panel.targets.length == 1 && this.previousQuery != '')
 		{
 			if(this.previousQuery != this.panel.targets[0].target)
@@ -150,14 +151,21 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
 				this.panel.inSightsStatusData = [];
 			}
 		}
-		if(this.panel.targets.length == 1 && this.measurementArray.length == 0)
+		if(this.panel.targets.length > 0 && this.measurementArray.length < this.series.length)
 		{
+			console.log("inside if loop");
 			for(let i = 0; i < this.series.length; i++) 
 			{
-				var obj = Object.assign(this.series[i], this.panel.targets[0]);
-				this.measurementArray.push(obj); 
+				console.log(this.series[i]);
+				const result = this.measurementArray.find( fruit => fruit.label === this.series[i].label );
+				if(result == undefined)
+				{
+					var obj = Object.assign(this.series[i], this.panel.targets[0]);
+					this.measurementArray.push(obj); 
+				}
 			}
 		}
+		console.log(this.measurementArray);
 		//	Assigning the query to static variable to check modification of query in next iteration.
 		if(this.panel.targets.length == 1)
 		{

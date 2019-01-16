@@ -77,6 +77,8 @@ System.register([], function(exports_1) {
                     for (var i_1 in targets) {
                         var target = targets[i_1];
                         var result = results[i_1];
+                        console.log("---------------------------");
+                        console.log(result);
                         if (target.timeSeries) {
                             var datapoints = [];
                             var targetResponse = {
@@ -106,8 +108,11 @@ System.register([], function(exports_1) {
                                     finalResponse[values] = response;
                                 }
                             }
-                            return response;
                         }
+                    }
+                    console.log(response);
+                    if (response.length > 0) {
+                        return response;
                     }
                     return null;
                 };
