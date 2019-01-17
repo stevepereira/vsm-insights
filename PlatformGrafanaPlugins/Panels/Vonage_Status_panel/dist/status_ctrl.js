@@ -71,6 +71,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 			panelDefaults = {
 				flipCard: false,
 				flipTime: 5,
+				fontsize: '100%',
 				colorMode: 'Panel',
 				// Changed colors to match Table Panel so colorised text is easier to read
 				colors: {
@@ -111,6 +112,9 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 					/*	Added Code on top of grafana status panel code.	*/
 					_this.measurementArray = [];
 					_this.previousQuery = '';
+					_this.ok_varibale = true;
+					_this.warn_varibale = false;
+					_this.crit_varibale = false;
 					/*	Added Code on top of grafana status panel code.	*/
 
 					// Dates get stored as strings and will need to be converted back to a Date objects
@@ -215,10 +219,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 							}
 						}
 						if (this.panel.targets.length > 0 && this.measurementArray.length < this.series.length) {
-							console.log("inside if loop");
-
 							var _loop = function _loop(i) {
-								console.log(_this3.series[i]);
 								var result = _this3.measurementArray.find(function (fruit) {
 									return fruit.label === _this3.series[i].label;
 								});
@@ -235,7 +236,6 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 								_loop(i);
 							}
 						}
-						console.log(this.measurementArray);
 						//	Assigning the query to static variable to check modification of query in next iteration.
 						if (this.panel.targets.length == 1) {
 							this.previousQuery = this.panel.targets[0].target;
@@ -681,11 +681,11 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 								case 'disabled-state':
 									this.$panelContainer.css('background-color', this.panel.colors.disable);break;
 								case 'error-state':
-									this.$panelContainer.css('background-color', this.panel.colors.crit);break;
+									this.$panelContainer.css('background-color', this.panel.colors.crit);this.crit_varibale = true;this.ok_varibale = false;this.warn_varibale = false;break;
 								case 'warn-state':
-									this.$panelContainer.css('background-color', this.panel.colors.warn);break;
+									this.$panelContainer.css('background-color', this.panel.colors.warn);this.crit_varibale = false;this.ok_varibale = false;this.warn_varibale = true;break;
 								case 'no-data-state':
-									this.$panelContainer.css('background-color', this.panel.colors.disable);break;
+									this.$panelContainer.css('background-color', this.panel.colors.disable);this.crit_varibale = false;this.ok_varibale = true;this.warn_varibale = false;break;
 								default:
 									this.$panelContainer.css('background-color', okColor);break;
 							}

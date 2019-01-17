@@ -63,6 +63,11 @@
 		<h5 class="section-heading">Threshold Preferences</h5>
 		<div class="gf-form">
 			<span class="gf-form-label width-9">
+			Font Size in %<input type="text" name="fontsize" ng-model="ctrl.panel.fontsize" class="gf-form-input max-width-9" ng-change="ctrl.onRender()"/>
+			</span>
+		</div>
+		<div class="gf-form">
+			<span class="gf-form-label width-9">
 					Font Format
 					<info-popover mode="right-normal">
 						The metric text font format in disable, warning or critical state
