@@ -72,6 +72,11 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 				flipCard: false,
 				flipTime: 5,
 				fontsize: '100%',
+				ok_text: 'OK',
+				warning_text: 'Warning',
+				critical_text: 'Critical',
+				flipheight: '300',
+				flipwidth: '300',
 				colorMode: 'Panel',
 				// Changed colors to match Table Panel so colorised text is easier to read
 				colors: {
@@ -115,6 +120,10 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 					_this.ok_varibale = true;
 					_this.warn_varibale = false;
 					_this.crit_varibale = false;
+
+					_this.panel.flipheight = _this.panel.gridPos.h * 50 + 'px' || '300px';
+					_this.panel.flipwidth = _this.panel.gridPos.w * 50 + 'px' || '300px';
+
 					/*	Added Code on top of grafana status panel code.	*/
 
 					// Dates get stored as strings and will need to be converted back to a Date objects

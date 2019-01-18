@@ -10,10 +10,10 @@ body {
       overflow-y:hidden;
   border: 5px solid transparent;
   background-color: transparent;
-  width: 300px;
-  height: 300px;
   perspective: 1000px;
   position: absolute;
+
+  
 }
 
 .flip-card-inner {
@@ -83,6 +83,7 @@ body {
   color: white;
   transform: rotateX(180deg);
   z-index: 1;
+  line-height: 200px;
 }
 </style>
 <div class="status-panel">
@@ -90,20 +91,19 @@ body {
 		<strong>Error</strong>: There are multiple measurements with the same alias. Please give each measurement a unique name.
 	</div>
 	<!--ng-hide made true to hide this block-->
-	<div class="flip-card">
+	<!--<div id="flipCardId" class="flip-card" ng-style="{ 'height': ctrl.panel.flipheight, width:ctrl.panel.flipwidth } ">-->
+	<div id="flipCardId" class="flip-card" ng-style="{ 'top': 0, 'left':0, 'right': 6, 'bottom':8 } ">
 	<div class="flip-card-inner">
 	<div class="flip-card-back">
-		<div class="ok-text" ng-show="ctrl.ok_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && !ctrl.panel.isIgnoreOKColors && {'color':ctrl.panel.colors.ok}">OK</div>
-		<div class="warning-text" ng-show="ctrl.warn_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.warn}">Warning</div>
-		<div class="fail-text" ng-show="ctrl.crit_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.crit}">Critical</div>
+		<div class="ok-text" ng-show="ctrl.ok_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && !ctrl.panel.isIgnoreOKColors && {'color':ctrl.panel.colors.ok}">{{ctrl.panel.ok_text}}</div>
+		<div class="warning-text" ng-show="ctrl.warn_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.warn}">{{ctrl.panel.warning_text}}</div>
+		<div class="fail-text" ng-show="ctrl.crit_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.crit}">{{ctrl.panel.critical_text}}</div>
 		<!--<div class="ok-text" ng-style="ctrl.panel.colorMode === 'Metric' && !ctrl.panel.isIgnoreOKColors && {'color':ctrl.panel.colors.ok}">OK</div>
 		<div class="warning-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.warn}">Warning</div>
 		<div class="fail-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.crit}">Critical</div>
 		<div class="no-data-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.disable}">No data</div>
 		<div class="disabled-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.disable}">Disabled</div>-->
 	</div>
-	
-	
 	<div class="flip-card-front" ng-hide="ctrl.duplicates" ng-style="{ 'min-height': ctrl.minHeight, 'font-size':ctrl.panel.fontsize } ">
 
 		<div class="top_section">

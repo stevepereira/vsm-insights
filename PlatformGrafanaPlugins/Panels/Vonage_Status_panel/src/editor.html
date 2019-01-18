@@ -63,8 +63,34 @@
 		<h5 class="section-heading">Threshold Preferences</h5>
 		<div class="gf-form">
 			<span class="gf-form-label width-9">
-			Font Size in %<input type="text" name="fontsize" ng-model="ctrl.panel.fontsize" class="gf-form-input max-width-9" ng-change="ctrl.onRender()"/>
+			Ok Text: 
 			</span>
+			<input type="text" name="ok_text" ng-model="ctrl.panel.ok_text" class="gf-form-input max-width-9" ng-change="ctrl.onRender()" 
+			placeholder="NORMAL SCENARIO"/>
+			
+		</div>
+		<div class="gf-form">
+			<span class="gf-form-label width-9">
+			Warning Text: 
+			</span>
+			<input type="text" name="warning_text" ng-model="ctrl.panel.warning_text" class="gf-form-input max-width-9" ng-change="ctrl.onRender()" 
+			placeholder="WARNING SCENARIO"/>
+			
+		</div>
+		<div class="gf-form">
+			<span class="gf-form-label width-9">
+			Critical Text: 
+			</span>
+			<input type="text" name="critical_text" ng-model="ctrl.panel.critical_text" class="gf-form-input max-width-9" ng-change="ctrl.onRender()"
+			placeholder="CRITICAL SCENARIO"/>
+			
+		</div>
+		<div class="gf-form">
+			<span class="gf-form-label width-9">
+			Font Size in %
+			</span>
+			<input type="text" name="fontsize" ng-model="ctrl.panel.fontsize" class="gf-form-input max-width-9" ng-change="ctrl.onRender()"/>
+			
 		</div>
 		<div class="gf-form">
 			<span class="gf-form-label width-9">
