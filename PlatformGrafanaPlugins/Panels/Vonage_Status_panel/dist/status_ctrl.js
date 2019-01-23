@@ -780,7 +780,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 						var _this8 = this;
 
 						if (this.timeoutId) clearInterval(this.timeoutId);
-						if (this.panel.flipCard && (this.crit.length > 0 || this.warn.length > 0 || this.disabled.length > 0)) {
+						if (this.panel.flipCard) {
 							this.timeoutId = setInterval(function () {
 								_this8.$panelContainer.toggleClass("flipped");
 							}, this.panel.flipTime * 1000);

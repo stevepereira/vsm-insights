@@ -47,6 +47,9 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
 		//this.log = $log.debug;
 		this.filter = $filter;
 
+		
+		
+		
 		this.valueHandlers = ['Number Threshold', 'String Threshold', 'Date Threshold', 'Disable Criteria', 'Text Only'];
 		this.aggregations = ['Last', 'First', 'Max', 'Min', 'Sum', 'Avg', 'Delta', 'All'];
 		this.displayTypes = ['Regular', 'Annotation'];
@@ -735,7 +738,7 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
 
 	autoFlip() {
 		if (this.timeoutId) clearInterval(this.timeoutId);
-		if (this.panel.flipCard && (this.crit.length > 0 || this.warn.length > 0 || this.disabled.length > 0)) {
+		if (this.panel.flipCard ) {
 			this.timeoutId = setInterval(() => {
 				this.$panelContainer.toggleClass("flipped");
 			}, this.panel.flipTime * 1000);

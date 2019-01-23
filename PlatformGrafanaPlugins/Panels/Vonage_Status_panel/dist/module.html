@@ -6,9 +6,8 @@ body {
 
 .flip-card {
     resize: both;
-	  overflow-x:scroll;
-      overflow-y:hidden;
-  border: 5px solid transparent;
+
+  
   background-color: transparent;
   perspective: 1000px;
   position: absolute;
@@ -41,7 +40,7 @@ body {
 }
 
 .flip-card-front {
-  color: white;
+  color: black;
   z-index: 2;
   .top_section {
 			.status-panel-annotation_row {
@@ -80,11 +79,39 @@ body {
 		font-size: 2.0rem;
 	}
 .flip-card-back {
-  color: white;
+  color: black;
   transform: rotateX(180deg);
   z-index: 1;
-  line-height: 200px;
+  line-height: 250%;
 }
+.flipped .flip-card-back {
+	z-index: 1;
+	line-height: 250%;
+	transition: transform 0.6s;
+    transform: rotateX( 0deg );
+}
+.flipped .flip-card-front {
+	z-index: 2;
+	transition: transform 0.6s;
+    transform: rotateX( 180deg );
+	opacity: 0;
+}
+
+
+.flipped .flip-card-front:hover {
+	transition-duration: 0s;
+	
+	transform: rotateX( 180deg );
+	backface-visibility: hidden;
+	
+}
+.flipped .flip-card-back:hover {
+	transition-duration: 0s;
+	
+	transform: rotateX( 180deg );
+	backface-visibility: hidden;
+}
+
 </style>
 <div class="status-panel">
 	<div ng-show="ctrl.duplicates">
@@ -92,9 +119,9 @@ body {
 	</div>
 	<!--ng-hide made true to hide this block-->
 	<!--<div id="flipCardId" class="flip-card" ng-style="{ 'height': ctrl.panel.flipheight, width:ctrl.panel.flipwidth } ">-->
-	<div id="flipCardId" class="flip-card" ng-style="{ 'top': 0, 'left':0, 'right': 6, 'bottom':8 } ">
+	<div id="flipCardId" class="flip-card" ng-style="{ 'top': 0, 'left':0, 'right': 8, 'bottom':10 } ">
 	<div class="flip-card-inner">
-	<div class="flip-card-back">
+	<div class="flip-card-front">
 		<div class="ok-text" ng-show="ctrl.ok_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && !ctrl.panel.isIgnoreOKColors && {'color':ctrl.panel.colors.ok}">{{ctrl.panel.ok_text}}</div>
 		<div class="warning-text" ng-show="ctrl.warn_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.warn}">{{ctrl.panel.warning_text}}</div>
 		<div class="fail-text" ng-show="ctrl.crit_varibale" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.crit}">{{ctrl.panel.critical_text}}</div>
@@ -104,7 +131,7 @@ body {
 		<div class="no-data-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.disable}">No data</div>
 		<div class="disabled-text" ng-style="ctrl.panel.colorMode === 'Metric' && {'color':ctrl.panel.colors.disable}">Disabled</div>-->
 	</div>
-	<div class="flip-card-front" ng-hide="ctrl.duplicates" ng-style="{ 'min-height': ctrl.minHeight, 'font-size':ctrl.panel.fontsize } ">
+	<div class="flip-card-back" ng-hide="ctrl.duplicates" ng-style="{ 'min-height': ctrl.minHeight, 'font-size':ctrl.panel.fontsize } ">
 
 		<div class="top_section">
 			<div class="status-panel-annotation_row" ng-if="ctrl.annotation.length > 0" ng-style="ctrl.panel.colorMode === 'Metric' && !ctrl.panel.isIgnoreOKColors && {'color':ctrl.panel.colors.ok}">
