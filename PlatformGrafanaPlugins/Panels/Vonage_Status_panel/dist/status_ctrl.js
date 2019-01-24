@@ -72,6 +72,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 				flipCard: false,
 				flipTime: 5,
 				fontsize: '100%',
+				fontsizefront: '50%',
 				ok_text: 'OK',
 				warning_text: 'Warning',
 				critical_text: 'Critical',
