@@ -58,11 +58,11 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 				this.data = this.jsonObjtoStr["inferenceDetails"][vector];			
 				this.vectorProperty = {};
 
-				this.googleChartData[this.data["id"]] = this.data["resultSet"];
+				this.googleChartData[this.data["kpiId"]] = this.data["resultSet"];
 
 				this.vectorProperty["kpi"]=this.data["kpi"];
 				this.vectorProperty["sentiment"]=this.data["sentiment"];
-				this.vectorProperty["id"]=this.data["id"];
+				this.vectorProperty["kpiId"]=this.data["kpiId"];
 				this.vectorProperty["trendline"]=this.data["trendline"];
 				this.vectorProperty["inference"]=this.data["inference"];
 				this.vectorMap["lastRun"]=this.data["lastRun"];
@@ -70,31 +70,31 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 					this.vectorProperty["color"]="green";
 					this.vectorProperty["type"]="increased";
 					
-					this.googleChartData[this.data["id"]].push("green");
+					this.googleChartData[this.data["kpiId"]].push("green");
 				}
 				else if(this.data["sentiment"] == "POSITIVE" && this.data["trendline"] == "Low to High"){
 					this.vectorProperty["color"]="green";
 					this.vectorProperty["type"]="increased";
 
-					this.googleChartData[this.data["id"]].push("green");
+					this.googleChartData[this.data["kpiId"]].push("green");
 				}
 				else if(this.data["sentiment"] == "NEGATIVE" && this.data["trendline"] == "Low to High"){
 					this.vectorProperty["color"]="red";
 					this.vectorProperty["type"]="increased";
 
-					this.googleChartData[this.data["id"]].push("red");
+					this.googleChartData[this.data["kpiId"]].push("red");
 				}
 				else if(this.data["sentiment"] == "NEGATIVE" && this.data["trendline"] == "High to Low"){
 					this.vectorProperty["color"]="red";
 					this.vectorProperty["type"]="decreased";
 
-					this.googleChartData[this.data["id"]].push("red");
+					this.googleChartData[this.data["kpiId"]].push("red");
 				}
 				else if(this.data["sentiment"] == "NEUTRAL"){
 					this.vectorProperty["color"]="green";
 					this.vectorProperty["type"]="same";
 
-					this.googleChartData[this.data["id"]].push("green");
+					this.googleChartData[this.data["kpiId"]].push("green");
 				}
 				this.arr.push(this.vectorProperty);
 			}
@@ -131,6 +131,7 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 		this.drawArr = [];
 		this.col = ['Value', '', { role: 'style' }];
 		this.drawArr.push(this.col);
+		
 		this.c = this.googleChartData[x][this.googleChartData[x].length - 1]
 		for (var data in this.googleChartData[x]){
 			this.arr = [];

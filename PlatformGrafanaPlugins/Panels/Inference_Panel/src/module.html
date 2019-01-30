@@ -243,7 +243,7 @@ md-radio-button {
             <div layout>
                 <div class="outerdiv">
                         <div class="textst"></div>
-                                    <div ng-repeat="y in vectorData.data"  ng-style="{'color':y.color}" ng-mouseenter="ctrl.hoverOn(y.id, y.inference, vectorData.vectorName)" style="margin-top:10px">
+                                    <div ng-repeat="y in vectorData.data"  ng-style="{'color':y.color}" ng-mouseenter="ctrl.hoverOn(y.kpiId, y.inference, vectorData.vectorName)" style="margin-top:10px">
                                     <img ng-src="public/img/sad.png" ng-if="y.color === 'red'" width="20" height="20" style="fill:red;color:red"/>
                                     <img ng-src="public/img/happy.png" ng-if="y.color === 'green'" width="20" height="20" style="fill:green;color:green"/>
                                     <a ng-class="{textst:true, txthover:hovering}" ng-mouseenter="hovering=true"  ng-mouseleave="hovering=false"></a>
