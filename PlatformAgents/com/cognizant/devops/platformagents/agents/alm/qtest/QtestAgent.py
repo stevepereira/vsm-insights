@@ -1,12 +1,12 @@
 #-------------------------------------------------------------------------------
 # Copyright 2017 Cognizant Technology Solutions
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License.  You may obtain a copy
 # of the License at
-# 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -16,12 +16,14 @@
 from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
 from datetime import datetime as dateTime2
 from dateutil import parser
+from itertools import chain
 
 import datetime
 import json
 import logging.handlers
 import base64
 import urllib
+
 
 class QtestAgent(BaseAgent):
     def process(self):
@@ -38,10 +40,13 @@ class QtestAgent(BaseAgent):
         headers = {"accept": "application/json","Authorization": "bearer "+self.token}
         pagination = ["test-cases", "requirements", "test-runs", "trace-matrix-report", "defects"]
         self.username , self.password , self.headers , self.baseUrl = username, password, headers, baseUrl
+        self.pageSize = self.config.get('almEntityPageSize', 20)
         #In this part we addthe module name where pagination is supported.
         try:
             projectsList = self.getResponse(baseUrl+"/api/v3/projects?assigned=false", 'GET', None, None, None, None, headers)
             almEntities = self.config.get("dynamicTemplate", {}).get("almEntities", None)
+            self.historyEntities = self.config.get("dynamicTemplate", {}).get("queryObjectHistory", {})
+            self.objectSize = self.historyEntities.get('objectSize', 100)
             if len(projectsList) > 0:
                 for projects in projectsList:
                     projectName = projects.get("name", None)
@@ -51,12 +56,13 @@ class QtestAgent(BaseAgent):
                         trackingDetails = {}
                         self.tracking[str(projectId)] = trackingDetails
                     projectStartDate = projects.get("start_date", None)
-                    if len(almEntities) > 0:                   
+                    if len(almEntities) > 0:
                         entityUpdatedDate = None
                         for entityType in almEntities:
                             page_num = 1
-                            page_size = 10
+                            page_size = self.pageSize
                             data = []
+                            reqIdLatest = list()
                             metadata = self.config.get("dynamicTemplate", {}).get("almEntityMetaData", None)
                             almEntityRestDetails = self.almEntityRestDetails(entityType, projectId, baseUrl, pagination)
                             entityUpdatedDate = almEntityRestDetails.get('entityUpdatedDate', None)
@@ -105,11 +111,14 @@ class QtestAgent(BaseAgent):
                                                                 #FOR NOW ASSUMING THAT IN NAME FIELD FIRST WORD WILL BE JIRA KEY.
                                                                 injectData['jiraKey'] = res.get('name', '').split(' ')[0]
                                                         #EXTRACTION PROPERTY VALUES FROM API RESPONSE.
-                                                        if str(res.get('id')) not in reqIdList:
-                                                            reqIdList.append(str(res.get('id')))
+                                                        _ObjectId = str(res.get('id'))
+                                                        if _ObjectId not in reqIdList:
+                                                            reqIdList.append(_ObjectId)
+                                                        if entityType in self.historyEntities:
+                                                            reqIdLatest.append(_ObjectId)
                                                         if 'properties' in res:
                                                             for property in res.get('properties', []):
-                                                                injectData[str(property.get('field_name').lower()).replace(' ', '')] = property.get('field_value')
+                                                                injectData[str(property.get('field_name').lower()).replace(' ', '')] = property.get('field_value_name')
                                                         data += self.parseResponse(responseTemplate, res, injectData)
                                                         #FOR COLLECTING DATA BEYOND PARENT/ROOT LEVEL. FUNCTION DEFINITION IS AT THE BOTTOM.
                                                         #self.injectResponseData(data, responseTemplate, res, projectName, projectId, entityType)
@@ -122,7 +131,7 @@ class QtestAgent(BaseAgent):
                                     nextPageResponse = False
                                 if almEntityRestDetails.get('pagination', False):
                                     if entityType == "defects":
-                                        page_size = page_size + 10
+                                        page_size = page_size + self.pageSize
                                     else:
                                         page_num = page_num + 1
                                 else:
@@ -132,12 +141,15 @@ class QtestAgent(BaseAgent):
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate, "entityIdDict": reqIdList}
                                 else:
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate}
+                            if reqIdLatest:
+                                data = data + self.typePropertyhistoryApi(projectId, entityType, reqIdLatest)
                             if len(data) > 0:
                                 self.publishToolsData(data, metadata)
                         self.tracking[str(projectId)] = trackingDetails
-                        self.updateTrackingJson(self.tracking)                        
+                        self.updateTrackingJson(self.tracking)
         finally:
             self.logout(self.token, baseUrl)
+
     def login(self, authToken, username, password, baseUrl):
         headers_token = {'accept': "application/json",'content-type': "application/x-www-form-urlencoded",'authorization': "Basic "+str(authToken)+""}
         payload = "grant_type=password&username="+str(username)+"&password="+str(password)
@@ -145,14 +157,98 @@ class QtestAgent(BaseAgent):
         if "error" in tokenResponse:
             logging.error("InValid Credentails")
         return tokenResponse.get("access_token", None)
+
     def logout(self, token, baseUrl):
         headerTokenRevoke = {"Authorization": "bearer "+str(token)+""}
         tokenResponse = self.getResponse(baseUrl+"/oauth/revoke", 'POST', None, None, None, None, headerTokenRevoke)
+
+    def typePropertyhistoryApi(self, projectId, objectType, objectIdList):
+        try:
+            toolsHistoryData = list()
+            page = 1
+            property = self.historyEntities.get(objectType, {}).get("Type")
+            objectQuery = self.constructHistoryObjectQuery(objectIdList)
+            for _Chunks in objectQuery:
+                if _Chunks:
+                    nextResponse = True
+                    while nextResponse:
+                        historyResponse = self.queryObjectHistoryApi(projectId, objectType, objectQuery=_Chunks, page=page, pageSize=self.pageSize)
+                        if 'items' in historyResponse and historyResponse['items']:
+                            changeHistory = historyResponse.get('items')
+                            for _Iter in changeHistory:
+                                changes = _Iter['changes']
+                                for _FieldChange in changes:
+                                    oldValue = _FieldChange['old_value']
+                                    newValue = _FieldChange['new_value']
+                                    if (oldValue == "" or oldValue == property['oldValue']) and newValue == property['newValue']:
+                                        data = {"projectId": projectId, "almType": objectType, "id": _Iter['linked_object']['object_id'], "automationTime": _Iter['created']}
+                                        toolsHistoryData.append(data)
+                            page = page + 1
+                        else:
+                            nextResponse = False
+            mappedHistoryData = self.mapToPair(toolsHistoryData)
+            for _Iter in mappedHistoryData:
+                mappedHistoryData[_Iter] = self.listSplitter(mappedHistoryData[_Iter], property.get('limit', 1))
+            return list(chain.from_iterable(mappedHistoryData.values()))
+        except Exception as err:
+            logging.error(err)
+
+    @staticmethod
+    def mapToPair(data):
+        try:
+            dataPair = dict()
+            for _Iter in data:
+                _Id = _Iter['id']
+                if _Id in dataPair:
+                    dataPair.get(_Id).append(_Iter)
+                else:
+                    dataPair[_Id] = [_Iter, ]
+            return dataPair
+        except Exception as err:
+            logging.error(err)
+
+    @staticmethod
+    def _ConstructHistoryObjectQuery(objectIdList):
+        objectQuery = str()
+        objectIdListLen = len(objectIdList)
+        for _iter in range(0, objectIdListLen):
+            _ObjectId = objectIdList[_iter]
+            objectQuery += '\'id\' = \'' + _ObjectId + '\''
+            if _iter != objectIdListLen - 1:
+                objectQuery += ' or '
+        return objectQuery
+
+    def constructHistoryObjectQuery(self, objectIdList):
+        if len(objectIdList) > self.objectSize:
+            objectQueryList = list()
+            chunks = [objectIdList[_Iter: _Iter + self.objectSize] for _Iter in range(0, len(objectIdList), self.objectSize)]
+            for _Iter in chunks:
+                objectQueryList.append(self._ConstructHistoryObjectQuery(_Iter))
+            return objectQueryList
+        else:
+            return [self._ConstructHistoryObjectQuery(objectIdList), ]
+
+    @staticmethod
+    def listSplitter(dataList, limit=1, reverse=True):
+        if reverse:
+            limit = -limit
+        return dataList[:limit] if limit >= 0 else dataList[limit:]
+
+    def queryObjectHistoryApi(self, projectId, objectType, fields=None, objectQuery=None, query=None, page=None, pageSize=None):
+        try:
+            headers = {'Content-Type': 'application/json', 'Authorization': 'bearer ' + self.token}
+            data = {"object_type": objectType, "fields": fields if fields else ["*"], "object_query": objectQuery if objectQuery else "", "query": query if query else ""}
+            url = self.baseUrl + "/api/v3/projects/" + str(projectId) + ("/histories" if not page else "/histories?page={0}&pageSize={1}".format(page, pageSize))
+            return self.getResponse(url, "POST", None, None, json.dumps(data), None, headers)
+        except Exception as err:
+            logging.error(err)
+
     def filterDataStructure(self, almType, responseObj):
         objs = {almType : True}
         for key, value in objs.iteritems():
             if value == True:
                 return responseObj.get(key, None)
+
     def almEntityRestDetails(self, entityType, projectId, baseUrl, paginationList):
         urlExtension = {
                         "trace-matrix-report": "requirements/trace-matrix-report",
@@ -170,6 +266,7 @@ class QtestAgent(BaseAgent):
         if entityType in paginationList:
             entityRestDetails['pagination'] = True
         return entityRestDetails
+
     def scheduleExtensions(self):
         extensions = self.config.get('dynamicTemplate', {}).get('extensions', None)
         if extensions:
@@ -179,6 +276,7 @@ class QtestAgent(BaseAgent):
             requirementMatrix = extensions.get('requirementMatrix', None)
             if requirementMatrix:
                 self.registerExtension('requirementMatrix', self.retrieveRequirementMatrix, requirementMatrix.get('runSchedule'))
+
     def retrieveLinkedArtifacts(self):
         try:
             token = self.login(self.authToken, self.username , self.password , self.baseUrl)
@@ -207,13 +305,14 @@ class QtestAgent(BaseAgent):
                                             injectData = {}
                                             injectData['id'] = parentId
                                             injectData['projectId'] = int(project)
-                                            injectData['almType'] = almEntity
-                                            for object in res.get('objects', None):                                        
+                                            injectData['almType'] = 'linked-objects'
+                                            injectData['almParentType'] = almEntity
+                                            for object in res.get('objects', None):
                                                 almType = (object.get('self', None).split('/')[-2]).replace('-', '')
                                                 if almType not in injectData:
                                                     injectData[almType] = [object.get('id')]
                                                 else:
-                                                    injectData[almType].append(object.get('id', None)) 
+                                                    injectData[almType].append(object.get('id', None))
                                             data.append(injectData)
                                     start = end
                                     end = end + 15
@@ -241,11 +340,11 @@ class QtestAgent(BaseAgent):
                 almEntityRestDetails = self.almEntityRestDetails("trace-matrix-report", project, self.baseUrl, ['trace-matrix-report'])
                 nextPageResponse = True
                 page_num = 1
-                page_size = 25
+                page_size = self.pageSize
                 while nextPageResponse:
                     restUrl = almEntityRestDetails.get('restUrl', None) + almEntityRestDetails.get('entityType', None) + "?page=" + str(page_num) + "&size=" + str(page_size)
                     try:
-                        entityTypeResponse = self.getResponse(restUrl, 'GET', None, None, None, None, headers)                
+                        entityTypeResponse = self.getResponse(restUrl, 'GET', None, None, None, None, headers)
                         if entityTypeResponse.__len__() > 0:
                             for res in entityTypeResponse:
                                 traceMatrixReport = res.get("requirements", {})
@@ -269,6 +368,7 @@ class QtestAgent(BaseAgent):
             self.logout(token, self.baseUrl)
         if len(dataMatrix) > 0:
             self.publishToolsData(dataMatrix, metadata)
+
     '''
     def injectResponseData(self, data, responseTemplate, res, projectName, projectId, entityType):
         injectData= {}
@@ -289,4 +389,4 @@ class QtestAgent(BaseAgent):
         data += self.parseResponse(responseTemplate, res, injectData)
     '''
 if __name__ == "__main__":
-    QtestAgent()       
+    QtestAgent()

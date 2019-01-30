@@ -94,6 +94,15 @@
         "id": "id"
       }
     },
+    "queryObjectHistory": {
+      "test-cases": {
+        "Type": {
+          "oldValue": "Manual",
+          "newValue": "Automation"
+        }
+      },
+      "objectSize": 100
+    },
     "almEntityMetaData": {
       "dataUpdateSupported": true,
       "uniqueKey": [
@@ -105,9 +114,9 @@
     "extensions": {
       "requirementMatrix": {
         "runSchedule": 720,
+        "pageSize": 25,
         "almEntityMetaData": {
           "labels": [
-            "QtestRequirementMatrix"
           ],
           "dataUpdateSupported": true,
           "uniqueKey": [
@@ -118,16 +127,16 @@
         }
       },
       "linkedArtifacts": {
-        "runSchedule": "720",
+        "runSchedule": 720,
         "almEntityMetaData": {
           "labels": [
-            "QtestLinkedArtifacts"
           ],
           "dataUpdateSupported": true,
           "uniqueKey": [
             "projectId",
             "id",
-            "almType"
+            "almType",
+            "almParentType"
           ]
         },
         "almEntities": {
@@ -152,14 +161,15 @@
   "insightsTimeZone": "GMT",
   "enableValueArray": false,
   "useResponseTemplate": true,
+  "almEntityPageSize": 20,
   "auth": "base64",
   "runSchedule": 30,
   "timeStampField": "lastModifiedDate",
   "timeStampFormat": "%Y-%m-%dT%H:%M:%S",
   "isEpochTimeFormat": false,
-  "startFrom": "2018-01-01T15:46:33",
-  "baseUrl": "https://base_url.com",
-  "username": "user_name",
+  "startFrom": "2018-10-01T15:46:33",
+  "baseUrl": "baseUrl",
+  "username": "username",
   "password": "password",
   "isDebugAllowed": false,
   "loggingSetting": {
