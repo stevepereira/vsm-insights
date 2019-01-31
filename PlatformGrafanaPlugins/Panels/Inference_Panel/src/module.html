@@ -217,30 +217,14 @@ md-radio-button {
                    google.charts.load('current', {packages: ['corechart']});     
                 </script>
              </head>
-<!--<div class="">
-	<div ng-repeat="vectorData in ctrl.uiResponseArr">
-            <button class="collapsible" ng-click="ctrl.openCollapse()">{{vectorData.vectorName}}</button>
-            <div class="content">
-                    Last Run: {{vectorData.lastRun}}
-                <div class="outerdiv" ng-show="ctrl.show" ng-repeat="y in vectorData.data" ng-style="{'color':y.color}">
-                        <md-icon ng-if="y.color == 'green'">&#x263A;</md-icon><md-icon ng-if="y.color == 'red'">&#x2639;</md-icon>
-                        {{y.inference}}
-                        <div ng-mouseover="ctrl.hoverOn(y.id)" ng-attr-id="{{y.id}}" ng-mouseleave="ctrl.hoverOut(y.id)">SHOW                  
-                    </div>
-                </div>
-                    
-                    <div style="width:50%"> 
-                    <a>
-                            <div google-chart style="height:200px; width:100%;"></div>     
-                    </a>
-                    </div>  
-                </div>
-    </div>
-</div>-->
+
 <div class="md-accordion" ng-repeat="vectorData in ctrl.uiResponseArr">
         <md-toolbar ng-click="ctrl.openCollapse()" style="padding:10; width: 100%;  font-size: 15px;font-weight: 500;color: #757575;font-family: proxima_novasemibold !important; background:#d3e9c7;">{{vectorData.vectorName}}
         <div style="padding-left:0em;" ng-hide="vectorData.lastRun == null">Last Run: {{vectorData.lastRun}}</div>
-            <div layout>
+            <div style="width:50%; float: right; padding-top:0em;">
+                        <div  google-chart chart-legend="false" style="float: right; height:200px; width:50%;" ng-attr-id="{{ctrl.panel.id}}"></div>        
+                </div>  
+			<div layout>
                 <div class="outerdiv">
                         <div class="textst"></div>
                                     <div ng-repeat="y in vectorData.data"  ng-style="{'color':y.color}" ng-mouseenter="ctrl.hoverOn(y.kpiId, y.inference, vectorData.vectorName)" style="margin-top:10px">
@@ -253,36 +237,8 @@ md-radio-button {
                         </div>
                         <div class="textst" ></div>
                 </div>
-                <div style="width:50%; float: right; padding-top:0em;">
-                        <div  google-chart chart-legend="false" style="float: right; height:200px; width:50%;" ng-attr-id="{{ctrl.panel.id}}"></div>        
-                </div>  
+                
         
     </md-toolbar>
         
 </div>
-<!--<div class="md-accordion" ng-repeat="vectorData in ctrl.uiResponseArr">
-<div ng-class="{dataContent:true, activeContent:true}" style="border-right:1px solid #333;border-left:1px solid #333;border-bottom:1px solid #333;">
-        <div layout>
-            <div class="outerdiv">
-                <div class="textst" >
-                    
-                    <ul>
-                        <li ng-repeat="y in vectorData.data" ng-mouseenter="ctrl.hoverOn(y.id)" style="margin-top:10px">
-                                <md-icon ng-if="y.color == 'green'">&#x263A;</md-icon>
-                                <md-icon ng-if="y.color == 'red'">&#x2639;</md-icon>
-                            <a ng-class="{textst:true, txthover:hovering}" ng-mouseenter="hovering=true"  ng-mouseleave="hovering=false"></a>
-                            <span>{{y.inference}}</span>
-                        </li>
-                    </ul>
-                </div>
-                <div class="textst" ></div>
-            </div>
-            <div style="width:50%">
-                <div  google-chart chart-legend="false" style="height:200px; width:100%;" id="graphdiv"></div>
-                
-            </div>
-        </div>
-        <div style="clear:both"></div>
-    </div >
-    </div>
--->
