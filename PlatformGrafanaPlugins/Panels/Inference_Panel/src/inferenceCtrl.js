@@ -63,9 +63,11 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 				this.vectorProperty["kpi"]=this.data["kpi"];
 				this.vectorProperty["sentiment"]=this.data["sentiment"];
 				this.vectorProperty["kpiId"]=this.data["kpiId"];
+				this.vectorProperty["schedule"]=this.data["schedule"];
 				this.vectorProperty["trendline"]=this.data["trendline"];
 				this.vectorProperty["inference"]=this.data["inference"];
 				this.vectorMap["lastRun"]=this.data["lastRun"];
+				this.vectorMap["schedule"]=this.data["schedule"];
 				if(this.data["sentiment"] == "POSITIVE" && this.data["trendline"] == "High to Low"){
 					this.vectorProperty["color"]="green";
 					this.vectorProperty["type"]="increased";
