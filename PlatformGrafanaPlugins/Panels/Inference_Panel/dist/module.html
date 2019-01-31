@@ -38,7 +38,7 @@ a:hover + d {
 }
 
 .outerdiv{
-    width:50%;
+    width:100%;
     
 
 }
@@ -222,7 +222,7 @@ md-radio-button {
         <md-toolbar ng-click="ctrl.openCollapse()" style="padding:10; width: 100%;  font-size: 15px;font-weight: 500;color: 
         ctrl.panel.textColor;font-family: proxima_novasemibold !important; background:#d3e9c7;">{{vectorData.vectorName}}
         <div style="padding-left:0em;" ng-hide="vectorData.schedule == null">Run Schedule: {{vectorData.schedule}}</div>
-            <div style="width:50%; float: right; padding-top:0em;">
+            <div style="width:100%; float: top; padding-top:0em;">
                         <div  google-chart chart-legend="false" style="float: right; height:200px; width:50%;" ng-attr-id="{{ctrl.panel.id}}"></div>        
                 </div>  
 			<div layout>
@@ -236,7 +236,7 @@ md-radio-button {
                                     </div>
                                 
                         </div>
-                        <div class="textst" ></div>
+                        
                 </div>
                 
         

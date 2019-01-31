@@ -162,6 +162,8 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 			options['backgroundColor'] = '#ffffff';
 			options['legendTextStyle'] = {color: 'black'};
 			options['titleTextStyle'] = {color: 'black'};
+			options['hAxis'] = {textStyle:{color: 'black'}};
+			options['vAxis'] = {textStyle:{color: 'black'}};
 			this.panel.textColor = 'black';
 			
 		 }
@@ -169,6 +171,8 @@ export class InferenceCtrl extends MetricsPanelCtrl {
 			options['backgroundColor'] = '#212124';
 			options['legendTextStyle'] = {color: 'white'};
 			options['titleTextStyle'] = {color: 'white'};
+			options['hAxis'] = {textStyle:{color: 'white'}};
+			options['vAxis'] = {textStyle:{color: 'white'}};
 			this.panel.textColor = 'white';
 		 }
 		chart.draw(data, options);
