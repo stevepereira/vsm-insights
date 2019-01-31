@@ -113,8 +113,6 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 					value: function onRender() {
 						google = window['google'];
 						google.charts.load('current', { packages: ['corechart'] });
-
-						//this.hoverOn();
 					}
 				}, {
 					key: "onDataReceived",
@@ -122,7 +120,6 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 						this.uiResponseArr = [];
 						this.jsonArrtoStr = dataList;
 						this.singleVectorKpiDetails = [];
-
 						for (var i = 0; i < this.jsonArrtoStr.length; i++) {
 							this.arr = [];
 							this.vectorMap = {};
@@ -131,9 +128,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 							for (var vector in this.jsonObjtoStr["inferenceDetails"]) {
 								this.data = this.jsonObjtoStr["inferenceDetails"][vector];
 								this.vectorProperty = {};
-
 								this.googleChartData[this.data["kpiId"]] = this.data["resultSet"];
-
 								this.vectorProperty["kpi"] = this.data["kpi"];
 								this.vectorProperty["sentiment"] = this.data["sentiment"];
 								this.vectorProperty["kpiId"] = this.data["kpiId"];
@@ -145,7 +140,6 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 								if (this.data["sentiment"] == "POSITIVE" && this.data["trendline"] == "High to Low") {
 									this.vectorProperty["color"] = "green";
 									this.vectorProperty["type"] = "increased";
-
 									this.googleChartData[this.data["kpiId"]].push("green");
 								} else if (this.data["sentiment"] == "POSITIVE" && this.data["trendline"] == "Low to High") {
 									this.vectorProperty["color"] = "green";
@@ -173,7 +167,6 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 							this.vectorMap["data"] = this.arr;
 							this.uiResponseArr.push(this.vectorMap);
 						}
-
 						this.onRender();
 					}
 				}, {
@@ -242,17 +235,13 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 							options['backgroundColor'] = '#ffffff';
 							options['legendTextStyle'] = { color: 'black' };
 							options['titleTextStyle'] = { color: 'black' };
+							this.panel.textColor = 'black';
 						} else {
 							options['backgroundColor'] = '#212124';
 							options['legendTextStyle'] = { color: 'white' };
 							options['titleTextStyle'] = { color: 'white' };
+							this.panel.textColor = 'white';
 						}
-						//var chart = new google.visualization.BarChart(document.getElementById(this.panel.id));
-						//  google.visualization.events.addOneTimeListener(chart, 'ready', function(){
-						// 	 console.log("--------------");
-						// 	chart.draw(data, options);
-						//  });
-
 						chart.draw(data, options);
 					}
 				}, {
@@ -264,24 +253,7 @@ System.register(["app/plugins/sdk", "lodash", "app/core/time_series2", "app/core
 					}
 				}, {
 					key: "drawCharts",
-					value: function drawCharts() {
-						// var options = {title: 'Date Wise Trend'}; 
-						// console.log(options);
-						// var data = google.visualization.arrayToDataTable([
-						// 	['Date', 'No.'],
-						// 	['Jan 20, 2019 6:40:26 PM',  900],
-						// 	['Jan 19, 2019 6:40:26 PM',  1050],
-						// 	['Jan 18, 2019 6:40:27 PM',  1100]
-						//  ]);
-						// var chart = new google.visualization.BarChart(document.getElementById("abc"));
-						// // google.visualization.events.addOneTimeListener(chart, 'ready', function(){
-
-						// // 	chart.draw(data, options);
-						// // });
-						// console.log("before chart.draw");
-						// chart.draw(data, options);
-						// console.log("after chart.draw");
-					}
+					value: function drawCharts() {}
 				}]);
 
 				return InferenceCtrl;
