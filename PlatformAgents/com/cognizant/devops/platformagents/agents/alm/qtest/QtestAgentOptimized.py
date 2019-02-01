@@ -23,6 +23,10 @@ import json
 import logging.handlers
 import base64
 import urllib
+import requests
+import json
+import logging
+from itertools import chain
 
 
 class QtestAgent(BaseAgent):
@@ -169,8 +173,8 @@ class QtestAgent(BaseAgent):
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate, "entityIdDict": reqIdList}
                                 else:
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate}
-                            #if reqIdLatest:
-                                #data = data + self.typePropertyhistoryApi(projectId, entityType, reqIdLatest)
+                            if reqIdLatest:
+                                data = data + self.typePropertyhistoryApi(projectId, entityType, reqIdLatest)
                             print "ProjectId: "+str(projectId)+", entity: "+entityType+", DataSize: "+str(len(data))+", url: "+restUrl
                             if len(data) > 0:
                                 self.publishToolsData(data, metadata)
@@ -195,22 +199,27 @@ class QtestAgent(BaseAgent):
         try:
             toolsHistoryData = list()
             page = 1
+            totalPages = 0
+            lastPageSize = 0
+            pageSize = self.pageSize
             property = self.historyEntities.get(objectType, {}).get("Type")
             objectQuery = self.constructHistoryObjectQuery(objectIdList)
             for _Chunks in objectQuery:
                 if _Chunks:
                     nextResponse = True
                     while nextResponse:
-                        historyResponse = self.queryObjectHistoryApi(projectId, objectType, objectQuery=_Chunks, page=page, pageSize=self.pageSize)
+                        totalPages, pageSize, lastPageSize, nextResponse, historyResponse = \
+                            self.queryObjectHistoryApi(projectId, objectType, objectQuery=_Chunks, page=page,
+                                                       pageSize=pageSize if page != totalPages else lastPageSize)
                         if 'items' in historyResponse and historyResponse['items']:
                             changeHistory = historyResponse.get('items')
                             for _Iter in changeHistory:
                                 changes = _Iter['changes']
                                 for _FieldChange in changes:
-                                    oldValue = _FieldChange['old_value']
+                                    fieldName = _FieldChange['field']
                                     newValue = _FieldChange['new_value']
-                                    if (oldValue == "" or oldValue == property['oldValue']) and newValue == property['newValue']:
-                                        data = {"projectId": projectId, "almType": objectType, "id": _Iter['linked_object']['object_id'], "automationTime": _Iter['created']}
+                                    if fieldName == 'Type' and newValue == property['newValue']:
+                                        data = {"projectId": projectId, "almType": objectType, "id": _Iter['linked_object']['object_id'], "automationTime": _Iter['created'][:-6]}
                                         toolsHistoryData.append(data)
                             page = page + 1
                         else:
@@ -265,10 +274,28 @@ class QtestAgent(BaseAgent):
 
     def queryObjectHistoryApi(self, projectId, objectType, fields=None, objectQuery=None, query=None, page=None, pageSize=None):
         try:
+            totalPages = 0
+            lastPageSize = 0
+            pageSize = self.pageSize
             headers = {'Content-Type': 'application/json', 'Authorization': 'bearer ' + self.token}
             data = {"object_type": objectType, "fields": fields if fields else ["*"], "object_query": objectQuery if objectQuery else "", "query": query if query else ""}
             url = self.baseUrl + "/api/v3/projects/" + str(projectId) + ("/histories" if not page else "/histories?page={0}&pageSize={1}".format(page, pageSize))
-            return self.getResponse(url, "POST", None, None, json.dumps(data), None, headers)
+            response = requests.post(url, data=json.dumps(data), headers=headers, verify=False)
+            if response.status_code == 500:
+                newResponse = requests.post(self.baseUrl + "/api/v3/projects/" + str(projectId) + "/histories?page=1&pageSize=1", data=json.dumps(data), headers=headers, verify=False)
+                if newResponse.status_code == 200:
+                    total = json.loads(newResponse.content).get('total')
+                    if 0 < total <= 100:
+                        currentResponse = requests.post(self.baseUrl + "/api/v3/projects/" + str(projectId) + "/histories?page=1&pageSize=" + str(total - 1), data=json.dumps(data), headers=headers, verify=False).content
+                        return totalPages, pageSize, lastPageSize, False, json.loads(currentResponse)
+                    else:
+                        totalPages = total // 100 + 1
+                        lastPageSize = total % 100
+                        currentResponse = requests.post(self.baseUrl + "/api/v3/projects/" + str(projectId) + "/histories?page=1&pageSize=" + str(100), data=json.dumps(data), headers=headers, verify=False).content
+                        return totalPages, pageSize, lastPageSize, True, json.loads(currentResponse)
+            else:
+                return totalPages, pageSize, lastPageSize, True, json.loads(response.content)
+
         except Exception as err:
             logging.error(err)
 
