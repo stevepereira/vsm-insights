@@ -37,6 +37,7 @@ class QtestAgent(BaseAgent):
         domainName = "InSightsAlmAgent:"
         self.authToken = base64.b64encode(domainName.encode('utf-8'))
         self.token = self.login(self.authToken, username, password, baseUrl)
+        authTokenTime = datetime.datetime.now()
         headers = {'Content-Type': 'application/json', "accept": "application/json","Authorization": "bearer "+self.token}
         pagination = ["test-cases", "requirements", "test-runs", "trace-matrix-report", "defects"]
         searchSupportedAlmEntities = ["test-cases", "requirements", "test-runs"]
@@ -95,6 +96,13 @@ class QtestAgent(BaseAgent):
                                         entityTypeResponse = self.getResponse(restApiUrl, 'GET', None, None, None, None, headers)
                                     #headers = {'Content-Type': 'application/json', 'Authorization': 'bearer ' + self.token}
                                 except Exception as ex1:
+                                    exceptionMsg = str(ex1)
+                                    if "invalid_token" in exceptionMsg and (datetime.datetime.now() - authTokenTime).total_seconds() >= 300:
+                                        authTokenTime = datetime.datetime.now()
+                                        self.token = self.login(self.authToken, username, password, baseUrl)
+                                        headers = {'Content-Type': 'application/json', "accept": "application/json","Authorization": "bearer "+self.token}
+                                        logging.warn('Current session has extended.')
+                                        continue
                                     nextPageResponse = False
                                     logging.error("ProjectID: " + str(projectId) + " Type: " +str(entityType) + " URL: " + str(restUrl) + "  " + str(ex1))
                                     break
