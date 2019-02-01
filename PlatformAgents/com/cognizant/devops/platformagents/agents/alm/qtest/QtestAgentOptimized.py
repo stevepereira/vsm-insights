@@ -90,6 +90,7 @@ class QtestAgent(BaseAgent):
                                 restUrl = restUrl + almEntityRestDetails.get('dateTimeStamp', None) + urllib.quote_plus(startFrom.strftime(timeStampFormat)) + "Z"
                             if reqIdList is None:
                                 reqIdList = []
+                            automatedTestCases = []
                             while nextPageResponse:
                                 restApiUrl = restUrl + "&page=" + str(page_num)
                                 print restApiUrl + ", Query:   "+json.dumps(searchApiQueryObject)
@@ -101,7 +102,7 @@ class QtestAgent(BaseAgent):
                                     #headers = {'Content-Type': 'application/json', 'Authorization': 'bearer ' + self.token}
                                 except Exception as ex1:
                                     exceptionMsg = str(ex1)
-                                    if "invalid_token" in exceptionMsg and (datetime.datetime.now() - authTokenTime).total_seconds() >= 300:
+                                    if "invalid_token" in exceptionMsg and (datetime.datetime.now() - authTokenTime).total_seconds() >= 5:
                                         authTokenTime = datetime.datetime.now()
                                         self.token = self.login(self.authToken, username, password, baseUrl)
                                         headers = {'Content-Type': 'application/json', "accept": "application/json","Authorization": "bearer "+self.token}
@@ -149,6 +150,8 @@ class QtestAgent(BaseAgent):
                                                             for property in res.get('properties', []):
                                                                 injectData[str(property.get('field_name').lower()).replace(' ', '')] = property.get('field_value_name')
                                                         data += self.parseResponse(responseTemplate, res, injectData)
+                                                        if entityType == 'test-cases' and injectData.get('type', '') == 'Automation':
+                                                            automatedTestCases.append(_ObjectId)
                                                         #FOR COLLECTING DATA BEYOND PARENT/ROOT LEVEL. FUNCTION DEFINITION IS AT THE BOTTOM.
                                                         #self.injectResponseData(data, responseTemplate, res, projectName, projectId, entityType)
                                     except Exception as ex:
@@ -173,8 +176,8 @@ class QtestAgent(BaseAgent):
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate, "entityIdDict": reqIdList}
                                 else:
                                     trackingDetails[entityType] = {"entityUpdatedDate": entityUpdatedDate}
-                            if reqIdLatest:
-                                data = data + self.typePropertyhistoryApi(projectId, entityType, reqIdLatest)
+                            if automatedTestCases:
+                                data = data + self.typePropertyhistoryApi(projectId, entityType, automatedTestCases)
                             print "ProjectId: "+str(projectId)+", entity: "+entityType+", DataSize: "+str(len(data))+", url: "+restUrl
                             if len(data) > 0:
                                 self.publishToolsData(data, metadata)
@@ -210,7 +213,7 @@ class QtestAgent(BaseAgent):
                     while nextResponse:
                         totalPages, pageSize, lastPageSize, nextResponse, historyResponse = \
                             self.queryObjectHistoryApi(projectId, objectType, objectQuery=_Chunks, page=page,
-                                                       pageSize=pageSize if page != totalPages else lastPageSize)
+                                                       pageSize=pageSize if page != totalPages else lastPageSize, testCaseCount=len(objectIdList))
                         if 'items' in historyResponse and historyResponse['items']:
                             changeHistory = historyResponse.get('items')
                             for _Iter in changeHistory:
@@ -272,7 +275,7 @@ class QtestAgent(BaseAgent):
             limit = -limit
         return dataList[:limit] if limit >= 0 else dataList[limit:]
 
-    def queryObjectHistoryApi(self, projectId, objectType, fields=None, objectQuery=None, query=None, page=None, pageSize=None):
+    def queryObjectHistoryApi(self, projectId, objectType, fields=None, objectQuery=None, query=None, page=None, pageSize=None, testCaseCount=0):
         try:
             totalPages = 0
             lastPageSize = 0
@@ -286,7 +289,7 @@ class QtestAgent(BaseAgent):
                 if newResponse.status_code == 200:
                     total = json.loads(newResponse.content).get('total')
                     if 0 < total <= 100:
-                        currentResponse = requests.post(self.baseUrl + "/api/v3/projects/" + str(projectId) + "/histories?page=1&pageSize=" + str(total - 1), data=json.dumps(data), headers=headers, verify=False).content
+                        currentResponse = requests.post(self.baseUrl + "/api/v3/projects/" + str(projectId) + "/histories?page=1&pageSize=" + str(total - testCaseCount), data=json.dumps(data), headers=headers, verify=False).content
                         return totalPages, pageSize, lastPageSize, False, json.loads(currentResponse)
                     else:
                         totalPages = total // 100 + 1
