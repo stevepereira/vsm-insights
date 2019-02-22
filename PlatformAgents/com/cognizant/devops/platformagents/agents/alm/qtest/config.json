@@ -1,7 +1,7 @@
 {
   "mqConfig": {
-    "user": "iSight",
-    "password": "iSight",
+    "user": "guest",
+    "password": "guest",
     "host": "127.0.0.1",
     "exchange": "iSight",
     "agentControlXchg": "iAgent"
@@ -24,55 +24,7 @@
       "lastModifiedDate": "%Y-%m-%dT%H:%M:%S"
     },
     "almEntities": {
-      "releases": {
-        "name": "name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
-      "test-cycles": {
-        "name": "name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
-      "test-suites": {
-        "name": "name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
-      "test-runs": {
-        "name": "name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
-      "test-cases": {
-        "name": "Name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
       "requirements": {
-        "name": "name",
-        "pid": "pid",
-        "id": "id",
-        "created_date": "creationDate",
-        "description": "description",
-        "last_modified_date": "lastModifiedDate"
-      },
-      "modules": {
         "name": "name",
         "pid": "pid",
         "id": "id",
@@ -85,23 +37,22 @@
         "pid": "pid",
         "id": "id",
         "created_date": "creationDate",
-        "description": "description",
         "last_modified_date": "lastModifiedDate"
       },
-      "trace-matrix-report": {
-        "testcases": "testcases",
-        "linkedTestcaseCount": "linkedTestcaseCount",
-        "id": "id"
-      }
-    },
-    "queryObjectHistory": {
       "test-cases": {
-        "Type": {
-          "oldValue": "Manual",
-          "newValue": "Automation"
-        }
+        "name": "name",
+        "pid": "pid",
+        "id": "id",
+        "created_date": "creationDate",
+        "last_modified_date": "lastModifiedDate"
       },
-      "objectSize": 100
+      "test-runs": {
+        "name": "name",
+        "pid": "pid",
+        "id": "id",
+        "created_date": "creationDate",
+        "last_modified_date": "lastModifiedDate"
+      }
     },
     "almEntityMetaData": {
       "dataUpdateSupported": true,
@@ -111,21 +62,23 @@
         "almType"
       ]
     },
-    "extensions": {
-      "requirementMatrix": {
-        "runSchedule": 720,
-        "pageSize": 25,
-        "almEntityMetaData": {
-          "labels": [
-          ],
-          "dataUpdateSupported": true,
-          "uniqueKey": [
-            "projectId",
-            "id",
-            "almType"
-          ]
-        }
+    "automationType": {
+      "test-cases": {
+        "field": "Type",
+        "newValue": "Automation"
+      }
+    },
+    "testRunsType": {
+      "testRunsWithAutomation": {
+        "query": "'Test Case Type' = 'Automation'",
+        "automation": true
       },
+      "testRunsWithOutAutomation": {
+        "query": "'Test Case Type' <> 'Automation'",
+        "automation": false
+      }
+    },
+    "extensions": {
       "linkedArtifacts": {
         "runSchedule": 720,
         "almEntityMetaData": {
@@ -141,16 +94,12 @@
         },
         "almEntities": {
           "test-cases": {
-            
           },
           "requirements": {
-            
           },
           "defects": {
-            
           },
           "test-runs": {
-            
           }
         }
       }
@@ -162,6 +111,8 @@
   "enableValueArray": false,
   "useResponseTemplate": true,
   "almEntityPageSize": 20,
+  "isHistoryApi": true,
+  "historyIdChunkSize": 10,
   "auth": "base64",
   "runSchedule": 30,
   "timeStampField": "lastModifiedDate",
