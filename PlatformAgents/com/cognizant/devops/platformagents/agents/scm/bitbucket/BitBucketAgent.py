@@ -139,7 +139,7 @@ class BitBucketAgent(BaseAgent):
 
 
     def processAllCommitsForBranch(self,projKey,repoName, branchName, repoTracking):
-        data = []
+        dataPublishInMQ = False
         injectData = {}
         injectData['branchName'] = branchName
         injectData['repoName'] = repoName
@@ -158,14 +158,18 @@ class BitBucketAgent(BaseAgent):
             try:
                 bitBucketCommits = self.getResponse(bitBucketCommitsUrl+'&limit='+str(limit)+'&start='+str(commitStart), 'GET', self.userId, self.passwd, None)
                 i = 0
+                commitPublishData = []
                 for commits in (bitBucketCommits["values"]):
                     authortimestamp = bitBucketCommits["values"][i]["authorTimestamp"]
                     if self.startFrom < authortimestamp:
-                        data += self.parseResponse(self.responseTemplate, commits, injectData)
+                        dataPublishInMQ = True
+                        commitPublishData += self.parseResponse(self.responseTemplate, commits, injectData)
                     i = i + 1
                 if not isTrackingUpdated:
                     repoTracking[branchName] = bitBucketCommits["values"][0]["id"]
                     isTrackingUpdated = True
+                if len(commitPublishData) > 0:
+                    self.publishToolsData(commitPublishData)
             except:
                 pass
             if bitBucketCommits.get("isLastPage", True):
@@ -174,9 +178,9 @@ class BitBucketAgent(BaseAgent):
             commitStart = bitBucketCommits.get("nextPageStart", None)
             return;
         # Update data once its processed for each branch
-        if len(data) > 0:
-            self.publishToolsData(data)
+        if dataPublishInMQ:
             self.updateTrackingJson(self.tracking)
+            dataPublishInMQ = False
 
 
     def processPullRequestsForRepo(self,projKey,repoName, repoTracking):
