@@ -62,7 +62,6 @@ class QtestAgent (BaseAgent):
             payload['object_type'] = entity
             payloadConfig[entityType]['payload'] = json.dumps(payload)
             payloadConfig[entityType]['entity'] = entity
-        print payloadConfig
         encodeKey = 'InSightsAlmAgent:'
         authKey = base64.b64encode(encodeKey.encode('utf-8'))
         token = self.login(baseUrl, userName, password, authKey)
@@ -84,7 +83,6 @@ class QtestAgent (BaseAgent):
                 injectData['projectId'] = projectId
                 injectData['projectName'] = projectName
                 for entity in payloadConfig:
-                    print entity
                     idList = list()
                     toolsData = list()
                     responseTemplate = almEntities[entity]
@@ -107,7 +105,6 @@ class QtestAgent (BaseAgent):
                         try:
                             url = searchUrl.format(page, pageSize)
                             response = self.getResponse(url, 'POST', None, None, payload, None, apiHeaders)
-                            print len(response['items'])
                             if not pageSetFlag:
                                 total = response.get('total', 0)
                                 totalPage = int(math.ceil(float(total) / 100))
@@ -146,14 +143,13 @@ class QtestAgent (BaseAgent):
             logging.error(err)
         finally:
             self.logout(token, baseUrl)
-        self.retrieveLinkedArtifacts()
 
-    # def scheduleExtensions(self):
-    #     extensions = self.config.get('dynamicTemplate', {}).get('extensions', None)
-    #     if extensions:
-    #         linkedArtifacts = extensions.get('linkedArtifacts', None)
-    #         if linkedArtifacts:
-    #             self.registerExtension('linkedArtifacts', self.retrieveLinkedArtifacts, linkedArtifacts.get('runSchedule'))
+    def scheduleExtensions(self):
+        extensions = self.config.get('dynamicTemplate', {}).get('extensions', None)
+        if extensions:
+            linkedArtifacts = extensions.get('linkedArtifacts', None)
+            if linkedArtifacts:
+                self.registerExtension('linkedArtifacts', self.retrieveLinkedArtifacts, linkedArtifacts.get('runSchedule'))
 
     def login(self, baseUrl, userName, password, authKey):
         headers = {'accept': 'application/json', 'content-type': 'application/x-www-form-urlencoded', 'authorization': 'Basic ' + authKey}
@@ -275,7 +271,6 @@ class QtestAgent (BaseAgent):
                             while dictIsNotEmpty:
                                 idListStr = str(idList[start:end])[1: -1]
                                 linkedArtifactUrl = "{}/api/v3/projects/{}/linked-artifacts?type={}&ids={}".format(baseUrl, str(project), entity, idListStr)
-                                print linkedArtifactUrl
                                 entityTypeResponse = self.getResponse(linkedArtifactUrl, 'GET', None, None, None, None, apiHeaders)
                                 for res in entityTypeResponse:
                                     parentId = res.get('id', None)

@@ -1,7 +1,7 @@
 {
   "mqConfig": {
-    "user": "guest",
-    "password": "guest",
+    "user": "iSight",
+    "password": "iSight",
     "host": "127.0.0.1",
     "exchange": "iSight",
     "agentControlXchg": "iAgent"
@@ -21,7 +21,8 @@
   "dynamicTemplate": {
     "timeFieldMapping": {
       "creationDate": "%Y-%m-%dT%H:%M:%S",
-      "lastModifiedDate": "%Y-%m-%dT%H:%M:%S"
+      "lastModifiedDate": "%Y-%m-%dT%H:%M:%S",
+      "automationTime": "%Y-%m-%dT%H:%M:%S"
     },
     "almEntities": {
       "requirements": {
@@ -29,7 +30,6 @@
         "pid": "pid",
         "id": "id",
         "created_date": "creationDate",
-        "description": "description",
         "last_modified_date": "lastModifiedDate"
       },
       "defects": {
@@ -118,7 +118,7 @@
   "timeStampField": "lastModifiedDate",
   "timeStampFormat": "%Y-%m-%dT%H:%M:%S",
   "isEpochTimeFormat": false,
-  "startFrom": "2018-10-01T15:46:33",
+  "startFrom": "2017-10-01T15:46:33",
   "baseUrl": "baseUrl",
   "username": "username",
   "password": "password",
