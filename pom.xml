@@ -30,7 +30,7 @@
 		</dependency>			
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>2.11.2</artifactId>
+			<artifactId>2.11.1</artifactId>
 			<version>2.</version>
 		</dependency>
 
