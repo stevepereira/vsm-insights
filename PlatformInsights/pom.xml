@@ -76,7 +76,7 @@
 			<exclusions>
 					<exclusion>
 							<groupId>org.apache.hadoop</groupId>
-							<artifactId>hadoop-mapreduce-client-core</artifactId>
+							<artifactId>hadoop-client</artifactId>
 					</exclusion>
 			</exclusions>
 			
@@ -84,7 +84,7 @@
 		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-mapreduce-client-core -->
 		<dependency>
     		<groupId>org.apache.hadoop</groupId>
-    		<artifactId>hadoop-mapreduce-client-core</artifactId>
+    		<artifactId>hadoop-client</artifactId>
     		<version>3.2.0</version>
 		</dependency>
 
