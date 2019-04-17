@@ -1,47 +1,62 @@
 {
- 
- 
+  "category": "CODEQUALITY",
+  "communication": {
+    "type": "REST",
+    "sslVerify": true,
+    "responseType": "JSON"
+  },
+  "dynamicTemplate": {
+    "timeFieldMapping": {
+      "startDate": "%Y-%m-%d"
+    },
+    "metrics": [
+      "alert_status",
+      "ncloc",
+	  "sqale_index",
+	  "duplicated_lines_density",
+	  "coverage",
+	  "bugs",
+	  "code_smells",
+	  "vulnerabilities"
+    ]
+  },
   "mqConfig": {
     "exchange": "iSight",
     "host": "127.0.0.1",
     "password": "iSight",
     "user": "iSight",
-	"agentControlXchg":"iAgent"
+    "agentControlXchg": "iAgent"
   },
   "publish": {
     "data": "CODEQUALITY.SONAR.DATA",
     "health": "CODEQUALITY.SONAR.HEALTH"
   },
   "subscribe": {
-    "config": "CODEQUALITY.SONAR.config"
+    "config": "CODEQUALITY.SONAR.config",
+    "agentCtrlQueue": "sonar-1543485399110"
   },
-  "toolCategory" : "CODEQUALITY",
-  "dynamicTemplate" : {
-  		"timeFieldMapping" : {
-			"startDate" : "%Y-%m-%d"
-  		},
-  		"metrics" : ["alert_status", "complexity", "coverage", "new_coverage"]
-  },
-  "agentId" : "",
+  "toolCategory": "CODEQUALITY",
   "toolName": "SONAR",
-  "runSchedule": 30,
+  "runSchedule": 0.33,
   "enableDataValidation": true,
   "timeStampField": "metricdate",
-  "userId":"admin",
-  "password":"admin",
+  "userId": "<username>",
+  "password": "<password>",
   "timeMachineapi": "no",
   "timeStampFormat": "%Y-%m-%dT%H:%M:%S",
-  "startFrom": "2015-10-10 00:01:01",
-  "toolsTimeZone": "Asia/Kolkata",
+  "startFrom": "2015-10-10T00:01:01",
+  "toolsTimeZone": "Europe/Jersey",
   "useResponseTemplate": false,
   "isDebugAllowed": false,
   "enableValueArray": false,
-  "isEpochTimeFormat" : false,
-  
-  "baseUrl": "http://127.0.0.1:9000/sonar/",
+  "isEpochTimeFormat": false,
+  "baseUrl": "http://<sonar_host>:<port>/",
   "loggingSetting": {
-    	"logLevel": "WARN",
-		"maxBytes" : 5000000,
-		"backupCount" : 1000
-  }
+    "logLevel": "WARN",
+    "maxBytes": 5000000,
+    "backupCount": 1000
+  },
+  "agentId": "sonar-1543485399110",
+  "osversion": "linux",
+  "agentVersion": "v4.6"
 }

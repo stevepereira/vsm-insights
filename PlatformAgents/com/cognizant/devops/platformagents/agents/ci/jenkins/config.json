@@ -4,10 +4,11 @@
     "password": "iSight",
     "host": "127.0.0.1",
     "exchange": "iSight",
-    "agentControlXchg":"iAgent"    
+    "agentControlXchg": "iAgent"
   },
   "subscribe": {
-    "config": "CI.JENKINS.config"
+    "config": "CI.JENKINS.config",
+    "agentCtrlQueue": "jenkins-1543485090527"
   },
   "publish": {
     "data": "CI.JENKINS.DATA",
@@ -19,77 +20,71 @@
     "responseType": "JSON"
   },
   "dynamicTemplate": {
-  	"timeFieldMapping" : {
-		"startDate" : "%Y-%m-%d"
-  	},
-	"responseTemplate": {
-	  "actions": [
-	    {
-	      "causes": [
-	        {
-	          "shortDescription": "shortDescription"
-	        }
-	      ]
-	    },
-	    {
-	      "remoteUrls": [
-	        "scmUrl"
-	      ]
-	    },
-	    {
-	    "url": "sonarUrl"
-	    }
-	  ],
-	  "changeSet": {
-	    "items": [
-	      {
-	        "commitId": "scmCommitId",
-	        "author": {
-	          "fullName": "scmAuthor"
-	        },
-	        "date": "buildDate"
-	      }
-	    ],
-	    "kind": "scmKind"
-	  },
-	  "duration": "duration",
-	  "id": "buildNumber",
-	  "number": "number",
-	  "result": "result",
-	  "timestamp": "buildTimestamp",
-	  "url": "buildUrl"
-	 }
+    "timeFieldMapping": {
+      "startDate": "%Y-%m-%d"
+    },
+    "responseTemplate": {
+      "actions": [
+        {
+          "causes": [
+            {
+              "userName": "userName"
+            }
+          ],
+          "remoteUrls": [
+            "scmUrl"
+          ],
+          "sonarqubeDashboardUrl": "sonarUrl",
+          "ceTaskId": "SonarTaskID"
+        }
+      ],
+      "changeSet": {
+        "items": [
+          {
+            "commitId": "scmCommitId",
+            "author": {
+              "fullName": "scmAuthor"
+            },
+            "date": "buildDate"
+          }
+        ],
+        "kind": "scmKind"
+      },
+      "duration": "duration",
+      "id": "buildNumber",
+      "result": "result",
+      "fullDisplayName": "fullDisplayName",
+      "timestamp": "buildTimestamp",
+      "url": "buildUrl"
+    }
   },
-"jobDetails" : {
-	"rundeckJobId" : "maven2-moduleset/publishers/org.jenkinsci.plugins.rundeck.RundeckNotifier/jobId",
-	"scmRemoteUrl" : "maven2-moduleset/scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url",
-	"nexusRepoUrl" : "maven2-moduleset/publishers/hudson.maven.RedeployPublisher/url",
-	"groupId" : "maven2-moduleset/rootModule/groupId",
-	"artifactId" : "maven2-moduleset/rootModule/artifactId"
-},
-"agentId":"",
-"toolCategory" : "CI",
-"toolsTimeZone" : "Asia/Kolkata",
-"enableDataValidation": true,
-"useResponseTemplate" : true,
-"useAllBuildsApi" : true,
-"isDebugAllowed" : false,
-"enableValueArray": false,
-"userid": "username",
-"passwd": "password",
-"runSchedule": 30,
-"baseUrl": "http://127.0.0.1:8080/",
-"jenkinsMasters" : {
-  	"master1" : "http://127.0.0.1:8080/",
-  	"master2" : "http://127.0.0.1:8080/"
+  "jobDetails": {
+    
   },
-"timeStampField":"buildTimestamp",
-"timeStampFormat":"epoch",
-"isEpochTimeFormat" : true,
-"startFrom" : "2019-03-01 15:46:33",
-"loggingSetting" : {
-	"logLevel" : "WARN",
-	"maxBytes" : 5000000,
-	"backupCount" : 1000
-}
+  "toolCategory": "CI",
+  "toolsTimeZone": "Pacific/Easter",
+  "enableDataValidation": false,
+  "useResponseTemplate": true,
+  "useAllBuildsApi": true,
+  "isDebugAllowed": false,
+  "enableValueArray": true,
+  "userid": "<username>",
+  "passwd": "<password>",
+  "runSchedule": 2,
+  "baseUrl": "http://<jenkins_host>:<port>/",
+  "jenkinsMasters": {
+    
+  },
+  "timeStampField": "buildTimestamp",
+  "timeStampFormat": "epoch",
+  "isEpochTimeFormat": true,
+  "startFrom": "2016-10-10 15:46:33",
+  "loggingSetting": {
+    "logLevel": "WARN",
+    "maxBytes": 5000000,
+    "backupCount": 1000
+  },
+  "agentId": "jenkins-1543485090527",
+  "osversion": "linux",
+  "agentVersion": "v4.6"
 }

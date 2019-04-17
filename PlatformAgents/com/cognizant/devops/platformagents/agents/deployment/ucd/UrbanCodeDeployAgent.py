@@ -23,7 +23,7 @@ import datetime
 from time import mktime
 from dateutil import parser
 
-from ....core.BaseAgent import BaseAgent
+from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
 
 class UrbanCodeDeployAgent(BaseAgent):
     def process(self):

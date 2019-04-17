@@ -24,7 +24,7 @@ import copy
 
 from dateutil import parser
 
-from ....core.BaseAgent import BaseAgent
+from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
 
 
 class JiraAgent(BaseAgent):
@@ -55,6 +55,7 @@ class JiraAgent(BaseAgent):
             workLogData = []
             #jiraIssuesUrl = self.buildJiraRestUrl(baseUrl, startFrom, fields) + '&startAt='+str(startAt + maxResults)
             response = self.getResponse(jiraIssuesUrl+'&startAt='+str(startAt + maxResults), 'GET', self.userid, self.passwd, None)
+            #print jiraIssuesUrl
             jiraIssues = response["issues"]
             for issue in jiraIssues:
                 parsedIssue = self.parseResponse(responseTemplate, issue)
@@ -72,9 +73,10 @@ class JiraAgent(BaseAgent):
                 fromDateTime = dt + datetime.timedelta(minutes=01)
                 fromDateTime = fromDateTime.strftime('%Y-%m-%d %H:%M')
                 self.tracking["lastupdated"] = fromDateTime
-                jiraKeyMetadata = {"dataUpdateSupported" : True,"uniqueKey" : ["key"]}
-                self.publishToolsData(data, jiraKeyMetadata)
+                jiraKeyMetadata = {"dataUpdateSupported":True,"uniqueKey":["key"]}
                 #self.publishToolsData(data)
+                #print data
+                self.publishToolsData(data, jiraKeyMetadata)
                 if len(workLogData) > 0:
                     self.publishToolsData(workLogData, changeLogMetadata)
                 self.updateTrackingJson(self.tracking)
@@ -150,6 +152,7 @@ class JiraAgent(BaseAgent):
             if sprintDetails:
                 sprints = []
                 boards = []
+                sprintNames = []
                 for sprint in sprintDetails:
                     sprintData = {}
                     sprintDetail = sprint.split("[")[1][:-1]
@@ -160,6 +163,7 @@ class JiraAgent(BaseAgent):
                             sprintData[propertyKeyValToken[0]] = propertyKeyValToken[1]
                     boardId = sprintData.get('rapidViewId')
                     sprintId = sprintData.get('id')
+                    sprintName = sprintData.get('name')
                     boardTracking = boardsTracking.get(boardId, None)
                     if boardTracking is None:
                         boardTracking = {}
@@ -174,8 +178,11 @@ class JiraAgent(BaseAgent):
                         boards.append(boardId)
                     if sprintId not in sprints:
                         sprints.append(sprintId)
+                    if sprintName not in sprintNames:
+                        sprintNames.append(sprintName)
                 parsedIssue[0]['sprints'] = sprints
                 parsedIssue[0]['boards'] = boards
+                parsedIssue[0]['Sprint'] = sprintNames
                 #if len(boards) > 1 :
                 #    for board in boards:
                 #        boardTracking = boardsTracking.get(board)
@@ -219,11 +226,7 @@ class JiraAgent(BaseAgent):
                 isLast = False
                 injectData = {'boardName' : board['name']}
                 while not isLast:
-                    try:
-                        sprintsResponse = self.getResponse(sprintsUrl+str(startAt), 'GET', self.userid, self.passwd, None)
-                    except Exception as ex3:
-                        #board['error'] = str(ex3)
-                        break
+                    sprintsResponse = self.getResponse(sprintsUrl+str(startAt), 'GET', self.userid, self.passwd, None)
                     isLast = sprintsResponse['isLast']
                     startAt = startAt + sprintsResponse['maxResults']
                     sprintValues = sprintsResponse['values']
@@ -303,19 +306,22 @@ class JiraAgent(BaseAgent):
                         sprintReportResponse = None
                         try:
                             sprintReportResponse = self.getResponse(sprintReportRestUrl, 'GET', self.userid, self.passwd, None)
+                            #print sprintReportResponse
                         except Exception as ex:
                             sprint['error'] = str(ex)
                         if sprintReportResponse:
                             content = sprintReportResponse.get('contents', None)
                             if sprintReportResponse.get('sprint', {}).get('state', 'OPEN') == 'CLOSED':
                                 sprint['closed'] = True
-                            injectData = { 'boardId' : int(boardId), 'sprintId' : int(sprintId) }
+                            sprintName = sprintReportResponse.get('sprint', {}).get('name')
+                            injectData = { 'boardId' : int(boardId), 'sprintId' : int(sprintId) , 'sprintName' : sprintName}
                             data = []
                             data += self.addSprintDetails(responseTemplate, content, 'completedIssues', injectData)
                             data += self.addSprintDetails(responseTemplate, content, 'issuesNotCompletedInCurrentSprint', injectData)
                             data += self.addSprintDetails(responseTemplate, content, 'puntedIssues', injectData)
                             data += self.addSprintDetails(responseTemplate, content, 'issuesCompletedInAnotherSprint', injectData)
                             if len(data) > 0:
+                                #print data
                                 #self.publishToolsData(self.getSprintInformation(sprintReportResponse, boardId, sprintId, board['name'], board['type']), sprintMetadata)
                                 self.publishToolsData(data, relationMetadata)
                                 self.updateTrackingJson(self.tracking)
