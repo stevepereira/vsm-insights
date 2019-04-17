@@ -20,7 +20,7 @@ Created on Jun 16, 2016
 '''
 from dateutil import parser
 import datetime
-from ....core.BaseAgent import BaseAgent
+from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
 import logging
 
 class GitAgent(BaseAgent):
@@ -33,7 +33,6 @@ class GitAgent(BaseAgent):
         #startFrom = startFrom.strftime('%Y-%m-%dT%H:%M:%SZ')
         getReposUrl = getRepos+"?access_token="+accessToken
         enableBranches = self.config.get("enableBranches", False)
-        enableBrancheDeletion = self.config.get("enableBrancheDeletion", False)
         repos = self.getResponse(getReposUrl+'&per_page=100&sort=created&page=1', 'GET', None, None, None)
         responseTemplate = self.getResponseTemplate()
         repoPageNum = 1
@@ -55,10 +54,6 @@ class GitAgent(BaseAgent):
                 if repoUpdatedAt is None:
                     repoUpdatedAt = repo.get('updated_at')
                 repoUpdatedAt = parser.parse(repoUpdatedAt, ignoretz=True)
-                branch_from_tracking_json = []
-                for key in trackingDetails:
-                    if key != "repoModificationTime":
-                        branch_from_tracking_json.append(key)
                 if startFrom < repoUpdatedAt:
                     trackingDetails['repoModificationTime'] = repo.get('updated_at')
                     branches = ['master']
@@ -89,16 +84,6 @@ class GitAgent(BaseAgent):
                                         "uniqueKey" : ["repoName", "gitType"]
                                     }
                                 self.publishToolsData(activeBranches, metadata)
-                        if enableBrancheDeletion:
-                            for key in branch_from_tracking_json:
-                                if key not in allBranches:
-                                    tracking = self.tracking.get(repoName,None)
-                                    if tracking:
-                                        lastCommitDate = trackingDetails.get(key, {}).get('latestCommitDate', None)
-                                        lastCommitId = trackingDetails.get(key, {}).get('latestCommitId', None)
-                                        self.updateTrackingForBranchCreateDelete(trackingDetails, repoName, key, lastCommitDate, lastCommitId)
-                                        tracking.pop(key)
-                        self.updateTrackingJson(self.tracking)
                         for branch in branches:
                             data = []
                             injectData = {}
@@ -148,17 +133,6 @@ class GitAgent(BaseAgent):
         fromDateTime = dt + datetime.timedelta(seconds=01)
         fromDateTime = fromDateTime.strftime('%Y-%m-%dT%H:%M:%SZ')    
         trackingDetails[branchName] = { 'latestCommitDate' : fromDateTime, 'latestCommitId' : latestCommit["sha"]}
-    def updateTrackingForBranchCreateDelete(self, trackingDetails, repoName, branchName, lastCommitDate, lastCommitId):
-        trackingDetails = self.tracking.get(repoName,None)
-        data_branch_delete=[]
-        branch_delete = {}
-        branch_delete['branchName'] = branchName
-        branch_delete['repoName'] = repoName
-        branch_delete['event'] = "branchDeletion"
-        #branch_delete['lastCommitDate'] = lastCommitDate
-        #branch_delete['lastCommitId'] = lastCommitId
-        data_branch_delete.append(branch_delete)
-        branchMetadata = {"labels" : ["METADATA"],"dataUpdateSupported" : True,"uniqueKey":["repoName","branchName"]}
-        self.publishToolsData(data_branch_delete, branchMetadata)        
+        
 if __name__ == "__main__":
     GitAgent()       
