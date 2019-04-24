@@ -99,11 +99,22 @@
 			<artifactId>PlatformDAL</artifactId>
 			<version>5.0</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.quartz-scheduler</groupId>
-			<artifactId>quartz</artifactId>
-			<version>2.3.1</version>
+		<groupId>org.quartz-scheduler</groupId>
+		<artifactId>quartz</artifactId>
+		<version>2.3.1</version>
+		<exclusions>
+				<exclusion>
+						<groupId>com.mchange</groupId>
+    						<artifactId>c3p0</artifactId>
+				</exclusion>
+		</exclusions>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.mchange/c3p0 -->
+		<dependency>
+   			 <groupId>com.mchange</groupId>
+    			<artifactId>c3p0</artifactId>
+   			 <version>0.9.5.4</version>
 		</dependency>
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
