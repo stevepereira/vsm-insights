@@ -16,6 +16,8 @@
 package com.cognizant.devops.platformdal.queryBuilder;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.hibernate.query.Query;
@@ -27,7 +29,7 @@ import com.cognizant.devops.platformdal.core.BaseDAL;
 public class QueryBuilderConfigDAL extends BaseDAL {
 
 
-	public boolean saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType) {
+	public boolean saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType, String user) {
 
 		Query<QueryBuilderConfig> createQuery = getSession().createQuery(
 				"FROM QueryBuilderConfig a WHERE a.reportName = :reportName",
@@ -45,6 +47,8 @@ public class QueryBuilderConfigDAL extends BaseDAL {
 			queryBuilderConfig.setSubscribers(subscribers);
 			queryBuilderConfig.setQuerypath(ConfigOptions.QUERY_DATA_PROCESSING_RESOLVED_PATH+File.separator+fileName);
 			queryBuilderConfig.setQuerytype(queryType);
+			queryBuilderConfig.setLastModifiedDate(Timestamp.valueOf(LocalDateTime.now()));
+			queryBuilderConfig.setLastUpdatedByUser(user);
 			getSession().update(queryBuilderConfig);
 		} else {
 			queryBuilderConfig = new QueryBuilderConfig();
@@ -53,6 +57,8 @@ public class QueryBuilderConfigDAL extends BaseDAL {
 			queryBuilderConfig.setSubscribers(subscribers);
 			queryBuilderConfig.setQuerypath(ConfigOptions.QUERY_DATA_PROCESSING_RESOLVED_PATH+File.separator+fileName);
 			queryBuilderConfig.setQuerytype(queryType);
+			queryBuilderConfig.setCreatedDate(Timestamp.valueOf(LocalDateTime.now()));
+			queryBuilderConfig.setLastUpdatedByUser(user);
 			getSession().save(queryBuilderConfig);
 		}
 		getSession().getTransaction().commit();

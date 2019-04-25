@@ -23,7 +23,7 @@ import com.cognizant.devops.platformdal.queryBuilder.QueryBuilderConfig;
 
 public interface QueryBuilderService {
 
-	public String saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType) throws InsightsCustomException;
+	public String saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType, String user) throws InsightsCustomException;
 
 	public String deleteQuery(String reportName) throws InsightsCustomException;
 

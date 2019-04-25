@@ -34,11 +34,11 @@ public class QueryBuilderServiceImpl implements QueryBuilderService{
 	private static final String SUCCESS = "SUCCESS";
 
 	@Override
-	public String saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType) throws InsightsCustomException {
+	public String saveOrUpdateQuery(String reportName, String frequency, String subscribers, String fileName, String queryType, String user) throws InsightsCustomException {
 		String result = "";
 		try{
 			QueryBuilderConfigDAL queryBuilderConfigDAL = new QueryBuilderConfigDAL();
-			boolean status = queryBuilderConfigDAL.saveOrUpdateQuery(reportName, frequency, subscribers, fileName, queryType);
+			boolean status = queryBuilderConfigDAL.saveOrUpdateQuery(reportName, frequency, subscribers, fileName, queryType, user);
 			if(status){
 				log.info("Successfully inserted/updated the query for "+ reportName);
 				result = SUCCESS;

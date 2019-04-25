@@ -23,12 +23,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,13 +61,14 @@ public class QueryBuilderController {
 		}
 		return PlatformServiceUtil.buildSuccessResponseWithData(result);
 	}
-
+	
 	@RequestMapping(value = "/createQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody JsonObject saveOrUpdateQuery(@RequestParam String reportName, @RequestParam String frequency,@RequestParam String subscribers,
-			@RequestParam String fileName,@RequestParam String queryType){
+	public @ResponseBody JsonObject saveOrUpdateQuery(@RequestBody Map<String,String> queryObj){
 		String message = null;
+		System.out.println("object is --"+queryObj);
 		try{
-			message = queryBuilderService.saveOrUpdateQuery(reportName, frequency, subscribers, fileName, queryType);
+			message = queryBuilderService.saveOrUpdateQuery(queryObj.get("reportName"), queryObj.get("frequency"), queryObj.get("subscribers"), 
+					queryObj.get("fileName"), queryObj.get("queryType"), queryObj.get("user"));
 		}catch(Exception e){
 			return PlatformServiceUtil.buildFailureResponse(e.toString());
 		}
@@ -73,7 +76,7 @@ public class QueryBuilderController {
 	}
 	
 	@RequestMapping(value = "/deleteQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody JsonObject registerAgent(@RequestParam String reportName){
+	public @ResponseBody JsonObject registerAgent(@RequestBody String reportName){
 		String message = null;
 		try{
 			message = queryBuilderService.deleteQuery(reportName);
@@ -85,7 +88,7 @@ public class QueryBuilderController {
 	
 	@RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
 	@ResponseBody
-	public JsonObject uploadFile(@RequestParam("json") MultipartFile file) {
+	public JsonObject uploadFile(@RequestBody MultipartFile file) {
 		String message = "";
 		try {
 			Path rootLocation = Paths.get(ConfigOptions.QUERY_DATA_PROCESSING_RESOLVED_PATH);

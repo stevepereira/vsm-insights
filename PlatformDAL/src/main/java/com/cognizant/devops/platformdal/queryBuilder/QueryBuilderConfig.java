@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.cognizant.devops.platformdal.queryBuilder;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,6 +47,15 @@ public class QueryBuilderConfig {
 
 	@Column(name = "QUERYTYPE")
 	private String querytype;
+	
+	@Column(name = "CREATED_DATE")
+	private Date createdDate;
+
+	@Column(name = "UPDATED_DATE")
+	private Date lastModifiedDate;
+	
+	@Column(name = "LAST_UPDATED_USER")
+	private String lastUpdatedByUser;
 	
 	public int getId() {
 		return id;
@@ -93,6 +104,31 @@ public class QueryBuilderConfig {
 	public void setQuerytype(String querytype) {
 		this.querytype = querytype;
 	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public Date getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(Date lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public String getLastUpdatedByUser() {
+		return lastUpdatedByUser;
+	}
+
+	public void setLastUpdatedByUser(String lastUpdatedByUser) {
+		this.lastUpdatedByUser = lastUpdatedByUser;
+	}
+	
 	
 	
 	
