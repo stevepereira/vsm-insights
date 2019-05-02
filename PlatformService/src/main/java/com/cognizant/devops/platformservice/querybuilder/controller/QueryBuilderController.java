@@ -25,6 +25,9 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,6 +50,8 @@ import com.google.gson.JsonObject;
 @RestController
 @RequestMapping("/blockchain/queryBuilder")
 public class QueryBuilderController {
+	
+	private static Logger Log = LogManager.getLogger(QueryBuilderController.class);
 
 	@Autowired
 	QueryBuilderService queryBuilderService;
@@ -65,7 +70,7 @@ public class QueryBuilderController {
 	@RequestMapping(value = "/createQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public @ResponseBody JsonObject saveOrUpdateQuery(@RequestBody Map<String,String> queryObj){
 		String message = null;
-		System.out.println("object is --"+queryObj);
+		Log.debug("object is --"+queryObj);
 		try{
 			message = queryBuilderService.saveOrUpdateQuery(queryObj.get("reportName"), queryObj.get("frequency"), queryObj.get("subscribers"), 
 					queryObj.get("fileName"), queryObj.get("queryType"), queryObj.get("user"));
@@ -76,7 +81,7 @@ public class QueryBuilderController {
 	}
 	
 	@RequestMapping(value = "/deleteQuery", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public @ResponseBody JsonObject registerAgent(@RequestBody String reportName){
+	public @ResponseBody JsonObject deleteQuery(@RequestBody String reportName){
 		String message = null;
 		try{
 			message = queryBuilderService.deleteQuery(reportName);
@@ -92,16 +97,22 @@ public class QueryBuilderController {
 		String message = "";
 		try {
 			Path rootLocation = Paths.get(ConfigOptions.QUERY_DATA_PROCESSING_RESOLVED_PATH);
-			System.out.println(file);
-			Files.copy(file.getInputStream(),rootLocation.resolve(file.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
-			message = "You successfully uploaded " + file.getOriginalFilename() + "!";
-			System.out.println(message);
-			return PlatformServiceUtil.buildSuccessResponseWithData(message);
+			Log.debug("File Obj -- "+file);
+			String fileName = file.getOriginalFilename();
+			String extension = FilenameUtils.getExtension(fileName);
+			if (fileName != null && !fileName.isEmpty() && "json".equalsIgnoreCase(extension)) {
+				Files.copy(file.getInputStream(),rootLocation.resolve(file.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
+				message = "You successfully uploaded " + file.getOriginalFilename() + "!";
+			}else{
+				message = "Upload failed, fail has invalid format! ";
+				return PlatformServiceUtil.buildFailureResponse(message);
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			message = "FAIL to upload " + file.getOriginalFilename() + "!";
-			return PlatformServiceUtil.buildSuccessResponseWithData(message);
+			return PlatformServiceUtil.buildFailureResponse(message);
 		}
+		Log.debug("Result -- "+message);
+		return PlatformServiceUtil.buildSuccessResponseWithData(message);
 	}
 	
 	@RequestMapping(value = "/getFileContents", method = RequestMethod.GET)
@@ -109,7 +120,7 @@ public class QueryBuilderController {
 	public ResponseEntity<byte[]> getFileContents(@RequestParam("path") String path) {
 		ResponseEntity<byte[]>  response = null;
 		try {
-			System.out.println(path);
+			Log.debug("Path to download -- "+path);
 			byte[] fileContent = Files.readAllBytes(Paths.get(new File(path).getAbsolutePath()));
 			HttpHeaders headers = new HttpHeaders();
 		    headers.setContentType(MediaType.parseMediaType("application/json"));
@@ -121,7 +132,7 @@ public class QueryBuilderController {
 			headers.add("Expires", "0");
 		    response = new ResponseEntity<>(fileContent, headers, HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Log.error("Error, Failed to download from " + path, e.getMessage());
 		}
 		return response;
 	}

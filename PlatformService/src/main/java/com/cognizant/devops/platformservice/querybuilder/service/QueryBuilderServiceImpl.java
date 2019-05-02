@@ -30,7 +30,7 @@ import com.cognizant.devops.platformservice.agentmanagement.service.AgentManagem
 @Service("queryBuilderService")
 public class QueryBuilderServiceImpl implements QueryBuilderService{
 
-	private static Logger log = LogManager.getLogger(AgentManagementServiceImpl.class);
+	private static Logger Log = LogManager.getLogger(AgentManagementServiceImpl.class);
 	private static final String SUCCESS = "SUCCESS";
 
 	@Override
@@ -40,11 +40,11 @@ public class QueryBuilderServiceImpl implements QueryBuilderService{
 			QueryBuilderConfigDAL queryBuilderConfigDAL = new QueryBuilderConfigDAL();
 			boolean status = queryBuilderConfigDAL.saveOrUpdateQuery(reportName, frequency, subscribers, fileName, queryType, user);
 			if(status){
-				log.info("Successfully inserted/updated the query for "+ reportName);
+				Log.info("Successfully inserted/updated the query for "+ reportName);
 				result = SUCCESS;
 			}
 		}catch(Exception e){
-			log.error("Error while inserting new query " + reportName, e);
+			Log.error("Error while inserting new query " + reportName, e);
 			throw new InsightsCustomException(e.toString());
 		}
 		return result;
@@ -57,11 +57,11 @@ public class QueryBuilderServiceImpl implements QueryBuilderService{
 			QueryBuilderConfigDAL queryBuilderConfigDAL = new QueryBuilderConfigDAL();
 			boolean status = queryBuilderConfigDAL.deleteQuery(reportName);
 			if(status){
-				log.info("Successfully deleted the query for "+ reportName);
+				Log.info("Successfully deleted the query for "+ reportName);
 				result = SUCCESS;
 			}
 		}catch(Exception e){
-			log.error("Error while deleting query " + reportName, e);
+			Log.error("Error while deleting query " + reportName, e);
 			throw new InsightsCustomException(e.toString());
 		}
 		return result;
@@ -74,7 +74,7 @@ public class QueryBuilderServiceImpl implements QueryBuilderService{
 			QueryBuilderConfigDAL queryBuilderConfigDAL = new QueryBuilderConfigDAL();
 			queryList = queryBuilderConfigDAL.fetchQueries();
 		}catch(Exception e){
-			log.error("Error while Fetching queries " , e);
+			Log.error("Error while Fetching queries " , e);
 			throw new InsightsCustomException(e.toString());
 		}
 		return queryList;
