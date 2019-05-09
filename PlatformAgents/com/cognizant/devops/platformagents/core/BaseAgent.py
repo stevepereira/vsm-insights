@@ -195,10 +195,15 @@ class BaseAgent(object):
             enableDataValidation = self.config.get('enableDataValidation',False)
             if enableDataValidation:
                 data = self.validateData(data)
+            
             self.addExecutionId(data, self.executionId)
+            print "executionId added"
             self.addTimeStampField(data, timeStampField, timeStampFormat, isEpochTime)
+            print "timefield added"
             logging.info(data)
+            print "logged"
             self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', 100), metadata)
+            print "sent in messages"
             self.logIndicator(self.PUBLISH_START, self.config.get('isDebugAllowed', False))
 
     '''
