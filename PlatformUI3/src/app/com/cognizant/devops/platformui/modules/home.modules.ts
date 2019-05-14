@@ -72,6 +72,8 @@ import { CustomReportConfigComponent } from '@insights/app/modules/blockchain/cu
 import { QueryBuilderService } from '@insights/app/modules/blockchain/custom-report/custom-report-service';
 import { ShowJsonDialog } from '@insights/app/modules/relationship-builder/show-correlationjson';
 import { from } from 'rxjs';
+import { RelationshipBuilderComponent } from '@insights/app/modules/relationship-builder/relationship-builder.component';
+
 
 
 
@@ -102,7 +104,8 @@ import { from } from 'rxjs';
     AssetPipe,
     CustomReportComponent,
     CustomReportConfigComponent,
-    ShowJsonDialog
+    ShowJsonDialog,
+    RelationshipBuilderComponent
   ],
   imports: [
     HomeRouting,
