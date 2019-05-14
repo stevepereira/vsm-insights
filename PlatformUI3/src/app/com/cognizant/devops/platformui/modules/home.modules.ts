@@ -66,7 +66,12 @@ import { StorageServiceModule } from 'ngx-webstorage-service';
 import { LogoSettingComponent } from '@insights/app/modules/settings/logo-setting/logo-setting.component';
 import { AssetDetailsDialog } from '@insights/app/modules/blockchain/bc-asset-details-dialog';
 import { LogoSettingService } from '@insights/app/modules/settings/logo-setting/logo-setting.service';
-import { AssetPipe } from './blockchain/bc-asset-pipe.pipe';
+import { AssetPipe } from '@insights/app/modules/blockchain/bc-asset-pipe.pipe';
+import { CustomReportComponent } from '@insights/app/modules/blockchain/custom-report/custom-report.component';
+import { CustomReportConfigComponent } from '@insights/app/modules/blockchain/custom-report/custom-report-configuration/custom-report-configuration.component';
+import { QueryBuilderService } from '@insights/app/modules/blockchain/custom-report/custom-report-service';
+import { ShowJsonDialog } from '@insights/app/modules/relationship-builder/show-correlationjson';
+import { from } from 'rxjs';
 
 
 
@@ -94,7 +99,10 @@ import { AssetPipe } from './blockchain/bc-asset-pipe.pipe';
     AddGroupMessageDialog,
     LogoSettingComponent,
     AssetDetailsDialog,
-    AssetPipe
+    AssetPipe,
+    CustomReportComponent,
+    CustomReportConfigComponent,
+    ShowJsonDialog
   ],
   imports: [
     HomeRouting,
@@ -114,7 +122,8 @@ import { AssetPipe } from './blockchain/bc-asset-pipe.pipe';
     ConfirmationMessageDialog,
     ApplicationMessageDialog,
     AddGroupMessageDialog,
-    AssetDetailsDialog
+    AssetDetailsDialog,
+    ShowJsonDialog
   ],
 
   providers: [
@@ -129,7 +138,8 @@ import { AssetPipe } from './blockchain/bc-asset-pipe.pipe';
     MessageDialogService,
     LogoSettingService,
     BlockChainService,
-    DatePipe
+    DatePipe,
+    QueryBuilderService
   ]
 })
 

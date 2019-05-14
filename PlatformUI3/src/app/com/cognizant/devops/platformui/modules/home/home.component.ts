@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit {
     if (this.depth === undefined) {
       this.depth = 0;
     }
-    this.grafanaService.validateSession();
+    //this.grafanaService.validateSession();
     this.isValidUser = true;
     this.framesize = window.frames.innerHeight;
     this.leftNavWidthInPer = 20;
@@ -189,7 +189,8 @@ export class HomeComponent implements OnInit {
     this.selectedItem = item;
     this.displayLandingPage = false;
     this.isToolbarDisplay = item.isToolbarDisplay
-
+    this.dataShare.validateSession();
+    console.log("here")
     if (!item.children || !item.children.length) {
       if (item.iconName == 'grafanaOrg') {
         this.selectedOrg = (this.selectedItem == undefined ? '' : this.selectedItem.displayName);
@@ -197,12 +198,15 @@ export class HomeComponent implements OnInit {
         this.switchOrganizations(item.orgId, item.route, this.selectedOrgName);
       } else if (item.displayName == 'About') {
         // window.open(this.aboutPageURL, "_blank");
+        var isSessionExpired = this.dataShare.validateSession();
+        if (!isSessionExpired) {
         let aboutDialogRef = this.dialog.open(AboutDialog, {
           panelClass: 'healthcheck-show-details-dialog-container',
           height: '50%',
           width: '30%',
           disableClose: true,
         });
+        }
         /* aboutDialogRef.afterClosed().subscribe(result => {
            if (result == 'yes') {
              this.router.navigateByUrl('InSights/Home/healthcheck', { skipLocationChange: true });
