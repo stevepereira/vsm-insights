@@ -148,6 +148,10 @@ export class RestAPIurlService implements IRestAPIUrlService {
         this.addEndPoint("DELETE_CYPHER_QUERY", '/PlatformService/blockchain/queryBuilder/deleteQuery');
         this.addEndPoint("UPLOAD_QUERY_FILE", '/PlatformService/blockchain/queryBuilder/uploadFile');
         this.addEndPoint("DOWNLOAD_CYPHER_QUERY", '/PlatformService/blockchain/queryBuilder/getFileContents')
+
+        this.addEndPoint("CO_RELATIONSHIP_JSON", '/PlatformService/admin/correlationbuilder/getCorrelationJson');
+        this.addEndPoint("CO_RELATIONSHIP_JSON_NEO4J", '/PlatformService/admin/correlationbuilder/getNeo4jJson');
+        this.addEndPoint("SAVE_RELATIONSHIP_JSON", '/PlatformService/admin/correlationbuilder/saveConfig');
     }
 
     public addEndPoint(name: String, url: String) {
