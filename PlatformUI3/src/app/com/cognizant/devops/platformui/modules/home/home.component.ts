@@ -188,42 +188,30 @@ export class HomeComponent implements OnInit {
   onItemSelected(item: NavItem) {
     this.selectedItem = item;
     this.displayLandingPage = false;
-    this.isToolbarDisplay = item.isToolbarDisplay
-    this.dataShare.validateSession();
-    console.log("here")
-    if (!item.children || !item.children.length) {
-      if (item.iconName == 'grafanaOrg') {
-        this.selectedOrg = (this.selectedItem == undefined ? '' : this.selectedItem.displayName);
-        this.selectedOrgName = this.getSelectedOrgName(this.selectedOrg);
-        this.switchOrganizations(item.orgId, item.route, this.selectedOrgName);
-      } else if (item.displayName == 'About') {
-        // window.open(this.aboutPageURL, "_blank");
-        var isSessionExpired = this.dataShare.validateSession();
-        if (!isSessionExpired) {
-        let aboutDialogRef = this.dialog.open(AboutDialog, {
-          panelClass: 'healthcheck-show-details-dialog-container',
-          height: '50%',
-          width: '30%',
-          disableClose: true,
-        });
+    this.isToolbarDisplay = item.isToolbarDisplay;
+
+    var isSessionExpired = this.dataShare.validateSession();
+    if (!isSessionExpired) {
+      if (!item.children || !item.children.length) {
+        if (item.iconName == 'grafanaOrg') {
+          this.selectedOrg = (this.selectedItem == undefined ? '' : this.selectedItem.displayName);
+          this.selectedOrgName = this.getSelectedOrgName(this.selectedOrg);
+          this.switchOrganizations(item.orgId, item.route, this.selectedOrgName);
+        } else if (item.displayName == 'About') {
+          this.about();
+        } else if (item.displayName == 'Help') {
+          window.open(this.helpPageURL, "_blank");
+        } else if (item.displayName == 'Logout') {
+          this.logout();
+        } else {
+          this.router.navigateByUrl(item.route, { skipLocationChange: true });
         }
-        /* aboutDialogRef.afterClosed().subscribe(result => {
-           if (result == 'yes') {
-             this.router.navigateByUrl('InSights/Home/healthcheck', { skipLocationChange: true });
-           }
-         });*/
-      } else if (item.displayName == 'Help') {
-        window.open(this.helpPageURL, "_blank");
-      } else if (item.displayName == 'Logout') {
-        this.logout();
-      } else {
-        this.router.navigateByUrl(item.route, { skipLocationChange: true });
-      }
-    } /*else {
+      } /*else {
       if (item.displayName == 'grafana') {
         console.log("in grafana");
       }
     }*/
+    }
   }
 
   public loadMenuItem() {
@@ -339,6 +327,15 @@ export class HomeComponent implements OnInit {
             isAdminMenu: true
           },
           {
+            displayName: 'Co-Relation Builder',
+            iconName: 'feature',
+            route: 'InSights/Home/relationship-builder',
+            isToolbarDisplay: true,
+            showMenu: true,
+            title: "Relationship-Builder",
+            isAdminMenu: true
+          },
+          {
             displayName: 'Logo Setting',
             iconName: 'feature',
             route: 'InSights/Home/logoSetting',
@@ -414,6 +411,16 @@ export class HomeComponent implements OnInit {
       });
     this.deleteAllPreviousCookies();
     this.router.navigate(['/login']);
+  }
+
+  public about(): void {
+    var self = this;
+    let aboutDialogRef = this.dialog.open(AboutDialog, {
+      panelClass: 'healthcheck-show-details-dialog-container',
+      height: '50%',
+      width: '30%',
+      disableClose: true,
+    });
   }
 
   switchOrganizations(orgId, route, orgName) {

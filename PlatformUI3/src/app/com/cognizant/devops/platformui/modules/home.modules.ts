@@ -73,6 +73,8 @@ import { QueryBuilderService } from '@insights/app/modules/blockchain/custom-rep
 import { ShowJsonDialog } from '@insights/app/modules/relationship-builder/show-correlationjson';
 import { from } from 'rxjs';
 import { RelationshipBuilderComponent } from '@insights/app/modules/relationship-builder/relationship-builder.component';
+import { RelationshipBuilderService } from '@insights/app/modules/relationship-builder/relationship-builder.service';
+
 
 
 
@@ -142,7 +144,8 @@ import { RelationshipBuilderComponent } from '@insights/app/modules/relationship
     LogoSettingService,
     BlockChainService,
     DatePipe,
-    QueryBuilderService
+    QueryBuilderService,
+    RelationshipBuilderService
   ]
 })
 

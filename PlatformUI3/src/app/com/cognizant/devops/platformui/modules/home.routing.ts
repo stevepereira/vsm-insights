@@ -32,6 +32,7 @@ import { LandingPageComponent } from '@insights/app/modules/landing-page/landing
 import { LogoSettingComponent } from '@insights/app/modules/settings/logo-setting/logo-setting.component';
 import { CustomReportComponent } from '@insights/app/modules/blockchain/custom-report/custom-report.component';
 import { CustomReportConfigComponent } from '@insights/app/modules/blockchain/custom-report/custom-report-configuration/custom-report-configuration.component';
+import { RelationshipBuilderComponent } from '@insights/app/modules/relationship-builder/relationship-builder.component';
 
 
 const homeRoutes: Routes = [
@@ -53,7 +54,8 @@ const homeRoutes: Routes = [
       { path: 'landingPage', component: LandingPageComponent },
       { path: 'logoSetting', component: LogoSettingComponent },
       { path: 'querybuilder', component: CustomReportComponent },
-      { path: 'reportconfiguration', component: CustomReportConfigComponent }
+      { path: 'reportconfiguration', component: CustomReportConfigComponent },
+      { path: 'relationship-builder', component: RelationshipBuilderComponent }
     ]
   }
 ];
