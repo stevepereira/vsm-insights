@@ -72,8 +72,8 @@ export class DataSharedService {
   }
 
 
- public getStoragedProperty(key: string): any {
-  
+  public getStoragedProperty(key: string): any {
+
     return this.storage.get(key);
   }
   public setAuthorizationToken(strAuthorization: string) {
@@ -91,12 +91,12 @@ export class DataSharedService {
     var dateStr = new Date().toTimeString();
     var parts = dateStr.match(/\(([^)]+)\)/i); //time
     var timezone = parts[1];
-    this.storage.set("timeZone", timezone);  
+    this.storage.set("timeZone", timezone);
     this.storage.set("timeZoneOffSet", zone);
 
   }
-  
- public convertDateToZone(dateStr: string): string {
+
+  public convertDateToZone(dateStr: string): string {
     var date = new Date(dateStr);
     var zone = this.storage.get("timeZone");
     var zoneOffset = this.storage.get("timeZoneOffSet");
@@ -105,13 +105,13 @@ export class DataSharedService {
     console.log(date + " ==== " + zone + " ==== " + zoneOffset + " ==== " + dateWithTimeZone + " ====  " + + " ====  " + dateWithTimeZone.toString());
     return dateWithTimeZone;
   }
- 
- public setSession() {
+
+  public setSession() {
     var date = new Date();
-    var minutes = 1;
+    var minutes = 30;
     date.setTime(date.getTime() + (minutes * 60 * 1000));
     var dateDashboardSessionExpiration = date.getTime();
-   // console.log(dateDashboardSessionExpiration + "  @@@@@@  " + date)
+    // console.log(dateDashboardSessionExpiration + "  @@@@@@  " + date)
     this.storage.set("dateDashboardSessionExpiration", dateDashboardSessionExpiration);
   }
 
@@ -125,19 +125,19 @@ export class DataSharedService {
     } else {
       var dashboardSessionExpirationTime = new Date(this.storage.get('dateDashboardSessionExpiration'));
       var date = new Date();
-     // console.log(dashboardSessionExpirationTime + "  ===== " + date);
+      // console.log(dashboardSessionExpirationTime + "  ===== " + date);
       if (sessionStorageDateDashboardSessionExpiration == undefined) {
         this.clearSessionData()
         return true;
       }
       if ((dashboardSessionExpirationTime < date)) {
         var dialogRef = this.sessionExpiredMessage(this.sessionExpireMessage, "WARN", true);
-        this.clearSessionData()     
+        this.clearSessionData()
         return true;
 
       } else {
         //console.log("session present");
-        var minutes = 1;
+        var minutes = 30;
         date.setTime(date.getTime() + (minutes * 60 * 1000));
         this.storage.set('Authorization', authToken);
         this.setSession()
