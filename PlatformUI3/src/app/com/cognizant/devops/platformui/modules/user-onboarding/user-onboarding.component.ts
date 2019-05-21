@@ -63,6 +63,7 @@ export class UserOnboardingComponent implements OnInit {
     public dialog: MatDialog, public messageDialog: MessageDialogService, private dataShare: DataSharedService) {
     var self = this;
 
+
     this.framesize = window.frames.innerHeight;
     var orgId2 = this.dataShare.getStoragedProperty("orgId");
 
@@ -74,6 +75,10 @@ export class UserOnboardingComponent implements OnInit {
     }
     window.addEventListener('message', receiveMessage, false);
     this.getApplicationDetail();
+  }
+
+  private newMethod() {
+
   }
 
   ngOnInit() {
@@ -155,6 +160,15 @@ export class UserOnboardingComponent implements OnInit {
         this.isbuttonenabled = true;
       }
     }
+  }
+
+
+
+
+
+  saveuser(newName1) {
+
+    console.log(newName1)
   }
 
   editUserData() {

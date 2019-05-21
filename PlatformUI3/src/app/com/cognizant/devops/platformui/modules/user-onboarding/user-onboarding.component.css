@@ -121,11 +121,18 @@
     height: 60vh;
 }
 .dat-row {
-    height: 40px !important;
+    height: 45px !important;
     text-align: left !important;
     vertical-align: middle;
     margin-left: 5px;
 }
+.inputcss {
+    font-size: 14px !important;
+  /*   margin-left: 25px; */
+    width: 240px;
+    margin-top: 10px
+}
+
 .dat-row1 {
     height: 80px !important;
     text-align: left !important;
@@ -134,7 +141,7 @@
 }
 
 .dat-row2 {
-    height: 40px !important;
+    height: 45px !important;
     text-align: left !important;
     vertical-align: middle;
     margin-left: 5px;
