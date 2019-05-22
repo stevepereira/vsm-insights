@@ -37,8 +37,13 @@ export class UserOnboardingComponent implements OnInit {
   showThrobber: boolean = false;
   adminOrgDataArray = [];
   readOnlyOrg: boolean = false;
+  userPropertyList = {};
+  role: any;
+  isIncorrect: boolean = false;
   selectedUser: any;
   oldSelectedUser: any;
+  listFilter: any;
+  searchValue: string = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
   //userDataSource: any = [];
   userDataSource = new MatTableDataSource<any>();
@@ -53,6 +58,9 @@ export class UserOnboardingComponent implements OnInit {
   showApplicationMessage: String = "";
   selectedAdminOrg: any;
   isSelectedUserId: any = -1;
+  regex = new RegExp("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$)")
+
+  additionalProperties = ['name', 'email', 'username', 'password', 'role', 'org'];
   roleRecord = [
     { value: 'Editor', name: 'Editor' },
     { value: 'Admin', name: 'Admin' },
@@ -142,7 +150,9 @@ export class UserOnboardingComponent implements OnInit {
   statusEdit(element) {
     //console.log("After radio check " + JSON.stringify(element) + "" + this.isSaveEnable);
     if (element != undefined) {
+
       this.oldSelectedUser = this.selectedUser;
+
       if (this.isSaveEnable) {
         var title = "Cancel Changes";
         var dialogmessage = "Are you sure you want to discard your changes?";
@@ -163,12 +173,69 @@ export class UserOnboardingComponent implements OnInit {
   }
 
 
+  clubProperties(jsonData, isArray) {
+    if (isArray) {
+      var length = jsonData.length;
+      for (let i = 0; i < length; i++) {
+        let propString = undefined;
+        for (let key of Object.keys(jsonData[i])) {
+          if (this.additionalProperties.indexOf(key) > -1) {
+          } else {
+            if (propString == undefined) {
+              propString = key + " <b> : </b>" + jsonData[i][key];
+            } else {
+              propString += "" + "<br>" + key + " <b> : </b>" + jsonData[i][key];
+            }
+          }
+        }
+        jsonData[i]['propertiesString'] = propString;
+      }
+    } else {
+      let propString = undefined;
+      for (let key of Object.keys(jsonData)) {
+        if (this.additionalProperties.indexOf(key) > -1) {
+        } else {
+          if (propString == undefined) {
+            propString = key + " <b> : </b>" + jsonData[key];
+          } else {
+            propString += "" + "<br>" + key + " <b> : </b>" + jsonData[key];
+          }
+        }
+      }
+      jsonData['propertiesString'] = propString;
+    }
+    return jsonData;
+  }
 
 
 
-  saveuser(newName1) {
 
-    console.log(newName1)
+
+  saveUser(newName, email, username, pass) {
+    console.log(this.role);
+    var userBMparameter;
+    this.userPropertyList = {};
+    //  this.userPropertyList = this.clubProperties(this.userPropertyList, false);
+
+    this.userPropertyList['name'] = newName;
+    this.userPropertyList['email'] = email;
+    this.userPropertyList['username'] = username;
+    this.userPropertyList['password'] = pass;
+    this.userPropertyList['role'] = this.role;
+    this.userPropertyList['org'] = this.selectedAdminOrg.name;
+    console.log(this.userPropertyList)
+
+    userBMparameter = JSON.stringify(this.userPropertyList);
+
+    console.log(userBMparameter)
+    var checkname = this.regex.test(email);
+    if (!checkname) {
+
+      this.isIncorrect = true;
+
+    }
+
+    // console.log(JSON.parse(userBMparameter))   // this.callEditOrSaveDataAPI(userBMparameter);
   }
 
   editUserData() {
@@ -206,8 +273,9 @@ export class UserOnboardingComponent implements OnInit {
   }
 
   async saveData() {
-    //console.log(this.selectedUser);
+    console.log(this.selectedUser);
     //console.log(" Organization " + "  " + this.selectedAdminOrg)
+
     let editResponse = await this.userOnboardingService.editUserOrg(this.selectedUser.orgId, this.selectedUser.userId, this.selectedUser.role);
     if (editResponse.message = "Organization user updated") {
       this.isSaveEnable = false;
