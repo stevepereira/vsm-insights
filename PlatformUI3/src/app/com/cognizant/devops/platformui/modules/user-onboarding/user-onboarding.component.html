@@ -46,7 +46,7 @@
     <div class="filterGroupCSS" *ngIf=" showDetail ">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search by Login ID or Email Address
           "
-        [style.height.px]="20" [style.width.%]="80" class="form-control">
+        [style.height.px]="20" [style.width.%]="90" class="form-control">
     </div>
   </div>
 
@@ -65,15 +65,22 @@
           person_add
         </mat-icon>
       </button>
-      <mat-icon svgIcon="lineInButton" class="mat-icon material-icons">
-        linea
-      </mat-icon>
+      <button mat-icon-button>
+        <mat-icon svgIcon="lineInButton" class="mat-icon material-icons">
+          linea
+        </mat-icon>
+
+      </button>
 
 
 
+      <button *ngIf="showDetail" mat-icon-button (click)="saveData() " [disabled]="!isSaveEnable ">
+        <mat-icon title="Save " class="mat-icon material-icons ">
+          save
+        </mat-icon>
+      </button>
 
-
-      <button mat-icon-button (click)="saveData() " [disabled]="!isSaveEnable ">
+      <button *ngIf="showAddUserDetail" mat-icon-button (click)="saveUser(names,email,username,pass)">
         <mat-icon title="Save " class="mat-icon material-icons ">
           save
         </mat-icon>
@@ -85,11 +92,7 @@
         </mat-icon>
       </button>
 
-      <button mat-icon-button (click)="saveUser(names,email,username,pass)">
-        <mat-icon title="Save " class="mat-icon material-icons ">
-          save
-        </mat-icon>
-      </button>
+
 
 
 
@@ -160,7 +163,7 @@
 
 
 
-  <div *ngIf=" !showDetail ">
+  <div *ngIf="showAddUserDetail ">
 
     <div class="column1">
       <div class="showTable" style="text-align: center; padding: 15px;">
@@ -173,18 +176,18 @@
         Add User (Please note: You are adding the user to)
       </div>
       <table>
-        <tbody style="max-height: 38vh">
+        <tbody style="display: grid; max-height: 38vh">
           <tr class="dat-row1">
 
 
             <td style="text-align: left; padding-left: 15px; padding-top: 8px; align-items: center;">
               <div>
-                <label class="mainText"> Current Access Group </label>
+                <label class="mainText2"> Current Access Group </label>
 
               </div>
             </td>
             <td style="text-align: left; padding-left: 15px; padding-top: 8px; align-items: center;">
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="60" name="selectedAdminOrg"
+              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="260" name="selectedAdminOrg"
                 [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
@@ -192,17 +195,21 @@
                 </mat-option>
               </mat-select>
             </td>
-
+            <input type="text" class="searchbox" [(ngModel)]='searchUser' [value]="searchuser" required placeholder="Search by Login ID or E-mail Address">
           </tr>
+
+
+
 
           <tr class="dat-row2">
 
 
             <td style="text-align: left; width:30px; padding-left: 15px; padding-top: 8px; align-items: center;">Name</td>
             <td>
-              <input type="text" class="inputcss" [(ngModel)]='names' [value]="searchValue" required placeholder="   Input a name">
+              <input style="margin-left: 40px;" type="text" class="inputcss" [(ngModel)]='names' [value]="searchValue"
+                required placeholder=" Input a name">
             </td>
-            <td *ngIf="isIncorrect"></td>
+            <td *ngIf="isNameIncorrect" class="wrnTxt">Please enter a valid Name.</td>
           </tr>
 
 
@@ -213,10 +220,11 @@
 
             <td style="text-align: left; width:30px; padding-left: 15px; padding-top: 8px; align-items: center;">Email</td>
             <td>
-              <input type="text" class="inputcss" [(ngModel)]='email' [value]="emailvalue" required placeholder=" Provide a valid E-mail Address"></td>
+              <input type="text" style="margin-left: 43px;" class="inputcss" [(ngModel)]='email' [value]="emailvalue"
+                required placeholder=" Provide a valid E-mail Address"></td>
 
 
-            <td *ngIf="isIncorrect" class="wrnTxt">Please enter a valid Email.</td>
+            <td *ngIf="isEmailIncorrect" class="wrnTxt">Please enter a valid Email.</td>
 
           </tr>
 
@@ -224,8 +232,9 @@
 
 
             <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Username</td>
-            <td><input type="text" class="inputcss" [(ngModel)]='username' [value]="searchValue" required placeholder=" Input a Username"></td>
-
+            <td><input type="text" style="margin-left: 11px;" class="inputcss" [(ngModel)]='username' [value]="searchValue"
+                required placeholder=" Input a Username"></td>
+            <td *ngIf="isUsernameIncorrect" class="wrnTxt">Please enter a valid Username.</td>
           </tr>
 
 
@@ -235,26 +244,27 @@
 
 
             <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Password</td>
-            <td><input type="text" class="inputcss" [(ngModel)]='pass' [value]="searchValue" required placeholder=" Input a Password"></td>
-
+            <td><input type="text" class="inputcss" style="margin-left: 13px;" [(ngModel)]='pass' [value]="searchValue"
+                required placeholder=" Input a Password"></td>
+            <td *ngIf="isPasswordIncorrect" class="wrnTxt">Please enter a valid Password.</td>
           </tr>
 
           <tr class="dat-row2">
 
 
-            <td>Role</td>
+            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role</td>
 
 
             <td>
-              <mat-select [(ngModel)]="role " [style.width.%]="40 " name="{{role}}" required placeholder=" Select a Role"
-                [ngClass]="{ 'input-disabled' : !isSaveEnable  , 'form-control': isSaveEnable} ">
+              <mat-select style="margin-left: 45px;" [(ngModel)]="role " [style.width.%]="200 " name="{{role}}"
+                required placeholder=" Select a Role" [ngClass]="{ 'input-disabled' : !isSaveEnable  , 'form-control': isSaveEnable} ">
                 <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
             </td>
 
-
+            <td style="padding-left: 170px;" *ngIf="isRoleIncorrect" class="wrnTxt">Please select a Role.</td>
 
           </tr>
 

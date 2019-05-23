@@ -68,6 +68,13 @@
     vertical-align: sub;
     width: 10%
 }
+.mainText2{
+    font-size: 14px;
+    color: black;
+   /*  font-weight:bold; */
+    vertical-align: sub;
+    width: 10%
+}
 
 .mat-button{
     font-size: 16px;
@@ -129,8 +136,15 @@
 .inputcss {
     font-size: 14px !important;
   /*   margin-left: 25px; */
-    width: 240px;
-   /*  margin-top: 10px */
+    width: 210px;
+     margin-top: 10px 
+}
+.searchbox
+{
+       font-size: 14px !important;
+    margin-left: 17px; 
+    width: 330px;
+     margin-top: 1px 
 }
 .wrnTxt{
   color: #ff8f1c !important;
@@ -138,7 +152,7 @@
 }
 
 .dat-row1 {
-    height: 80px !important;
+    height: 100px !important;
     text-align: left !important;
     vertical-align: middle;
     margin-left: 5px;

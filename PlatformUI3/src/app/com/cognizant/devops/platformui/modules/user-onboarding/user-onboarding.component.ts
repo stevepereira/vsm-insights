@@ -34,12 +34,18 @@ export class UserOnboardingComponent implements OnInit {
   iframeStyleAdd = "{'height': 1500 +'px '+ '!important' }";
   userListUrl: SafeResourceUrl;
   framesize: any;
+  showAddUserDetail: boolean = false;
   showThrobber: boolean = false;
   adminOrgDataArray = [];
   readOnlyOrg: boolean = false;
   userPropertyList = {};
   role: any;
-  isIncorrect: boolean = false;
+  isEmailIncorrect: boolean = false;
+  isNameIncorrect: boolean = false;
+  isUsernameIncorrect: boolean = false;
+  isPasswordIncorrect: boolean = false;
+  isRoleIncorrect: boolean = false;
+  isOrgIncorrect: boolean = false;
   selectedUser: any;
   oldSelectedUser: any;
   listFilter: any;
@@ -230,9 +236,19 @@ export class UserOnboardingComponent implements OnInit {
     console.log(userBMparameter)
     var checkname = this.regex.test(email);
     if (!checkname) {
-
-      this.isIncorrect = true;
-
+      this.isEmailIncorrect = true;
+    }
+    if (username == undefined) {
+      this.isUsernameIncorrect = true;
+    }
+    if (pass == undefined) {
+      this.isPasswordIncorrect = true;
+    }
+    if (newName == undefined) {
+      this.isNameIncorrect = true;
+    }
+    if (this.role == undefined) {
+      this.isRoleIncorrect = true;
     }
 
     // console.log(JSON.parse(userBMparameter))   // this.callEditOrSaveDataAPI(userBMparameter);
@@ -335,8 +351,8 @@ export class UserOnboardingComponent implements OnInit {
     }
   }
   addGlobalUser() {
-    this.showDetail = false
-
+    this.showAddUserDetail = true
+    this.showDetail = false;
   }
 }
 
