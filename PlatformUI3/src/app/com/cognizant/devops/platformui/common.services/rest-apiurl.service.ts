@@ -90,6 +90,7 @@ export class RestAPIurlService implements IRestAPIUrlService {
         //this.addEndPoint("ALL_USERS", '/PlatformService/admin/userMgmt/getAllUsers');
         //this.addEndPoint("USER_TO_ORG_ADD", '/PlatformService/admin/userMgmt/addUserToOrg');
         this.addEndPoint("ORG_CREATE", '/PlatformService/admin/userMgmt/createOrg');
+        this.addEndPoint("USER_CREATE", '/PlatformService/accessGrpMgmt/addUserOrg');
         //this.addEndPoint("USER_ORG_DELETE", '/PlatformService/admin/userMgmt/removeUserFromOrg');
         //this.addEndPoint("USER_ROLE_INORG_UPDATE", '/PlatformService/admin/userMgmt/updateUserRoleInOrg');
 

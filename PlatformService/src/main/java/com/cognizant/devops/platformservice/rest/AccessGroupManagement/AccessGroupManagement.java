@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.config.GrafanaData;
 import com.cognizant.devops.platformcommons.dal.rest.RestHandler;
+import com.cognizant.devops.platformdal.grafana.user.UserDAL;
 import com.cognizant.devops.platformservice.rest.util.PlatformServiceUtil;
 import com.cognizant.devops.platformservice.security.config.SpringAuthorityUtil;
 import com.google.gson.JsonArray;
@@ -145,6 +146,39 @@ public class AccessGroupManagement {
 		log.debug("Headers: " + headers + "\n\n");
 		return PlatformServiceUtil
 				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
+	}
+	
+	@RequestMapping(value = "/addUserOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String addUser(@RequestParam int orgId,@RequestParam String name, @RequestParam String email, @RequestParam String role,@RequestParam String userName,@RequestParam String orgName){
+		GrafanaData grafana = ApplicationConfigProvider.getInstance().getGrafana();
+		String apiUrl = grafana.getGrafanaEndpoint()+"/api/admin/users";
+		JsonObject request = new JsonObject();
+		request.addProperty("name", name);
+		request.addProperty("login", userName);
+		request.addProperty("email", email);
+		request.addProperty("role", role);
+		request.addProperty("password", "password");
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Authorization", buildAuthenticationHeader());
+		ClientResponse response = RestHandler.doPost(apiUrl, request, headers);
+		JsonObject jsonResponse = new JsonParser().parse(response.getEntity(String.class)).getAsJsonObject();
+		//log.error(jsonResponse);
+		if(jsonResponse.get("id") != null){
+			//update DB for removing the password.
+			String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+			JsonObject requestOrg = new JsonObject();
+			requestOrg.addProperty("loginOrEmail", email);
+			requestOrg.addProperty("role", role);
+			request.addProperty("name", orgName);
+			//requestOrg.addProperty("Password", "admin");
+			Map<String, String> headersOrg = new HashMap<String, String>();
+			headersOrg.put("Authorization", buildAuthenticationHeader());
+			ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
+			//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
+			return responseOrg.getEntity(String.class);
+		}else {
+			return jsonResponse.toString();
+		}
 	}
 	
 	@RequestMapping(value = "/getGrafanaVersion", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

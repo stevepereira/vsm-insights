@@ -228,11 +228,11 @@ export class UserOnboardingComponent implements OnInit {
     this.userPropertyList['username'] = username;
     this.userPropertyList['password'] = pass;
     this.userPropertyList['role'] = this.role;
-    this.userPropertyList['org'] = this.selectedAdminOrg.name;
+    this.userPropertyList['org'] = this.selectedAdminOrg;
     console.log(this.userPropertyList)
-
+    console.log(this.selectedAdminOrg)
     userBMparameter = JSON.stringify(this.userPropertyList);
-
+    console.log(    this.userOnboardingService.addUserOrg(newName,email,username,"Admin",this.selectedAdminOrg.orgId,this.selectedAdminOrg.name));
     console.log(userBMparameter)
     var checkname = this.regex.test(email);
     if (!checkname) {
