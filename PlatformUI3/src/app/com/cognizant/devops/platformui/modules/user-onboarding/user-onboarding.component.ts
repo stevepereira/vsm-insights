@@ -34,12 +34,19 @@ export class UserOnboardingComponent implements OnInit {
   iframeStyleAdd = "{'height': 1500 +'px '+ '!important' }";
   userListUrl: SafeResourceUrl;
   framesize: any;
+  adduserSaveEnable: boolean = false;
+  showAddUserDetail: boolean = false;
   showThrobber: boolean = false;
   adminOrgDataArray = [];
   readOnlyOrg: boolean = false;
   userPropertyList = {};
   role: any;
-  isIncorrect: boolean = false;
+  isEmailIncorrect: boolean = false;
+  isNameIncorrect: boolean = false;
+  isUsernameIncorrect: boolean = false;
+  isPasswordIncorrect: boolean = false;
+  isRoleIncorrect: boolean = false;
+  isOrgIncorrect: boolean = false;
   selectedUser: any;
   oldSelectedUser: any;
   listFilter: any;
@@ -58,6 +65,8 @@ export class UserOnboardingComponent implements OnInit {
   showApplicationMessage: String = "";
   selectedAdminOrg: any;
   isSelectedUserId: any = -1;
+  searchInput: any;
+  usernamestore: any;
   regex = new RegExp("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$)")
 
   additionalProperties = ['name', 'email', 'username', 'password', 'role', 'org'];
@@ -211,7 +220,12 @@ export class UserOnboardingComponent implements OnInit {
 
 
 
-  saveUser(newName, email, username, pass) {
+  async saveUser(newName, email, username, pass) {
+    this.isEmailIncorrect = false;
+    this.isUsernameIncorrect = false;
+    this.isPasswordIncorrect = false;
+    this.isNameIncorrect = false;
+    this.isRoleIncorrect = false;
     console.log(this.role);
     var userBMparameter;
     this.userPropertyList = {};
@@ -223,20 +237,80 @@ export class UserOnboardingComponent implements OnInit {
     this.userPropertyList['password'] = pass;
     this.userPropertyList['role'] = this.role;
     this.userPropertyList['org'] = this.selectedAdminOrg;
-    console.log(this.userPropertyList)
-    console.log(this.selectedAdminOrg)
+    //  console.log(this.userPropertyList)
+    //console.log(this.selectedAdminOrg)
     userBMparameter = JSON.stringify(this.userPropertyList);
-    console.log(    this.userOnboardingService.addUserOrg(newName,email,username,"Admin",this.selectedAdminOrg.orgId,this.selectedAdminOrg.name));
-    console.log(userBMparameter)
+
+    //console.log(userBMparameter)
     var checkname = this.regex.test(email);
     if (!checkname) {
+      this.isEmailIncorrect = true;
+    }
+    if (username == undefined) {
+      this.isUsernameIncorrect = true;
+    }
+    if (pass == undefined) {
+      this.isPasswordIncorrect = true;
+    }
+    if (newName == undefined) {
+      this.isNameIncorrect = true;
+    }
+    if (this.role == undefined) {
+      this.isRoleIncorrect = true;
+    }
+    if (!this.isRoleIncorrect && !this.isNameIncorrect && !this.isPasswordIncorrect && !this.isUsernameIncorrect && !this.isEmailIncorrect) {
+      let usersResponseData = await this.userOnboardingService.addUserOrg(newName, email, username, this.role, this.selectedAdminOrg.orgId, this.selectedAdminOrg.name);
 
-      this.isIncorrect = true;
+      if (usersResponseData.status != "success") {
+        this.messageDialog.showApplicationsMessage("Email address or the Username already exists.", "ERROR");
+      }
+      else if (usersResponseData.status == "success") {
+        this.messageDialog.showApplicationsMessage("User has been added", "SUCCESS");
+      }
 
     }
 
+
+
+
+
+
+
     // console.log(JSON.parse(userBMparameter))   // this.callEditOrSaveDataAPI(userBMparameter);
   }
+  adduserenableSave() {
+    this.adduserSaveEnable = true
+  }
+  searchData(searchUser) {
+    var count = 0;
+    console.log(this.userDataSource.data)
+    for (var element of this.userDataSource.data) {
+      var emailcheck = (element.email);
+      var usernamecheck = element.login
+      this.searchInput = searchUser
+      console.log(searchUser)
+      if (this.searchInput == emailcheck) {
+        count = count + 1;
+        break;
+
+      }
+      else if (this.searchInput == usernamecheck) {
+        count = count + 1;
+        break;
+
+      }
+    }
+    if (count == 1) {
+      var dialogmessage = " User already exists in " + "<b>" + this.selectedAdminOrg.name
+
+      this.messageDialog.showApplicationsMessage(dialogmessage, "SUCCESS");
+    }
+    else {
+      this.messageDialog.showApplicationsMessage("No User Found.", "ERROR");
+    }
+  }
+
+
 
   editUserData() {
     //console.log(this.selectedUser.userId);
@@ -335,8 +409,8 @@ export class UserOnboardingComponent implements OnInit {
     }
   }
   addGlobalUser() {
-    this.showDetail = false
-
+    this.showAddUserDetail = true
+    this.showDetail = false;
   }
 }
 

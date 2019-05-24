@@ -46,11 +46,9 @@
     <div class="filterGroupCSS" *ngIf=" showDetail ">
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search by Login ID or Email Address
           "
-        [style.height.px]="20" [style.width.%]="80" class="form-control">
+        [style.height.px]="20" [style.width.%]="90" class="form-control">
     </div>
   </div>
-
-
 
   <div>
     <div class="btnAlign">
@@ -65,15 +63,20 @@
           person_add
         </mat-icon>
       </button>
-      <mat-icon svgIcon="lineInButton" class="mat-icon material-icons">
-        linea
-      </mat-icon>
+      <button mat-icon-button>
+        <mat-icon svgIcon="lineInButton" class="mat-icon material-icons">
+          linea
+        </mat-icon>
 
+      </button>
 
+      <button *ngIf="showDetail" mat-icon-button (click)="saveData() " [disabled]="!isSaveEnable ">
+        <mat-icon title="Save " class="mat-icon material-icons ">
+          save
+        </mat-icon>
+      </button>
 
-
-
-      <button mat-icon-button (click)="saveData() " [disabled]="!isSaveEnable ">
+      <button *ngIf="showAddUserDetail" mat-icon-button (click)="saveUser(names,email,username,pass)" [disabled]="!adduserSaveEnable">
         <mat-icon title="Save " class="mat-icon material-icons ">
           save
         </mat-icon>
@@ -84,14 +87,6 @@
           edit
         </mat-icon>
       </button>
-
-      <button mat-icon-button (click)="saveUser(names,email,username,pass)">
-        <mat-icon title="Save " class="mat-icon material-icons ">
-          save
-        </mat-icon>
-      </button>
-
-
 
       <button mat-icon-button [disabled]="!isbuttonenabled || isSaveEnable " (click)="deleteOrgUser() ">
         <mat-icon title="Delete Organization User " class="mat-icon material-icons ">
@@ -106,7 +101,6 @@
 
     </div>
     <div *ngIf=" showDetail ">
-
 
       <mat-radio-group [(ngModel)]="selectedUser ">
         <table mat-table [dataSource]="userDataSource " class="mat-elevation-z8 ">
@@ -152,40 +146,36 @@
         </table>
       </mat-radio-group>
 
-
     </div>
   </div>
 
+  <div *ngIf="showAddUserDetail ">
 
+    <div class="adduserCol">
+      <div class="showTable" style="text-align: center; padding: 8px;">
+        <div style="margin-right: 110px;">
+          <mat-radio-group>
+            <mat-radio-button [value]="element" color="primary" (click)=adduserenableSave()>
+            </mat-radio-button>
 
-
-
-  <div *ngIf=" !showDetail ">
-
-    <div class="column1">
-      <div class="showTable" style="text-align: center; padding: 15px;">
-        <mat-radio-group>
-          <mat-radio-button [value]="element" color="primary">
-          </mat-radio-button>
-
-
-        </mat-radio-group>
-        Add User (Please note: You are adding the user to)
+          </mat-radio-group>
+          Add User (Please note: You are adding the user to {{selectedAdminOrg.name}})
+        </div>
       </div>
+
       <table>
-        <tbody style="max-height: 38vh">
+        <tbody style="display: grid; max-height: 38vh">
           <tr class="dat-row1">
 
-
-            <td style="text-align: left; padding-left: 15px; padding-top: 8px; align-items: center;">
+            <td class="AddUserColTextCss">
               <div>
                 <label class="mainText"> Current Access Group </label>
 
               </div>
             </td>
-            <td style="text-align: left; padding-left: 15px; padding-top: 8px; align-items: center;">
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="60" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+            <td class="AddUserColTextCss">
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectedAdminOrg" [style.height.px]="20"
+                [style.width.%]="260" name="selectedAdminOrg" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
                   {{record.name}}
@@ -193,87 +183,80 @@
               </mat-select>
             </td>
 
+            <input [disabled]="!adduserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchUser' [value]="searchuser"
+              required placeholder=" Search by Login ID or E-mail Address">
+            <button mat-icon-button (click)="searchData(searchUser) ">
+              <mat-icon title="Search" class="mat-icon material-icons">
+                search
+              </mat-icon>
+
+            </button>
           </tr>
 
           <tr class="dat-row2">
 
-
-            <td style="text-align: left; width:30px; padding-left: 15px; padding-top: 8px; align-items: center;">Name</td>
+            <td class="AddUserColTextCss" style=" width:30px;">Name</td>
             <td>
-              <input type="text" class="inputcss" [(ngModel)]='names' [value]="searchValue" required placeholder="   Input a name">
+              <input [disabled]="!adduserSaveEnable" style="margin-left: 40px;" type="text" class="inputcss"
+                [(ngModel)]='names' [value]="searchValue" required placeholder=" Input a Name">
             </td>
-            <td *ngIf="isIncorrect"></td>
+            <td *ngIf="isNameIncorrect" class="wrnTxt">Please enter a valid Name.</td>
           </tr>
-
-
-
 
           <tr class="dat-row">
 
-
-            <td style="text-align: left; width:30px; padding-left: 15px; padding-top: 8px; align-items: center;">Email</td>
+            <td class="AddUserColTextCss" style=" width:30px;">Email</td>
             <td>
-              <input type="text" class="inputcss" [(ngModel)]='email' [value]="emailvalue" required placeholder=" Provide a valid E-mail Address"></td>
+              <input [disabled]="!adduserSaveEnable" type="text" style="margin-left: 43px;" class="inputcss"
+                [(ngModel)]='email' [value]="emailvalue" required placeholder=" Provide a valid E-mail Address">
+            </td>
 
-
-            <td *ngIf="isIncorrect" class="wrnTxt">Please enter a valid Email.</td>
+            <td *ngIf="isEmailIncorrect" class="wrnTxt">Please enter a valid Email.</td>
 
           </tr>
 
           <tr class="dat-row2">
 
-
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Username</td>
-            <td><input type="text" class="inputcss" [(ngModel)]='username' [value]="searchValue" required placeholder=" Input a Username"></td>
-
+            <td class="AddUserColTextCss" style=" width:30px;">Username</td>
+            <td>
+              <input [disabled]="!adduserSaveEnable" type="text" style="margin-left: 11px;" class="inputcss"
+                [(ngModel)]='username' [value]="searchValue" required placeholder=" Input a Username">
+            </td>
+            <td *ngIf="isUsernameIncorrect" class="wrnTxt">Please enter a valid Username.</td>
           </tr>
-
-
-
 
           <tr class="dat-row">
 
-
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Password</td>
-            <td><input type="text" class="inputcss" [(ngModel)]='pass' [value]="searchValue" required placeholder=" Input a Password"></td>
-
+            <td class="AddUserColTextCss" style=" width:30px;">Password</td>
+            <td>
+              <input [disabled]="!adduserSaveEnable" type="password" class="inputcss" style="margin-left: 13px;"
+                [(ngModel)]='pass' [value]="searchValue" required placeholder=" Input a Password">
+            </td>
+            <td *ngIf="isPasswordIncorrect" class="wrnTxt">Please enter a valid Password.</td>
           </tr>
 
           <tr class="dat-row2">
 
-
-            <td>Role</td>
-
+            <td class="AddUserColTextCss" style=" width:30px;">Role</td>
 
             <td>
-              <mat-select [(ngModel)]="role " [style.width.%]="40 " name="{{role}}" required placeholder=" Select a Role"
-                [ngClass]="{ 'input-disabled' : !isSaveEnable  , 'form-control': isSaveEnable} ">
+              <mat-select [disabled]="!adduserSaveEnable" style="margin-left: 45px;" [(ngModel)]="role "
+                [style.width.%]="200 " name="{{role}}" required placeholder=" Select a Role" [ngClass]="{ 'input-disabled' : !isSaveEnable  , 'form-control': isSaveEnable} ">
                 <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
             </td>
 
-
+            <td style="padding-left: 170px;" *ngIf="isRoleIncorrect" class="wrnTxt">Please select a Role.</td>
 
           </tr>
-
-
 
         </tbody>
       </table>
 
     </div>
-
-
-
-
-
-
-
-
-
-
+<!-- Below Code needs formatting! -->
     <div class="column2">
       <div class="showTable" style="text-align: center; padding: 25px;">
       </div>
@@ -284,9 +267,9 @@
 
           <tr class="dat-row">
 
-
             <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group</td>
+              Group
+            </td>
             <td>
 
               <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
@@ -298,7 +281,6 @@
               </mat-select>
 
             </td>
-
 
             <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role
             </td>
@@ -318,9 +300,9 @@
 
           <tr class="dat-row2">
 
-
             <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group</td>
+              Group
+            </td>
             <td>
 
               <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
@@ -332,7 +314,6 @@
               </mat-select>
 
             </td>
-
 
             <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role
             </td>
@@ -348,20 +329,13 @@
 
             </td>
 
-
-
-
           </tr>
-
-
-
-
 
           <tr class="dat-row">
 
-
             <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group</td>
+              Group
+            </td>
             <td>
 
               <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
@@ -387,14 +361,13 @@
 
             </td>
 
-
           </tr>
 
           <tr class="dat-row2">
-
 
             <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group</td>
+              Group
+            </td>
             <td>
 
               <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
@@ -419,18 +392,14 @@
               </mat-select>
 
             </td>
-
-
 
           </tr>
 
-
-
           <tr class="dat-row">
 
-
             <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group</td>
+              Group
+            </td>
             <td>
 
               <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
@@ -454,7 +423,6 @@
               </mat-select>
 
             </td>
-
 
           </tr>
 
@@ -464,22 +432,15 @@
             </td>
             <td>
 
-
-
             </td>
             <td></td>
             <td></td>
           </tr>
-
 
         </tbody>
       </table>
 
-
-
-
     </div>
-
 
     <!-- <div [hidden]="!showDetail">
     <mat-paginator #paginator [pageSize]="MAX_ROWS_PER_TABLE" showFirstLastButtons class="paginationStyle"></mat-paginator>
