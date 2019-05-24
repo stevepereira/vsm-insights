@@ -164,6 +164,7 @@ public class AccessGroupManagement {
 			ClientResponse responseUserOrgs = RestHandler.doGet(apiUrlUserOrgs, null, headersUserOrgs);
 			JsonArray userOrgs=new JsonParser().parse(responseUserOrgs.getEntity(String.class)).getAsJsonArray();
 			boolean orgFlag=false;
+			String orgCurrentRole="";
 			for (JsonElement totalOrgs: userOrgs){
 				JsonObject orgs=totalOrgs.getAsJsonObject();
 				int responseOrgId=orgs.get("orgId").getAsInt();
@@ -172,12 +173,17 @@ public class AccessGroupManagement {
 				//log.error(responseOrgId==orgId);
 				if (responseOrgId== orgId ) {
 					orgFlag=true;
+					orgCurrentRole=responseOrgRole;
 				}
 			}
 			//log.error(orgFlag);
 			if(orgFlag) {
-				//log.error(jsonResponseName.get("orgId").getAsInt()+orgId);
-				return "{messgae:user exists in current org}";
+				if (role.equals(orgCurrentRole)) {
+					return "{message: user existss in currrent org with same role "+orgCurrentRole+"}";
+				}
+				else {
+					return "{message: user existss in currrent org with different  role "+orgCurrentRole+"}";
+				}
 			}else {
 				String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
 				JsonObject requestOrg = new JsonObject();
@@ -214,7 +220,7 @@ public class AccessGroupManagement {
 				ClientResponse responseCreate = RestHandler.doPost(apiUrlCreate, requestCreate, headersCreate);
 				JsonObject jsonResponse = new JsonParser().parse(responseCreate.getEntity(String.class)).getAsJsonObject();
 				//log.error(jsonResponseCreate);
-				if(jsonResponse.get("id") != null){
+				if(jsonResponse.get("id") != null && orgId!=1){
 					//update DB for removing the password.
 					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
 					JsonObject requestOrg = new JsonObject();
@@ -227,6 +233,16 @@ public class AccessGroupManagement {
 					ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
 					//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
 					return responseOrg.getEntity(String.class);
+				}else if(jsonResponse.get("id") != null && orgId==1 && role.equals("Viewer")!=true){
+					JsonObject createdUserId=jsonResponse.getAsJsonObject();
+					int userIdRole=createdUserId.get("id").getAsInt();
+					String apiUrlRole = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users/"+userIdRole;
+					JsonObject requestRole = new JsonObject();
+					requestRole.addProperty("role", role);
+					Map<String, String> headersRole = new HashMap<String, String>();
+					headersRole.put("Authorization", buildAuthenticationHeader());
+					ClientResponse responseRole = RestHandler.doPatch(apiUrlRole, requestRole, headersRole);
+					return responseRole.getEntity(String.class);
 				}else {
 					return jsonResponse.toString();
 				}	
