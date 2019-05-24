@@ -150,34 +150,87 @@ public class AccessGroupManagement {
 	
 	@RequestMapping(value = "/addUserOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String addUser(@RequestParam int orgId,@RequestParam String name, @RequestParam String email, @RequestParam String role,@RequestParam String userName,@RequestParam String orgName){
-		GrafanaData grafana = ApplicationConfigProvider.getInstance().getGrafana();
-		String apiUrl = grafana.getGrafanaEndpoint()+"/api/admin/users";
-		JsonObject request = new JsonObject();
-		request.addProperty("name", name);
-		request.addProperty("login", userName);
-		request.addProperty("email", email);
-		request.addProperty("role", role);
-		request.addProperty("password", "password");
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Authorization", buildAuthenticationHeader());
-		ClientResponse response = RestHandler.doPost(apiUrl, request, headers);
-		JsonObject jsonResponse = new JsonParser().parse(response.getEntity(String.class)).getAsJsonObject();
-		//log.error(jsonResponse);
-		if(jsonResponse.get("id") != null){
-			//update DB for removing the password.
-			String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
-			JsonObject requestOrg = new JsonObject();
-			requestOrg.addProperty("loginOrEmail", email);
-			requestOrg.addProperty("role", role);
-			request.addProperty("name", orgName);
-			//requestOrg.addProperty("Password", "admin");
-			Map<String, String> headersOrg = new HashMap<String, String>();
-			headersOrg.put("Authorization", buildAuthenticationHeader());
-			ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
-			//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
-			return responseOrg.getEntity(String.class);
+		Map<String, String> headersName = new HashMap<String, String>();
+		headersName.put("Cookie", getUserCookies());
+		String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+name;
+		ClientResponse responseName = RestHandler.doGet(apiUrlName, null, headersName);
+		JsonObject jsonResponseName = new JsonParser().parse(responseName.getEntity(String.class)).getAsJsonObject();
+		//log.error("jsonResponseName-----------------"+jsonResponseName);
+		//log.error(orgId);
+		if(jsonResponseName.get("id") != null){
+			String apiUrlUserOrgs = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/"+jsonResponseName.get("id").getAsInt()+"/orgs";
+			Map<String, String> headersUserOrgs = new HashMap<String, String>();
+			headersUserOrgs.put("Authorization", buildAuthenticationHeader());
+			ClientResponse responseUserOrgs = RestHandler.doGet(apiUrlUserOrgs, null, headersUserOrgs);
+			JsonArray userOrgs=new JsonParser().parse(responseUserOrgs.getEntity(String.class)).getAsJsonArray();
+			boolean orgFlag=false;
+			for (JsonElement totalOrgs: userOrgs){
+				JsonObject orgs=totalOrgs.getAsJsonObject();
+				int responseOrgId=orgs.get("orgId").getAsInt();
+				String responseOrgRole=orgs.get("role").getAsString();
+				//log.error(responseOrgId+responseOrgRole);
+				//log.error(responseOrgId==orgId);
+				if (responseOrgId== orgId ) {
+					orgFlag=true;
+				}
+			}
+			//log.error(orgFlag);
+			if(orgFlag) {
+				//log.error(jsonResponseName.get("orgId").getAsInt()+orgId);
+				return "{messgae:user exists in current org}";
+			}else {
+				String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+				JsonObject requestOrg = new JsonObject();
+				requestOrg.addProperty("loginOrEmail", email);
+				requestOrg.addProperty("role", role);
+				//request.addProperty("name", orgName);
+				//requestOrg.addProperty("Password", "admin");
+				Map<String, String> headersOrg = new HashMap<String, String>();
+				headersOrg.put("Authorization", buildAuthenticationHeader());
+				ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
+				//log.error("requestOrg top------------- "+responseOrg.getEntity(String.class));
+				return responseOrg.getEntity(String.class);
+			}
+			
 		}else {
-			return jsonResponse.toString();
+			Map<String, String> headersEmail = new HashMap<String, String>();
+			headersName.put("Cookie", getUserCookies());
+			String apiUrlEmail = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+email;
+			ClientResponse responseEmail = RestHandler.doGet(apiUrlEmail, null, headersEmail);
+			JsonObject jsonResponseEmail = new JsonParser().parse(responseEmail.getEntity(String.class)).getAsJsonObject();
+			//log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
+			if(jsonResponseEmail.get("id") != null){
+				return jsonResponseEmail.toString();
+			}else {
+				String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/admin/users";
+				JsonObject requestCreate = new JsonObject();
+				requestCreate.addProperty("name", name);
+				requestCreate.addProperty("login", userName);
+				requestCreate.addProperty("email", email);
+				requestCreate.addProperty("role", role);
+				requestCreate.addProperty("password", "password");
+				Map<String, String> headersCreate = new HashMap<String, String>();
+				headersCreate.put("Authorization", buildAuthenticationHeader());
+				ClientResponse responseCreate = RestHandler.doPost(apiUrlCreate, requestCreate, headersCreate);
+				JsonObject jsonResponse = new JsonParser().parse(responseCreate.getEntity(String.class)).getAsJsonObject();
+				//log.error(jsonResponseCreate);
+				if(jsonResponse.get("id") != null){
+					//update DB for removing the password.
+					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+					JsonObject requestOrg = new JsonObject();
+					requestOrg.addProperty("loginOrEmail", email);
+					requestOrg.addProperty("role", role);
+					//request.addProperty("name", orgName);
+					//requestOrg.addProperty("Password", "admin");
+					Map<String, String> headersOrg = new HashMap<String, String>();
+					headersOrg.put("Authorization", buildAuthenticationHeader());
+					ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
+					//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
+					return responseOrg.getEntity(String.class);
+				}else {
+					return jsonResponse.toString();
+				}	
+			}
 		}
 	}
 	
