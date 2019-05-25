@@ -148,8 +148,8 @@ public class AccessGroupManagement {
 				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
 	
-	@RequestMapping(value = "/addUserOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String addUser(@RequestParam int orgId,@RequestParam String name, @RequestParam String email, @RequestParam String role,@RequestParam String userName,@RequestParam String orgName){
+	@RequestMapping(value = "/addUserInOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String addUser(@RequestParam int orgId,@RequestParam String name, @RequestParam String email, @RequestParam String role,@RequestParam String userName,@RequestParam String orgName ,@RequestParam String password){
 		Map<String, String> headersName = new HashMap<String, String>();
 		headersName.put("Cookie", getUserCookies());
 		String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+name;
@@ -179,11 +179,11 @@ public class AccessGroupManagement {
 			//log.error(orgFlag);
 			if(orgFlag) {
 				if (role.equals(orgCurrentRole)) {
-					return "{message: user existss in currrent org with same role "+orgCurrentRole+"}";
-				}
-				else {
-					return "{message: user existss in currrent org with different  role "+orgCurrentRole+"}";
-				}
+					return "{\"message\":\" user existss in currrent org with same role "+orgCurrentRole+"\"}";
+                }
+                else {
+                      return "{\"message\":\" user existss in currrent org with different  role "+orgCurrentRole+"\"}";}
+
 			}else {
 				String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
 				JsonObject requestOrg = new JsonObject();
@@ -214,7 +214,7 @@ public class AccessGroupManagement {
 				requestCreate.addProperty("login", userName);
 				requestCreate.addProperty("email", email);
 				requestCreate.addProperty("role", role);
-				requestCreate.addProperty("password", "password");
+				requestCreate.addProperty("password", password);
 				Map<String, String> headersCreate = new HashMap<String, String>();
 				headersCreate.put("Authorization", buildAuthenticationHeader());
 				ClientResponse responseCreate = RestHandler.doPost(apiUrlCreate, requestCreate, headersCreate);
@@ -227,7 +227,7 @@ public class AccessGroupManagement {
 					requestOrg.addProperty("loginOrEmail", email);
 					requestOrg.addProperty("role", role);
 					//request.addProperty("name", orgName);
-					//requestOrg.addProperty("Password", "admin");
+					//requestOrg.addProperty("Password", admin);
 					Map<String, String> headersOrg = new HashMap<String, String>();
 					headersOrg.put("Authorization", buildAuthenticationHeader());
 					ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
