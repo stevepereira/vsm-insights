@@ -201,6 +201,8 @@ public class AccessGroupManagement {
 				return responseOrg.getEntity(String.class);
 			}
 			
+		}else if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)!=true){
+			return "{\"message\":\" username already exists\"}";
 		}else {
 			//if the username is not present in grafana then we are checking for the email 
 			Map<String, String> headersEmail = new HashMap<String, String>();
@@ -211,7 +213,7 @@ public class AccessGroupManagement {
 			//log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
 			if(jsonResponseEmail.get("id") != null){
 				//if email id exists  returning email exists 
-				return jsonResponseEmail.toString();
+				return "{\"message\":\" email already exists\"}";
 			}else {
 				//if email not exits then we are creating a new user
 				String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/admin/users";
