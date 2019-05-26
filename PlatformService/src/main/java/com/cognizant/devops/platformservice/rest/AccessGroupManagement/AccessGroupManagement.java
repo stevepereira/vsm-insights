@@ -155,8 +155,9 @@ public class AccessGroupManagement {
 		String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+name;
 		ClientResponse responseName = RestHandler.doGet(apiUrlName, null, headersName);
 		JsonObject jsonResponseName = new JsonParser().parse(responseName.getEntity(String.class)).getAsJsonObject();
+		String jsonResponseNameEmail=jsonResponseName.get("email").getAsString();
 		//checking whether username exists
-		if(jsonResponseName.get("id") != null){
+		if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)){
 			//if the user exists then we are getting the list of orgs in which the user is already present
 			String apiUrlUserOrgs = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/"+jsonResponseName.get("id").getAsInt()+"/orgs";
 			Map<String, String> headersUserOrgs = new HashMap<String, String>();
@@ -250,7 +251,7 @@ public class AccessGroupManagement {
 					ClientResponse responseRole = RestHandler.doPatch(apiUrlRole, requestRole, headersRole);
 					return responseRole.getEntity(String.class);
 				}else {
-					//if the org is main org and the role is viewver we are not doing anything 
+					//if the org is main org and the role is viewver then we are not doing anything
 					return jsonResponse.toString();
 				}	
 			}
