@@ -177,9 +177,9 @@ public class AccessGroupManagement {
 					orgCurrentRole=responseOrgRole;
 				}
 			}
-			//checking whether the user exists in the org we entered in UI
+			
 			if(orgFlag) {
-				//if the user exists in the or we entered , then we check if it is in the same role or not
+				
 				if (role.equals(orgCurrentRole)) {
 					return "{\"message\":\" user exists in currrent org with same role "+orgCurrentRole+"\"}";
                 }
@@ -187,7 +187,7 @@ public class AccessGroupManagement {
                       return "{\"message\":\" user exists in currrent org with different  role "+orgCurrentRole+"\"}";}
 
 			}else {
-				//if the user is not exists in the org we entered, then we add it to the org
+				
 				String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
 				JsonObject requestOrg = new JsonObject();
 				requestOrg.addProperty("loginOrEmail", email);
@@ -204,7 +204,7 @@ public class AccessGroupManagement {
 		}else if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)!=true){
 			return "{\"message\":\" username already exists\"}";
 		}else {
-			//if the username is not present in grafana then we are checking for the email 
+			
 			Map<String, String> headersEmail = new HashMap<String, String>();
 			headersName.put("Cookie", getUserCookies());
 			String apiUrlEmail = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+email;
@@ -212,10 +212,10 @@ public class AccessGroupManagement {
 			JsonObject jsonResponseEmail = new JsonParser().parse(responseEmail.getEntity(String.class)).getAsJsonObject();
 			//log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
 			if(jsonResponseEmail.get("id") != null){
-				//if email id exists  returning email exists 
+				
 				return "{\"message\":\" email already exists\"}";
 			}else {
-				//if email not exits then we are creating a new user
+				
 				String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/admin/users";
 				JsonObject requestCreate = new JsonObject();
 				requestCreate.addProperty("name", name);

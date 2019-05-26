@@ -22,7 +22,7 @@ import { ConfirmationMessageDialog } from '@insights/app/modules/application-dia
 import { AddGroupMessageDialog } from '@insights/app/modules/user-onboarding/add-group-message-dialog';
 import { MessageDialogService } from '@insights/app/modules/application-dialog/message-dialog-service';
 import { DataSharedService } from '@insights/common/data-shared-service';
-
+import { Router, ActivatedRoute, ParamMap, NavigationExtras } from '@angular/router';
 @Component({
   selector: 'app-user-onboarding',
   templateUrl: './user-onboarding.component.html',
@@ -76,7 +76,7 @@ export class UserOnboardingComponent implements OnInit {
     { value: 'Viewer', name: 'Viewer' }
   ];
 
-  constructor(private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
+  constructor(private router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
     public dialog: MatDialog, public messageDialog: MessageDialogService, private dataShare: DataSharedService) {
     var self = this;
 
@@ -220,7 +220,7 @@ export class UserOnboardingComponent implements OnInit {
 
 
 
-  async saveUser(newName, email, username, pass) {
+  saveUser(newName, email, username, pass) {
     this.isEmailIncorrect = false;
     this.isUsernameIncorrect = false;
     this.isPasswordIncorrect = false;
@@ -259,28 +259,64 @@ export class UserOnboardingComponent implements OnInit {
       this.isRoleIncorrect = true;
     }
     if (!this.isRoleIncorrect && !this.isNameIncorrect && !this.isPasswordIncorrect && !this.isUsernameIncorrect && !this.isEmailIncorrect) {
-      let usersResponseData = await this.userOnboardingService.addUserOrg(newName, email, username, this.role, this.selectedAdminOrg.orgId, this.selectedAdminOrg.name);
+      this.userOnboardingService.addUserInOrg(newName, email, username, this.role, this.selectedAdminOrg.orgId, this.selectedAdminOrg.name, pass)
+        .subscribe(data => {
+          //console.log(data)
+          console.log(data.message)
+          console.log(data)
+          if (data.message == "User added to organization") {
+            this.messageDialog.showApplicationsMessage("User has been added", "SUCCESS");
+          }
+          else if (data.message == " user exists in currrent org with same role " + this.role) {
+            this.messageDialog.showApplicationsMessage("User exsits in org.", "ERROR");
+          }
+          else if (data.message == " user exists in currrent org with different  role Viewer" || " user exists in currrent org with different  role Admin" || " user exists in currrent org with different  role Editor") {
 
-      if (usersResponseData.status != "success") {
-        this.messageDialog.showApplicationsMessage("Email address or the Username already exists.", "ERROR");
-      }
-      else if (usersResponseData.status == "success") {
-        this.messageDialog.showApplicationsMessage("User has been added", "SUCCESS");
-      }
+            var title = "ERROR";
+            //  console.log(this.deleteRelation);
+            var dialogmessage = data.message + ". Are you sure you want to update the role?"
+            const dialogRef = this.messageDialog.showConfirmationMessage(title, dialogmessage, this.role, "ALERT", "40%");
+            dialogRef.afterClosed().subscribe(result => {
+              if (result == 'yes') {
+                this.showDetail = true;
+                this.showAddUserDetail = false;
+                /*  let navigationExtras: NavigationExtras = {
+                   skipLocationChange: true,
+ 
+                 };
+                 this.router.navigate(['InSights/Home/accessGroupManagement'], navigationExtras); */
+              }
+
+            })
+            //this.messageDialog.showApplicationsMessage(data.message, "ERROR");
+
+          }
+
+          else if (data.message == "failed to create user") {
+            this.messageDialog.showApplicationsMessage("Failed to create user.", "ERROR");
+          }
+          else if (data.message == "email already exists") {
+            this.messageDialog.showApplicationsMessage("Email address already exists.", "ERROR");
+          }
+          else if (data.message == " username already exists") {
+            this.messageDialog.showApplicationsMessage("Username already exists.", "ERROR");
+          }
+        })
+
+
 
     }
 
-
-
-
-
-
-
     // console.log(JSON.parse(userBMparameter))   // this.callEditOrSaveDataAPI(userBMparameter);
+
+
+
   }
   adduserenableSave() {
     this.adduserSaveEnable = true
   }
+
+
   searchData(searchUser) {
     var count = 0;
     console.log(this.userDataSource.data)

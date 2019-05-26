@@ -62,8 +62,8 @@ export class UserOnboardingService implements IUserOnboardingService {
         return this.restHandler.postWithParameter("ORG_CREATE", { "orgName": orgName }, { 'Content-Type': 'application/x-www-form-urlencoded' }).toPromise();
     }
 
-    addUserOrg(name: string,email: string,userName: string,role: string,orgId: number,orgName:string): Promise<any> {
-        return this.restHandler.postWithParameter("USER_CREATE", { "orgId": orgId ,"name":name,"email":email,"role":role,"userName":userName,"orgName":orgName}, { 'Content-Type': 'application/x-www-form-urlencoded' }).toPromise();
+    addUserInOrg(name: string, email: string, userName: string, role: string, orgId: number, orgName: string, pass: string) {
+        return this.restHandler.postWithParameter("USER_CREATE", { "orgId": orgId, "name": name, "email": email, "role": role, "userName": userName, "orgName": orgName, "password": pass }, { 'Content-Type': 'application/x-www-form-urlencoded' })
     }
 }
 
