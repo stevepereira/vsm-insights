@@ -29,6 +29,7 @@ import { DataSharedService } from '@insights/common/data-shared-service';
 export interface ILoginComponent {
   createAndValidateForm(): void;
   userAuthentication(): void;
+
 }
 
 @Component({
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit, ILoginComponent {
 
   ngOnInit() {
     this.createAndValidateForm();
+    this.dataShare.storeTimeZone();
     //this.deleteAllPreviousCookies();
   }
 
@@ -111,8 +113,8 @@ export class LoginComponent implements OnInit, ILoginComponent {
             var dateDashboardSessionExpiration = new Date(new Date().getTime() + 86400 * 1000);
             var minutes = 30;
             date.setTime(date.getTime() + (minutes * 60 * 1000));
-            this.cookieService.set('Authorization', token, date);
-            this.cookieService.set('DashboardSessionExpiration', dateDashboardSessionExpiration.toString());
+            this.dataShare.setAuthorizationToken(token);
+            this.dataShare.setSession();
             this.cookies = "";
             for (var key in grafcookies) {
               this.cookieService.set(key, grafcookies[key], date);

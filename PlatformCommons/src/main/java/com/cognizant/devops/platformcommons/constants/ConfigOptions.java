@@ -16,12 +16,14 @@
 package com.cognizant.devops.platformcommons.constants;
 
 import java.io.File;
-
+import java.time.Instant;
 public interface ConfigOptions {
 	String CONFIG_DIR = ".InSights";
 	String CONFIG_FILE = "server-config.json";
 	String TOOLS_CONFIG_FILE = "toolsConfig.json";
 	String CORRELATION_TEMPLATE = "correlation.json";
+	String NEO4J_TEMPLATE = "neo4jdata.json";
+	String CORRELATION = "correlation"+Instant.now().toEpochMilli()+".json";
 	String DATA_ENRICHMENT_TEMPLATE = "data-enrichment.json";
 	String ENDPOINT_DATA = "endpointData";
 	String USER_DATA = "userData";
@@ -59,5 +61,8 @@ public interface ConfigOptions {
 	String CSV_FORMAT = "CSV";
 	String JSON_FORMAT = "JSON";
 	String OFFLINE_DATA_PROCESSING_FOLDER = "data-enrichment";
+	String QUERY_DATA_PROCESSING_FOLDER = "Audit-report";
 	String OFFLINE_DATA_PROCESSING_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.OFFLINE_DATA_PROCESSING_FOLDER;
+	String QUERY_DATA_PROCESSING_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.QUERY_DATA_PROCESSING_FOLDER;
+
 }
