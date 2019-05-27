@@ -317,33 +317,66 @@ export class UserOnboardingComponent implements OnInit {
   }
 
 
-  searchData(searchUser) {
+  searchData(searchUser, selectedAdminOrg) {
     var count = 0;
+
+
+
+
+
+
+
+    var self = this;
+    self.userDataSource = new MatTableDataSource();
+    this.userOnboardingService.getOrganizationUsers(selectedAdminOrg.orgId).then(function (usersResponseData) {
+      if (usersResponseData.data != undefined && usersResponseData.status == "success") {
+
+
+        self.userDataSource.data = usersResponseData.data; //new MatTableDataSource( )
+        self.userDataSource.paginator = self.paginator;
+        console.log(self.userDataSource.data)
+
+
+
+
+        for (var element of self.userDataSource.data) {
+          var emailcheck = (element.email);
+          var usernamecheck = element.login
+          self.searchInput = searchUser
+          console.log(searchUser)
+          if (self.searchInput == emailcheck) {
+            count = count + 1;
+            break;
+
+          }
+          else if (self.searchInput == usernamecheck) {
+            count = count + 1;
+            break;
+
+          }
+        }
+        if (count == 1) {
+          var dialogmessage = " User already exists in " + "<b>" + self.selectedAdminOrg.name
+
+          self.messageDialog.showApplicationsMessage(dialogmessage, "SUCCESS");
+        }
+        else {
+          self.messageDialog.showApplicationsMessage("No User Found.", "ERROR");
+        }
+
+
+
+      } else {
+        self.messageDialog.showApplicationsMessage("Unable to load data", "WARN");
+      }
+    });
+
+
+
+
+    // this.loadUsersInfo(selectedAdminOrg);
     console.log(this.userDataSource.data)
-    for (var element of this.userDataSource.data) {
-      var emailcheck = (element.email);
-      var usernamecheck = element.login
-      this.searchInput = searchUser
-      console.log(searchUser)
-      if (this.searchInput == emailcheck) {
-        count = count + 1;
-        break;
 
-      }
-      else if (this.searchInput == usernamecheck) {
-        count = count + 1;
-        break;
-
-      }
-    }
-    if (count == 1) {
-      var dialogmessage = " User already exists in " + "<b>" + this.selectedAdminOrg.name
-
-      this.messageDialog.showApplicationsMessage(dialogmessage, "SUCCESS");
-    }
-    else {
-      this.messageDialog.showApplicationsMessage("No User Found.", "ERROR");
-    }
   }
 
 

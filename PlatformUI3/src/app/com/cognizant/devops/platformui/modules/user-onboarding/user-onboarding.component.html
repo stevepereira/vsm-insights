@@ -185,7 +185,7 @@
 
             <input [disabled]="!adduserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchUser' [value]="searchuser"
               required placeholder=" Search by Login ID or E-mail Address">
-            <button mat-icon-button (click)="searchData(searchUser) ">
+            <button mat-icon-button (click)="searchData(searchUser,selectedAdminOrg) ">
               <mat-icon title="Search" class="mat-icon material-icons">
                 search
               </mat-icon>
