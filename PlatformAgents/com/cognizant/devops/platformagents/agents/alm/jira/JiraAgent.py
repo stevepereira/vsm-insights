@@ -1,12 +1,11 @@
-#-------------------------------------------------------------------------------
-# Copyright 2017 Cognizant Technology Solutions
-# 
+#opyright 2017 Cognizant Technology Solutions
+#
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License.  You may obtain a copy
 # of the License at
-# 
+#
 #   http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
@@ -21,14 +20,15 @@ Created on Jun 22, 2016
 from datetime import datetime as dateTime2
 import datetime
 import copy
+import logging.handlers
 
 from dateutil import parser
 
-from ....core.BaseAgent import BaseAgent
+from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
 
 
 class JiraAgent(BaseAgent):
-        
+
     def process(self):
         self.userid = self.config.get("userid", '')
         self.passwd = self.config.get("passwd", '')
@@ -38,6 +38,7 @@ class JiraAgent(BaseAgent):
         responseTemplate = self.getResponseTemplate()
         fields = self.extractFields(responseTemplate)
         jiraIssuesUrl = baseUrl+"?jql=updated>='"+lastUpdated+"' ORDER BY updated ASC&maxResults="+str(self.config.get("dataFetchCount", 1000))+'&fields='+fields
+        #print "started excecution"
         changeLog = self.config.get('changeLog', None)
         if changeLog:
             jiraIssuesUrl = jiraIssuesUrl + '&expand=changelog'
@@ -60,6 +61,20 @@ class JiraAgent(BaseAgent):
                 parsedIssue = self.parseResponse(responseTemplate, issue)
                 if sprintField:
                     self.processSprintInformation(parsedIssue, issue, sprintField, self.tracking)
+                try:
+                        projectURL = parsedIssue[0]["projectUrl"]
+                        projectResponse = self.getResponse(projectURL, 'GET', self.userid, self.passwd, None)
+                        parsedIssue[0]["groupUrl"]=projectResponse.get("url",None)
+                        groupUrlVar = projectResponse.get("url",None)
+                        if groupUrlVar is not None:
+                                urlTempList = groupUrlVar.split("/")
+                                parsedIssue[0]["Product"] = str(urlTempList[3])
+                                parsedIssue[0]["Feature"] = str(urlTempList[4])
+                                #print  parsedIssue[0]["Product"]
+                #       print  parsedIssue[0]["groupUrl"]
+                except Exception as e:
+                        print e
+                        logging.error(e)
                 data += parsedIssue
                 if changeLog:
                     workLogData += self.processChangeLog(issue, changeLogFields, changeLogResponseTemplate, startFromDate)
@@ -67,20 +82,24 @@ class JiraAgent(BaseAgent):
             total = response['total']
             startAt = response['startAt']
             if len(jiraIssues) > 0:
+                print "inside if"
                 updatetimestamp = jiraIssues[len(jiraIssues) - 1]["fields"]["updated"]
                 dt = parser.parse(updatetimestamp)
                 fromDateTime = dt + datetime.timedelta(minutes=01)
                 fromDateTime = fromDateTime.strftime('%Y-%m-%d %H:%M')
                 self.tracking["lastupdated"] = fromDateTime
+                print fromDateTime
                 jiraKeyMetadata = {"dataUpdateSupported" : True,"uniqueKey" : ["key"]}
+                print "before publish"
                 self.publishToolsData(data, jiraKeyMetadata)
-                #self.publishToolsData(data)
+                print "after Publish"
                 if len(workLogData) > 0:
                     self.publishToolsData(workLogData, changeLogMetadata)
+                print "Before update tracking"
                 self.updateTrackingJson(self.tracking)
             else:
                 break
-    
+
     def buildJiraRestUrl(self, baseUrl, startFrom, fields):
         lastUpdatedDate = self.tracking.get("lastupdated", startFrom)
         endDate = parser.parse(lastUpdatedDate) + datetime.timedelta(hours=24)
@@ -90,7 +109,7 @@ class JiraAgent(BaseAgent):
         if changeLog:
             jiraIssuesUrl = jiraIssuesUrl + '&expand=changelog'
         return jiraIssuesUrl
-    
+
     def processChangeLog(self, issue, workLogFields, responseTemplate, startFromDate):
         changeLog = issue.get('changelog', None)
         workLogData = []
@@ -112,7 +131,7 @@ class JiraAgent(BaseAgent):
                             dataCopy['to'] = item['to']
                             workLogData.append(dataCopy)
         return workLogData
-    
+
     def scheduleExtensions(self):
         extensions = self.config.get('dynamicTemplate', {}).get('extensions', None)
         if extensions:
@@ -128,7 +147,7 @@ class JiraAgent(BaseAgent):
             releaseDetails = extensions.get('releaseDetails', None)
             if releaseDetails:
                 self.registerExtension('releaseDetails', self.retrieveReleaseDetails, releaseDetails.get('runSchedule'))
-    
+
     def extractFields(self, responseTemplate):
         fieldsJson = responseTemplate.get("fields", None)
         fieldsParam = ''
@@ -183,7 +202,7 @@ class JiraAgent(BaseAgent):
                 #        for sprint in sprints:
                 #            if sprintTracking.get(sprint, None) is None:
                 #                sprintTracking[sprint] = {}
-     
+
     def retrieveSprintDetails(self):
         sprintDetails = self.config.get('dynamicTemplate', {}).get('extensions', {}).get('sprints', None)
         boardApiUrl = sprintDetails.get('boardApiUrl')
@@ -211,19 +230,17 @@ class JiraAgent(BaseAgent):
                             data.append(self.parseResponse(responseTemplate, sprintResponse)[0])
                         except Exception:
                             pass;
-                    if len(data) > 0 : 
+                    if len(data) > 0 :
+                        print "pubishing sprint"
                         self.publishToolsData(data, sprintMetadata)
+                        print "published sprint "
                     continue
                 sprintsUrl = boardRestUrl + '/sprint?startAt='
                 startAt = 0
                 isLast = False
                 injectData = {'boardName' : board['name']}
                 while not isLast:
-                    try:
-                        sprintsResponse = self.getResponse(sprintsUrl+str(startAt), 'GET', self.userid, self.passwd, None)
-                    except Exception as ex3:
-                        #board['error'] = str(ex3)
-                        break
+                    sprintsResponse = self.getResponse(sprintsUrl+str(startAt), 'GET', self.userid, self.passwd, None)
                     isLast = sprintsResponse['isLast']
                     startAt = startAt + sprintsResponse['maxResults']
                     sprintValues = sprintsResponse['values']
@@ -231,9 +248,11 @@ class JiraAgent(BaseAgent):
                     for parsedSprint in parsedSprints:
                         if str(parsedSprint.get('boardId')) == str(boardId):
                             data.append(parsedSprint)
-                if len(data) > 0 : 
+                if len(data) > 0 :
+                    print "publishing board"
                     self.publishToolsData(data, sprintMetadata)
-                    
+                    print "published board"
+
     def retrieveBacklogDetails(self):
         backlogDetails = self.config.get('dynamicTemplate', {}).get('extensions', {}).get('backlog', None)
         boardApiUrl = backlogDetails.get('boardApiUrl')
@@ -264,12 +283,14 @@ class JiraAgent(BaseAgent):
                             issue['boardName'] = board['name']
                             issue['boardId'] = boardId
                             data.append(issue)
-                    if len(data) > 0 : 
+                    if len(data) > 0 :
+                        print "publishing backlog"
                         self.publishToolsData(data, backlogMetadata)
+                        print "published backlog"
                 except Exception as ex:
                     board['error'] = str(ex)
                     #Get the individual sprint details.
-    
+
     def retrieveSprintReports(self):
         sprintDetails = self.config.get('dynamicTemplate', {}).get('extensions', {}).get('sprintReport', None)
         boardApiUrl = sprintDetails.get('boardApiUrl')
@@ -317,9 +338,10 @@ class JiraAgent(BaseAgent):
                             data += self.addSprintDetails(responseTemplate, content, 'issuesCompletedInAnotherSprint', injectData)
                             if len(data) > 0:
                                 #self.publishToolsData(self.getSprintInformation(sprintReportResponse, boardId, sprintId, board['name'], board['type']), sprintMetadata)
+                                print "publishing sprint data"
                                 self.publishToolsData(data, relationMetadata)
                                 self.updateTrackingJson(self.tracking)
-    
+                                print "published sprint data updated tracking"
     def getSprintInformation(self, content, boardId, sprintId, boardName, boardType):
         data = []
         sprint = content.get('sprint')
@@ -345,7 +367,7 @@ class JiraAgent(BaseAgent):
             sprint['completeDateEpoch'] = self.getRemoteDateTime(dateTime2.strptime(completeDate.split(' ')[0], timeStampFormat)).get('epochTime')
         data.append(sprint)
         return data
-        
+
     def addSprintDetails(self, responseTemplate, content, sprintIssueRegion, injectData):
         issueKeysAddedDuringSprint = content.get('issueKeysAddedDuringSprint', {})
         issues = content.get(sprintIssueRegion, None)
@@ -358,7 +380,7 @@ class JiraAgent(BaseAgent):
                 issue['sprintIssueRegion'] = sprintIssueRegion
                 issue['projectKey'] = issueKey.split('-')[0]
         return parsedIssues
-     
+
     def retrieveReleaseDetails(self):
         releaseDetails = self.config.get('dynamicTemplate', {}).get('extensions', {}).get('releaseDetails', None)
         if releaseDetails:
@@ -374,7 +396,8 @@ class JiraAgent(BaseAgent):
                     releaseApiUrl = jiraProjectApiUrl + '/' + projectKey + '/versions'
                     releaseVersionsResponse = self.getResponse(releaseApiUrl, 'GET', self.userid, self.passwd, None)
                     parsedReleaseVersions = self.parseResponse(jiraReleaseResponseTemplate, releaseVersionsResponse)
+                    print "release version"
                     self.publishToolsData(parsedReleaseVersions, releaseVersionsMetadata)
-                    
+                    print "published release version"
 if __name__ == "__main__":
-    JiraAgent()        
+    JiraAgent()
