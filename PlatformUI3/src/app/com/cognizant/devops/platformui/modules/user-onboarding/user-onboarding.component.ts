@@ -233,10 +233,11 @@ export class UserOnboardingComponent implements OnInit {
 
     this.userPropertyList['name'] = newName;
     this.userPropertyList['email'] = email;
-    this.userPropertyList['username'] = username;
+    this.userPropertyList['userName'] = username;
     this.userPropertyList['password'] = pass;
     this.userPropertyList['role'] = this.role;
-    this.userPropertyList['org'] = this.selectedAdminOrg;
+    this.userPropertyList['orgName'] = this.selectedAdminOrg.name
+    this.userPropertyList['orgId'] = this.selectedAdminOrg.orgId
     //  console.log(this.userPropertyList)
     //console.log(this.selectedAdminOrg)
     userBMparameter = JSON.stringify(this.userPropertyList);
@@ -259,47 +260,43 @@ export class UserOnboardingComponent implements OnInit {
       this.isRoleIncorrect = true;
     }
     if (!this.isRoleIncorrect && !this.isNameIncorrect && !this.isPasswordIncorrect && !this.isUsernameIncorrect && !this.isEmailIncorrect) {
-      this.userOnboardingService.addUserInOrg(newName, email, username, this.role, this.selectedAdminOrg.orgId, this.selectedAdminOrg.name, pass)
-        .subscribe(data => {
-          //console.log(data)
-          console.log(data.message)
-          console.log(data)
-          if (data.message == "User added to organization") {
-            this.messageDialog.showApplicationsMessage("User has been added", "SUCCESS");
-          }
-          else if (data.message == " user exists in currrent org with same role " + this.role) {
-            this.messageDialog.showApplicationsMessage("User exsits in org.", "ERROR");
-          }
-          else if (data.message == " user exists in currrent org with different  role Viewer" || " user exists in currrent org with different  role Admin" || " user exists in currrent org with different  role Editor") {
+      this.userOnboardingService.addUserInOrg(userBMparameter)
+        .subscribe(adduserresponse => {
+          console.log(adduserresponse)
+          console.log(JSON.stringify(adduserresponse.data))
 
+          if (adduserresponse.data == "") {
+            this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
+          }
+
+          else if (adduserresponse.data == "Email already exists") {
+            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
+          }
+          else if (adduserresponse.data == "Username already exists") {
+            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
+          }
+          else if (adduserresponse.data == "User exists in currrent org with same role as " + this.role) {
+            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
+          }
+          else if (adduserresponse.data == "Not found") {
+            this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
+          }
+
+          else if (adduserresponse.data = "User exists in currrent org with different role as Viewer" || "User exists in currrent org with different role as Editor" || "User exists in currrent org with different role as Admin") {
             var title = "ERROR";
             //  console.log(this.deleteRelation);
-            var dialogmessage = data.message + ". Are you sure you want to update the role?"
+            var dialogmessage = adduserresponse.data + ". Are you sure you want to update the role?"
             const dialogRef = this.messageDialog.showConfirmationMessage(title, dialogmessage, this.role, "ALERT", "40%");
             dialogRef.afterClosed().subscribe(result => {
               if (result == 'yes') {
                 this.showDetail = true;
                 this.showAddUserDetail = false;
-                /*  let navigationExtras: NavigationExtras = {
-                   skipLocationChange: true,
- 
-                 };
-                 this.router.navigate(['InSights/Home/accessGroupManagement'], navigationExtras); */
               }
-
             })
-            //this.messageDialog.showApplicationsMessage(data.message, "ERROR");
-
           }
 
-          else if (data.message == "failed to create user") {
+          else if (adduserresponse.data == "failed to create user") {
             this.messageDialog.showApplicationsMessage("Failed to create user.", "ERROR");
-          }
-          else if (data.message == "email already exists") {
-            this.messageDialog.showApplicationsMessage("Email address already exists.", "ERROR");
-          }
-          else if (data.message == " username already exists") {
-            this.messageDialog.showApplicationsMessage("Username already exists.", "ERROR");
           }
         })
 

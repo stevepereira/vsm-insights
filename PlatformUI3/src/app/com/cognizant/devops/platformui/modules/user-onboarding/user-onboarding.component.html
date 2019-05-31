@@ -198,7 +198,7 @@
             <td class="AddUserColTextCss" style=" width:30px;">Name</td>
             <td>
               <input [disabled]="!adduserSaveEnable" style="margin-left: 40px;" type="text" class="inputcss"
-                [(ngModel)]='names' [value]="searchValue" required placeholder=" Input a Name">
+                [(ngModel)]='username' [value]="searchValue" required placeholder=" Input a Name">
             </td>
             <td *ngIf="isNameIncorrect" class="wrnTxt">Please enter a valid Name.</td>
           </tr>
@@ -220,7 +220,7 @@
             <td class="AddUserColTextCss" style=" width:30px;">Username</td>
             <td>
               <input [disabled]="!adduserSaveEnable" type="text" style="margin-left: 11px;" class="inputcss"
-                [(ngModel)]='username' [value]="searchValue" required placeholder=" Input a Username">
+                [(ngModel)]='names' [value]="searchValue" required placeholder=" Input a Username">
             </td>
             <td *ngIf="isUsernameIncorrect" class="wrnTxt">Please enter a valid Username.</td>
           </tr>
@@ -256,7 +256,7 @@
       </table>
 
     </div>
-<!-- Below Code needs formatting! -->
+    <!-- Below Code needs formatting! -->
     <div class="column2">
       <div class="showTable" style="text-align: center; padding: 25px;">
       </div>
