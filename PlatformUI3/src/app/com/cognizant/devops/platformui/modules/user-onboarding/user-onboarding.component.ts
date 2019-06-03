@@ -38,8 +38,12 @@ export class UserOnboardingComponent implements OnInit {
   showAddUserDetail: boolean = false;
   showThrobber: boolean = false;
   adminOrgDataArray = [];
+  orgNameArray = [];
+  orgIdArray = [];
+  userRolesArray = [];
   readOnlyOrg: boolean = false;
   userPropertyList = {};
+  assignUserData = {};
   role: any;
   isEmailIncorrect: boolean = false;
   isNameIncorrect: boolean = false;
@@ -261,31 +265,47 @@ export class UserOnboardingComponent implements OnInit {
     }
     if (!this.isRoleIncorrect && !this.isNameIncorrect && !this.isPasswordIncorrect && !this.isUsernameIncorrect && !this.isEmailIncorrect) {
       this.userOnboardingService.addUserInOrg(userBMparameter)
-        .subscribe(adduserresponse => {
-          console.log(adduserresponse)
-          console.log(JSON.stringify(adduserresponse.data))
+        .subscribe(data => {
+          console.log(data)
+          console.log(data.data)
+          console.log(typeof (data.data))
+          console.log(JSON.parse(data.data).message)
+          var userResponse = JSON.parse(data.data).message;
+          console.log(data.data)
+          // console.log(data.data["message"])
+          // console.log(JSON.stringify(data.data.message))
+          console.log(userResponse)
 
-          if (adduserresponse.data == "") {
+          if (userResponse == "User created") {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
           }
-
-          else if (adduserresponse.data == "Email already exists") {
-            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
-          }
-          else if (adduserresponse.data == "Username already exists") {
-            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
-          }
-          else if (adduserresponse.data == "User exists in currrent org with same role as " + this.role) {
-            this.messageDialog.showApplicationsMessage(adduserresponse.data, "ERROR");
-          }
-          else if (adduserresponse.data == "Not found") {
+          else if (userResponse == "Organization user updated")
+          {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
+            }
+          else if (userResponse == "Email already exists") {
+            this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
           }
+          else if (userResponse == "Username already exists") {
+            this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
+          }
+          else if (userResponse == "User exists in currrent org with same role") {
+            this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
+          }
+          else if (userResponse == "Password is missing or too short") {
+            this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
+          }
+          else if (userResponse == "failed to create user") {
+            this.messageDialog.showApplicationsMessage("Failed to create User.Please try again", "ERROR");
+          }
+          /*  else if (userResponse == "Not found") {
+             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
+           } */
 
-          else if (adduserresponse.data = "User exists in currrent org with different role as Viewer" || "User exists in currrent org with different role as Editor" || "User exists in currrent org with different role as Admin") {
+          else if (userResponse = "User exists in currrent org with different role") {
             var title = "ERROR";
             //  console.log(this.deleteRelation);
-            var dialogmessage = adduserresponse.data + ". Are you sure you want to update the role?"
+            var dialogmessage = userResponse + ". Are you sure you want to update the role?"
             const dialogRef = this.messageDialog.showConfirmationMessage(title, dialogmessage, this.role, "ALERT", "40%");
             dialogRef.afterClosed().subscribe(result => {
               if (result == 'yes') {
@@ -309,6 +329,57 @@ export class UserOnboardingComponent implements OnInit {
 
 
   }
+  async assignUser(usertoBeAdded, selectOrgForUser1, selectedrole1, selectOrgForUser2, selectedrole2, selectOrgForUser3, selectedrole3, selectOrgForUser4, selectedrole4, selectOrgForUser5, selectedrole5) {
+    this.assignUserData = {};
+    this.orgNameArray = [];
+    this.orgIdArray = [];
+    this.userRolesArray = [];
+    //console.log(selectOrgForUser2.name, selectedrole1)
+    if (selectOrgForUser1 != undefined) {
+      this.orgNameArray.push(selectOrgForUser1.name)
+      this.orgIdArray.push(selectOrgForUser1.orgId)
+      this.userRolesArray.push(selectedrole1)
+    }
+
+    if (selectOrgForUser2 != undefined) {
+      this.orgNameArray.push(selectOrgForUser2.name)
+      this.orgIdArray.push(selectOrgForUser2.orgId)
+      this.userRolesArray.push(selectedrole2)
+    }
+    if (selectOrgForUser3 != undefined) {
+      this.orgNameArray.push(selectOrgForUser3.name)
+      this.orgIdArray.push(selectOrgForUser3.orgId)
+      this.userRolesArray.push(selectedrole3)
+    }
+    if (selectOrgForUser4 != undefined) {
+      this.orgNameArray.push(selectOrgForUser4.name)
+      this.orgIdArray.push(selectOrgForUser4.orgId)
+      this.userRolesArray.push(selectedrole4)
+    }
+    if (selectOrgForUser5 != undefined) {
+      this.orgNameArray.push(selectOrgForUser5.name)
+      this.orgIdArray.push(selectOrgForUser5.orgId)
+      this.userRolesArray.push(selectedrole5)
+    }
+    console.log(this.orgNameArray)
+    //  this.userPropertyList = this.clubProperties(this.userPropertyList, false);
+    var userBMparameter;
+
+    this.assignUserData['userName'] = usertoBeAdded;
+    this.assignUserData['orgId'] = this.orgIdArray;
+    this.assignUserData['role'] = this.userRolesArray;
+    this.assignUserData['orgName'] = this.orgNameArray;
+    console.log(this.assignUserData)
+    // this.assignUserData['orgId'] = this.selectedAdminOrg.orgId
+    //  console.log(this.userPropertyList)
+    //console.log(this.selectedAdminOrg)
+    userBMparameter = JSON.stringify(this.assignUserData);
+
+  }
+
+
+
+
   adduserenableSave() {
     this.adduserSaveEnable = true
   }

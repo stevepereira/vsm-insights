@@ -258,191 +258,197 @@
     </div>
     <!-- Below Code needs formatting! -->
     <div class="column2">
-      <div class="showTable" style="text-align: center; padding: 25px;">
+      <div class="showTable" style="text-align: center; padding: 8px;">
+        <div style="margin-right: 110px;">
+          <mat-radio-group>
+            <mat-radio-button [value]="element" color="primary" (click)=adduserenableSave()>
+            </mat-radio-button>
+
+          </mat-radio-group>
+          Assign users to various access groups
+        </div>
       </div>
 
       <table>
-        <tbody>
-          <!--  style="display: grid;" -->
+        <tbody style="display: grid; max-height: 38vh">
+          <tr class="dat-row1">
 
-          <tr class="dat-row">
+            <td class="AddUserColTextCss">
+              <div>
+                <label class="mainText"> Current Access Group </label>
 
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group
+              </div>
             </td>
-            <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
-                  {{record.name}}
-                </mat-option>
-              </mat-select>
+            <td class="AddUserColTextCss">
 
             </td>
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role
-            </td>
-            <td>
+            <input [disabled]="!adduserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchOrgForUser' [value]="searchOrgForUser"
+              required placeholder=" Search by Login ID or E-mail Address">
+            <button mat-icon-button (click)="assignUser(searchOrgForUser,selectOrgForUser1,selectedrole1,selectOrgForUser2,selectedrole2,selectOrgForUser3,selectedrole3,selectOrgForUser4,selectedrole4,selectOrgForUser5,selectedrole5) ">
+              <mat-icon title="Search" class="mat-icon material-icons">
+                search
+              </mat-icon>
 
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
-                  {{record.name}}
-                </mat-option>
-              </mat-select>
-
-            </td>
-
+            </button>
           </tr>
 
           <tr class="dat-row2">
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group
-            </td>
+            <td class="AddUserColTextCss">Access Group </td>
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectOrgForUser1" [style.height.px]="20"
+                [style.width.%]="260" name="selectOrgForUser1" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role
-            </td>
+            <td style="padding-left: 130px;">Role</td>
+
+
+
+
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+              <mat-select required placeholder="Select Role" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                [(ngModel)]="selectedrole1" [style.width.%]="200 " name="role1">
+                <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
           </tr>
 
           <tr class="dat-row">
 
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group
-            </td>
+            <td class="AddUserColTextCss">Access Group </td>
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectOrgForUser2" [style.height.px]="20"
+                [style.width.%]="260" name="selectOrgForUser2" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role</td>
+            <td style="padding-left: 130px;">Role</td>
+
+
+
+
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+              <mat-select required placeholder="Select Role" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                [(ngModel)]="selectedrole2" [style.width.%]="200 " name="role2">
+                <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
+
+
+
+
+
+
+
 
           </tr>
 
           <tr class="dat-row2">
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group
-            </td>
+            <td class="AddUserColTextCss">Access Group </td>
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectOrgForUser3" [style.height.px]="20"
+                [style.width.%]="260" name="selectOrgForUser3" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role</td>
+            <td style="padding-left: 130px;">Role</td>
+
+
+
+
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+              <mat-select required placeholder="Select Role" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                [(ngModel)]="selectedrole3" [style.width.%]="200 " name="role3">
+                <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
           </tr>
 
           <tr class="dat-row">
 
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-              Group
-            </td>
+            <td class="AddUserColTextCss">Access Group </td>
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectOrgForUser4" [style.height.px]="20"
+                [style.width.%]="260" name="selectOrgForUser4" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
                 <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
-            <td style="text-align: left; width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Role</td>
+
+            <td style="padding-left: 130px;">Role</td>
+
+
+
+
             <td>
-
-              <mat-select [(ngModel)]="selectedAdminOrg" [style.height.px]="20" [style.width.%]="70" name="selectedAdminOrg"
-                [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
-
-                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+              <mat-select required placeholder="Select Role" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                [(ngModel)]="selectedrole4" [style.width.%]="200 " name="role4">
+                <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                   {{record.name}}
                 </mat-option>
               </mat-select>
-
             </td>
 
           </tr>
 
           <tr class="dat-row2">
-
-            <td style="text-align: left;  width:30px;padding-left: 15px; padding-top: 8px; align-items: center;">Access
-            </td>
+            <td class="AddUserColTextCss">Access Group </td>
             <td>
+              <mat-select [disabled]="!adduserSaveEnable" [(ngModel)]="selectOrgForUser5" [style.height.px]="20"
+                [style.width.%]="260" name="selectOrgForUser5" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
+                <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+                  {{record.name}}
+                </mat-option>
+              </mat-select>
             </td>
-            <td></td>
-            <td></td>
+
+            <td style="padding-left: 130px;">Role</td>
+
+
+
+
+            <td>
+              <mat-select required placeholder="Select Role" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                [(ngModel)]="selectedrole5" [style.width.%]="200 " name="role5">
+                <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
+                  {{record.name}}
+                </mat-option>
+              </mat-select>
+            </td>
+
           </tr>
 
         </tbody>
       </table>
 
-    </div>
 
-    <!-- <div [hidden]="!showDetail">
+      <!-- <div [hidden]="!showDetail">
     <mat-paginator #paginator [pageSize]="MAX_ROWS_PER_TABLE" showFirstLastButtons class="paginationStyle"></mat-paginator>
   </div> -->
-  </div>
+    </div>

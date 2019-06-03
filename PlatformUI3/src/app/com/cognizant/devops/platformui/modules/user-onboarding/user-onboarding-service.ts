@@ -34,6 +34,16 @@ export class UserOnboardingService implements IUserOnboardingService {
         return this.restHandler.get("ACCESS_GROUP_MANAGEMENT_GET_CURRENT_USER_ORGS");
     }
 
+
+    getUser(): Promise<any> {
+        return this.restHandler.get("ACCESS_GROUP_MANAGEMENT_GET_USERS");
+    }
+
+    getCurrentOrgRole(): Promise<any> {
+        return this.restHandler.get("ACCESS_GROUP_MANAGEMENT_GET_USERS_ORGS")
+    }
+
+
     getOrganizationUsers(orgId: number): Promise<any> {
         return this.restHandler.postWithParameter("ORG_USERS_GET", { "orgId": orgId }, { 'Content-Type': 'application/x-www-form-urlencoded' }).toPromise();
     }
@@ -68,9 +78,13 @@ export class UserOnboardingService implements IUserOnboardingService {
   */
 
     addUserInOrg(userPropertyList: string) {
-        console.log(userPropertyList);
+        console.log( userPropertyList);
         return this.restHandler.postWithData("USER_CREATE", userPropertyList, "", { 'Content-Type': 'application/x-www-form-urlencoded' })
     }
+    assignUser(assignUserList: string) {
+        return this.restHandler.postWithData("ASSIGN_USER", assignUserList, "", { 'Content-Type': 'application/json' })
+    }
+
 
 }
 
