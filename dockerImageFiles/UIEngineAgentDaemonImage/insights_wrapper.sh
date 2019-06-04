@@ -162,6 +162,14 @@ mkdir -p /opt/insightsengine/
 cd /opt/insightsengine/ && wget $insightsEngineJar
 chmod -R 755 /opt/insightsengine/
 java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar
+# Apache server 
+yum install httpd
+systemctl start httpd
+firewall-cmd --zone=public --permanent --add-service=http
+firewall-cmd --zone=public --permanent --add-service=https
+firewall-cmd --reload
+/usr/sbin/setsebool -P httpd_can_network_connect 1
+systemctl start httpd
 
 # now we bring the primary process back into the foreground
 # and leave it there
