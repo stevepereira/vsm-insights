@@ -58,7 +58,7 @@
         </mat-icon>
 
       </button>
-      <button mat-icon-button (click)="addGlobalUser()">
+      <button *ngIf="!showAddUserDetail " mat-icon-button (click)="addGlobalUser()">
         <mat-icon title="Add Global User" class="mat-icon material-icons">
           person_add
         </mat-icon>
@@ -76,7 +76,19 @@
         </mat-icon>
       </button>
 
-      <button *ngIf="showAddUserDetail" mat-icon-button (click)="saveUser(names,email,username,pass)" [disabled]="!adduserSaveEnable">
+      <button *ngIf="!showDetail2" mat-icon-button (click)="saveData() " [disabled]="!isSaveEnable ">
+        <mat-icon title="Save " class="mat-icon material-icons ">
+          save
+        </mat-icon>
+      </button>
+
+      <button *ngIf="adduserSaveEnable" mat-icon-button (click)="saveUser(names,email,username,pass)" [disabled]="!adduserSaveEnable">
+        <mat-icon title="Save " class="mat-icon material-icons ">
+          save
+        </mat-icon>
+      </button>
+
+      <button *ngIf="assignuserSaveEnable" mat-icon-button (click)="assignUser()" [disabled]="!assignuserSaveEnable">
         <mat-icon title="Save " class="mat-icon material-icons ">
           save
         </mat-icon>
@@ -95,7 +107,7 @@
       </button>
 
       <button mat-icon-button [disabled]="">
-        <mat-icon title="Cancel " class="mat-icon material-icons">
+        <mat-icon title="Cancel " class="mat-icon material-icons" (click)="Refresh()">
           cancel </mat-icon>
       </button>
 
@@ -155,7 +167,7 @@
       <div class="showTable" style="text-align: center; padding: 8px;">
         <div style="margin-right: 110px;">
           <mat-radio-group>
-            <mat-radio-button [value]="element" color="primary" (click)=adduserenableSave()>
+            <mat-radio-button [checked]="addRadioSelected" [value]="element1" color="primary" (click)=adduserenableSave()>
             </mat-radio-button>
 
           </mat-radio-group>
@@ -261,7 +273,7 @@
       <div class="showTable" style="text-align: center; padding: 20px;">
         <div style="margin-right: 110px;">
           <mat-radio-group>
-            <mat-radio-button [value]="element" color="primary" (click)=adduserenableSave()>
+            <mat-radio-button [checked]="assignRadioSelected" [value]="element2" color="primary" (click)=assignuserenableSave()>
             </mat-radio-button>
 
           </mat-radio-group>
@@ -282,9 +294,9 @@
 
             </td>
 
-            <input [disabled]="!adduserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchOrgForUser' [value]="searchOrgForUser"
-              required placeholder=" Search by Login ID or E-mail Address">
-            <button mat-icon-button (click)="assignUser()">
+            <input [disabled]="!assignuserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchOrgForUser'
+              [value]="searchOrgForUser" required placeholder=" Search by Login ID">
+            <button mat-icon-button (click)="searchData(searchOrgForUser,selectedAdminOrg)">
               <mat-icon title="Search" class="mat-icon material-icons">
                 search
               </mat-icon>
@@ -303,11 +315,11 @@
                   <tr class="AddUserColTextCss" *ngFor="let row of rows?.controls;let index = index;">
                     <td>Access Group </td>
                     <td>
-                      <mat-select required placeholder="Select Access Group" [formControl]="row.get('org')"
-                        [style.width.px]="100 " [style.height.px]="20" [style.width.px]="160" name="selectOrgForUser5"
-                        [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+                      <mat-select [disabled]="!assignuserSaveEnable" required placeholder="Select Access Group"
+                        [formControl]="row.get('org')" [style.width.px]="100 " [style.height.px]="20" [style.width.px]="160"
+                        name="selectOrgForUser5" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
 
-                        <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+                        <mat-option [disabled]="!assignuserSaveEnable" *ngFor="let record of adminOrgDataArray" [value]="record">
                           {{record.name}}
                         </mat-option>
                       </mat-select>

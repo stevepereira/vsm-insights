@@ -36,7 +36,9 @@ export class UserOnboardingComponent implements OnInit {
   userListUrl: SafeResourceUrl;
   framesize: any;
   adduserSaveEnable: boolean = false;
+  assignuserSaveEnable: boolean = false
   showAddUserDetail: boolean = false;
+  showAssignUserDetail: boolean = false;
   showThrobber: boolean = false;
   adminOrgDataArray = [];
   orgNameArray = [];
@@ -54,6 +56,8 @@ export class UserOnboardingComponent implements OnInit {
   isOrgIncorrect: boolean = false;
   selectedUser: any;
   oldSelectedUser: any;
+  addSelected: boolean = false;
+  assignSelected: boolean = false;
   listFilter: any;
   searchValue: string = '';
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -61,6 +65,9 @@ export class UserOnboardingComponent implements OnInit {
   userDataSource = new MatTableDataSource<any>();
   MAX_ROWS_PER_TABLE = 10;
   displayedColumns = [];
+  showDetail2: boolean = true;
+  addRadioSelected: boolean = false;
+  assignRadioSelected: boolean = false;
   isbuttonenabled: boolean = false;
   isSaveEnable: boolean = false;
   showDetail: boolean = false;
@@ -359,15 +366,46 @@ export class UserOnboardingComponent implements OnInit {
         })
     }
   }
+  Refresh() {
 
+    this.adduserSaveEnable = false;
+    this.addSelected = false;
+    this.assignSelected = false;
+    this.showDetail2 = false;
+    this.addRadioSelected = false;
+    this.assignRadioSelected = false;
+    this.assignuserSaveEnable = false;
+  }
   adduserenableSave() {
-    this.adduserSaveEnable = true
+    this.showAddUserDetail = true;
+    this.adduserSaveEnable = true;
+    this.addSelected = true;
+    this.assignSelected = false;
+    this.showDetail2 = true;
+    this.addRadioSelected = true;
+    this.assignRadioSelected = false;
+    this.assignuserSaveEnable = false;
+
+  }
+  assignuserenableSave() {
+    this.adduserSaveEnable = false;
+    this.showAssignUserDetail = true;
+    this.assignuserSaveEnable = true;
+    this.assignSelected = true;
+    this.addSelected = false;
+    this.showDetail2 = true;
+    this.assignRadioSelected = true;
+    this.addRadioSelected = false;
   }
 
   searchData(searchUser, selectedAdminOrg) {
     var count = 0;
     var self = this;
     self.userDataSource = new MatTableDataSource();
+    console.log(this.assignRadioSelected)
+    if (this.assignRadioSelected == true) {
+      selectedAdminOrg.orgId = 1;
+    }
     this.userOnboardingService.getOrganizationUsers(selectedAdminOrg.orgId).then(function (usersResponseData) {
       if (usersResponseData.data != undefined && usersResponseData.status == "success") {
         self.userDataSource.data = usersResponseData.data; //new MatTableDataSource( )
@@ -495,8 +533,10 @@ export class UserOnboardingComponent implements OnInit {
     }
   }
   addGlobalUser() {
-    this.showAddUserDetail = true
+    this.showAssignUserDetail = true;
+    this.showAddUserDetail = true;
     this.showDetail = false;
+    this.showDetail2 = false
   }
 }
 
