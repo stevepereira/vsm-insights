@@ -22,12 +22,11 @@ import java.util.List;
 
 /**
  * 
- * @author 146414
- *  This class will hold all the config options required for application setup.
- *  These options will also be persisted in DB
+ * @author 146414 This class will hold all the config options required for
+ *         application setup. These options will also be persisted in DB
  *
  */
-public class ApplicationConfigProvider implements Serializable{
+public class ApplicationConfigProvider implements Serializable {
 	private static ApplicationConfigProvider instance = new ApplicationConfigProvider();
 	private EndpointData endpointData = new EndpointData();
 	private SparkConfigurations sparkConfigurations = new SparkConfigurations();
@@ -44,27 +43,33 @@ public class ApplicationConfigProvider implements Serializable{
 	private String proxyHost;
 	private int proxyPort;
 	private Date refreshTime;
-	private List<String> trustedHosts = new ArrayList<String>(3);	
+	private List<String> trustedHosts = new ArrayList<String>(3);
+	private boolean enableOnlineDatatagging = false;
 	private boolean enableNativeUsers;
-    private CorrelationConfig correlations;
-    private EmailConfiguration emailConfiguration=new EmailConfiguration();
-    private boolean enableFieldIndex;
 
-	private ApplicationConfigProvider(){
+	private EmailConfiguration emailConfiguration = new EmailConfiguration();
+	private CorrelationConfig correlations;
+	private boolean enableFieldIndex;
+	private boolean enableOnlineBackup = false;
+	private AgentDetails agentDetails = new AgentDetails();
+
+	private QueryCache queryCache = new QueryCache();
+
+	private ApplicationConfigProvider() {
 		this.refreshTime = new Date(new Date().getTime() - 86400000);
 	}
-	
-	public static void performSystemCheck(){
-		if((new Date().getTime() - instance.refreshTime.getTime()) >= 86400000){
+
+	public static void performSystemCheck() {
+		if ((new Date().getTime() - instance.refreshTime.getTime()) >= 86400000) {
 			instance.refreshTime = new Date();
 		}
 	}
-	
-	public static ApplicationConfigProvider getInstance(){
+
+	public static ApplicationConfigProvider getInstance() {
 		return instance;
 	}
-	
-	public static void updateConfig(ApplicationConfigProvider cachedInstance){
+
+	public static void updateConfig(ApplicationConfigProvider cachedInstance) {
 		instance = cachedInstance;
 	}
 
@@ -75,7 +80,7 @@ public class ApplicationConfigProvider implements Serializable{
 	public void setEndpointData(EndpointData endpointData) {
 		this.endpointData = endpointData;
 	}
-		
+
 	public SparkConfigurations getSparkConfigurations() {
 		return sparkConfigurations;
 	}
@@ -168,6 +173,14 @@ public class ApplicationConfigProvider implements Serializable{
 		return proxyHost;
 	}
 
+	public AgentDetails getAgentDetails() {
+		return agentDetails;
+	}
+
+	public void setAgentDetails(AgentDetails agentDetails) {
+		this.agentDetails = agentDetails;
+	}
+
 	public EmailConfiguration getEmailConfiguration() {
 		return emailConfiguration;
 	}
@@ -227,4 +240,29 @@ public class ApplicationConfigProvider implements Serializable{
 	public void setEnableFieldIndex(boolean enableFieldIndex) {
 		this.enableFieldIndex = enableFieldIndex;
 	}
+
+	public boolean isEnableOnlineBackup() {
+		return enableOnlineBackup;
+	}
+
+	public void setEnableOnlineBackup(boolean enableOnlineBackup) {
+		this.enableOnlineBackup = enableOnlineBackup;
+	}
+
+	public boolean isEnableOnlineDatatagging() {
+		return enableOnlineDatatagging;
+	}
+
+	public QueryCache getQueryCache() {
+		return queryCache;
+	}
+
+	public void setQueryCache(QueryCache queryCache) {
+		this.queryCache = queryCache;
+	}
+
+	public void setEnableOnlineDatatagging(boolean enableOnlineDatatagging) {
+		this.enableOnlineDatatagging = enableOnlineDatatagging;
+	}
+
 }

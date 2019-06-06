@@ -3,7 +3,8 @@
 		"user" : "iSight", 
 		"password" : "iSight", 
 		"host" : "127.0.0.1", 
-		"exchange" : "iSight"
+		"exchange" : "iSight",
+		"agentControlXchg":"iAgent"
 	},
 	"subscribe" : {
 		"config" : "SCM.GIT.config"
@@ -13,31 +14,48 @@
 		"health" : "SCM.GIT.HEALTH"
 	},
 	"communication":{
-		"type" : "REST" 
+		"type" : "REST",
+    	"sslVerify": true,
+    	"responseType": "JSON" 
 	},
-	"responseTemplate" : {
-		"sha": "commitId",
-		"commit" : {
-			"author" : {
-				"name": "authorName",
-				"date": "commitTime"
+	"dynamicTemplate": {
+	  "timeFieldMapping" : {
+		"startDate" : "%Y-%m-%d"
+  		},
+		"responseTemplate" : {
+			"sha": "commitId",
+			"commit" : {
+				"message": "message",
+				"author" : {
+					"name": "authorName",
+					"date": "commitTime"
+				}
 			}
 		}
 	},
+	"agentId": "",
 	"enableBranches" : false,
+	"enableBrancheDeletion" : false,
+	"enableDataValidation": true,	
+	"toolCategory" : "SCM",
 	"toolsTimeZone" : "GMT",
 	"insightsTimeZone" : "Asia/Kolkata",
+	"enableValueArray": false,
 	"useResponseTemplate" : true,
 	"auth" : "base64",
 	"runSchedule" : 30,
 	"timeStampField":"commitTime",
 	"timeStampFormat":"%Y-%m-%dT%H:%M:%SZ",
-	"StartFrom" : "2016-10-10 15:46:33",
-	"AccessToken": "accesstoken",
-	"GetRepos":"https://api.github.com/users/<USER_NAME>/repos",
-	"CommitsBaseEndPoint":"https://api.github.com/repos/<REPO_NAME>/",
+	"isEpochTimeFormat" : false,
+	
+	"startFrom" : "2019-03-01 15:46:33",
+	"accessToken": "accesstoken",
+	"getRepos":"https://api.github.com/users/<USER_NAME>/repos",
+	"commitsBaseEndPoint":"https://api.github.com/repos/<REPO_NAME>/",
 	"isDebugAllowed" : false,
 	"loggingSetting" : {
-		"logLevel" : "WARN"
+		"logLevel" : "WARN",
+		"maxBytes" : 5000000,
+		"backupCount" : 1000
 	}
 }

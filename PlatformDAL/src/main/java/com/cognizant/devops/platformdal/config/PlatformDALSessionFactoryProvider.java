@@ -26,11 +26,13 @@ import com.cognizant.devops.platformdal.dashboards.CustomDashboard;
 import com.cognizant.devops.platformdal.entity.definition.EntityDefinition;
 import com.cognizant.devops.platformdal.grafana.user.User;
 import com.cognizant.devops.platformdal.hierarchy.details.HierarchyDetails;
+import com.cognizant.devops.platformdal.icon.Icon;
 import com.cognizant.devops.platformdal.mapping.hierarchy.HierarchyMapping;
 import com.cognizant.devops.platformdal.mapping.projects.ProjectMapping;
+import com.cognizant.devops.platformdal.queryBuilder.QueryBuilderConfig;
+import com.cognizant.devops.platformdal.settingsconfig.SettingsConfiguration;
 import com.cognizant.devops.platformdal.tools.layout.ToolsLayout;
 import com.cognizant.devops.platformdal.user.UserPortfolio;
-import com.cognizant.devops.platformdal.icon.Icon;
 
 public class PlatformDALSessionFactoryProvider {
 	private static SessionFactory sessionFactory;
@@ -54,6 +56,8 @@ public class PlatformDALSessionFactoryProvider {
 			configuration.addAnnotatedClass(HierarchyDetails.class);
 			configuration.addAnnotatedClass(HierarchyMapping.class);
 			configuration.addAnnotatedClass(Icon.class);
+			configuration.addAnnotatedClass(SettingsConfiguration.class);
+			configuration.addAnnotatedClass(QueryBuilderConfig.class);
 			PostgreData postgre = ApplicationConfigProvider.getInstance().getPostgre();
 			if(postgre != null){
 				configuration.setProperty("hibernate.connection.username", postgre.getUserName());

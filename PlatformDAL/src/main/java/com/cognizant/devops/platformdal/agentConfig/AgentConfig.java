@@ -32,6 +32,7 @@ public class AgentConfig {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
+	@Deprecated
 	@Column(name = "AGENT_ID")
 	private int agentId;
 
@@ -41,17 +42,33 @@ public class AgentConfig {
 	@Column(name = "TOOL_CATEGORY")
 	private String toolCategory;
 
-	@Column(name = "AGENT_JSON", length = 1023)
+	@Column(name = "AGENT_JSON" ,length = 10000)
 	private String agentJson;
 
 	@Column(name = "UPDATE_DATE")
 	private Date updatedDate;
 	
+	@Deprecated
 	@Column(name = "DATA_UPDATE_SUPPORTED")
-	private Boolean dataUpdateSupported;
+	private Boolean dataUpdateSupported = false;
 	
+	@Deprecated
 	@Column(name = "UNIQUE_KEY")
 	private String uniqueKey;
+	
+	@Column(name = "OS_VERSION")
+	private String osVersion;
+	
+	@Column(name = "AGENT_VERSION")
+	private String agentVersion;
+	
+	@Column(name = "AGENT_STATUS")
+	private String agentStatus;
+	
+	@Column(name = "AGENT_KEY", unique = true, nullable = false)
+	private String agentKey;
+	
+	
 	
 	public int getId() {
 		return id;
@@ -60,11 +77,13 @@ public class AgentConfig {
 	public void setId(int id) {
 		this.id = id;
 	}
-
+	
+	@Deprecated
 	public int getAgentId() {
 		return agentId;
 	}
 
+	@Deprecated
 	public void setAgentId(int agentId) {
 		this.agentId = agentId;
 	}
@@ -97,23 +116,67 @@ public class AgentConfig {
 		return updatedDate;
 	}
 
-	public void setUpdatedDate(Date updatedDate) {
-		this.updatedDate = updatedDate;
-	}
-
-	public Boolean isDataUpdateSupported() {
+	public Boolean getDataUpdateSupported() {
 		return dataUpdateSupported;
-	}
-
-	public void setDataUpdateSupported(Boolean dataUpdateSupported) {
-		this.dataUpdateSupported = dataUpdateSupported;
 	}
 
 	public String getUniqueKey() {
 		return uniqueKey;
 	}
 
+	public void setUpdatedDate(Date updatedDate) {
+		this.updatedDate = updatedDate;
+	}
+
+	@Deprecated
+	public Boolean isDataUpdateSupported() {
+		return dataUpdateSupported;
+	}
+
+	@Deprecated
+	public void setDataUpdateSupported(Boolean dataUpdateSupported) {
+		this.dataUpdateSupported = dataUpdateSupported;
+	}
+
+	@Deprecated
+	public String Subscriber() {
+		return uniqueKey;
+	}
+
+	@Deprecated
 	public void setUniqueKey(String uniqueKey) {
 		this.uniqueKey = uniqueKey;
+	}
+
+	public String getOsVersion() {
+		return osVersion;
+	}
+
+	public void setOsVersion(String osVersion) {
+		this.osVersion = osVersion;
+	}
+
+	public String getAgentVersion() {
+		return agentVersion;
+	}
+
+	public void setAgentVersion(String agentVersion) {
+		this.agentVersion = agentVersion;
+	}
+
+	public String getAgentStatus() {
+		return agentStatus;
+	}
+
+	public void setAgentStatus(String agentStatus) {
+		this.agentStatus = agentStatus;
+	}
+
+	public String getAgentKey() {
+		return agentKey;
+	}
+
+	public void setAgentKey(String agentKey) {
+		this.agentKey = agentKey;
 	}
 }

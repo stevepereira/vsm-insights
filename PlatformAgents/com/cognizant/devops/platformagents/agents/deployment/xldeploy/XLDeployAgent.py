@@ -22,13 +22,13 @@ Created on Oct 13, 2016
 import json
 import datetime
 from datetime import timedelta
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 
 class XLDeployAgent(BaseAgent):
     def process(self):
-        BaseEndPoint = self.config.get("BaseEndPoint", '')
-        UserId = self.config.get("UserID", '')
-        Passwd = self.config.get("Passwd", '')
+        BaseEndPoint = self.config.get("baseEndPoint", '')
+        UserId = self.config.get("userID", '')
+        Passwd = self.config.get("passwd", '')
         begindate = self.tracking.get("begindate", '')
         listtasksurl = BaseEndPoint+"/tasks/v2/export?begindate="+begindate
         try:

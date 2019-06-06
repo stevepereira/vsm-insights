@@ -23,14 +23,14 @@ from dateutil import parser
 import requests
 import xml.etree.ElementTree as ET
 from requests.auth import HTTPBasicAuth
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 
 class JenkinsAgent(BaseAgent):
     def process(self):
         self.userid = self.config.get("userid", '')
         self.passwd = self.config.get("passwd", '')
-        self.BaseUrl = self.config.get("BaseUrl", '')
-        startFrom = self.config.get("StartFrom", '')
+        self.BaseUrl = self.config.get("baseUrl", '')
+        startFrom = self.config.get("startFrom", '')
         startFrom = parser.parse(startFrom)
         startFrom = mktime(startFrom.timetuple()) + startFrom.microsecond/1000000.0
         self.startFrom = long(startFrom * 1000)

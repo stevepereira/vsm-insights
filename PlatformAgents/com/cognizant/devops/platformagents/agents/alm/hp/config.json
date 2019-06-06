@@ -3,7 +3,8 @@
     "user": "iSight",
     "password": "iSight",
     "host": "127.0.0.1",
-    "exchange": "iSight"
+    "exchange": "iSight",
+    "agentControlXchg":"iAgent"
   },
   "subscribe": {
     "config": "ALM.HP.config"
@@ -13,32 +14,43 @@
     "health": "ALM.HP.HEALTH"
   },
   "communication": {
-    "type": "REST"
+    "type": "REST",
+    "sslVerify": true,
+    "responseType": "JSON"
   },
-  "almEntities" : {
-  	"requirements" : {
-		"parent-id" : "parentId", 
-		"id"		: "id", 
-		"name"		: "name", 
-		"creation-time" : "creationTime", 
-		"last-modified" : "lastModified", 
-		"req-reviewed"  : "reqReviewed", 
-		"req-priority"  : "priority", 
-		"father-name"   : "fatherName"
-	},
-	"defects" : {
-		"id" : "id", 
-		"priority" : "priority", 
-		"name" : "name", 
-		"creation-time" : "creationTime", 
-		"last-modified" : "lastModified", 
-		"status" : "status", 
-		"severity" : "severity", 
-		"detected-by" : "detectedBy", 
-		"owner" : "owner"
-	}
+  "dynamicTemplate": {
+	  "timeFieldMapping" : {
+		"startDate" : "%Y-%m-%d"
+ 	   },
+	  "almEntities" : {
+	  	"requirements" : {
+			"parent-id" : "parentId", 
+			"id"		: "id", 
+			"name"		: "name", 
+			"creation-time" : "creationTime", 
+			"last-modified" : "lastModified", 
+			"req-reviewed"  : "reqReviewed", 
+			"req-priority"  : "priority", 
+			"father-name"   : "fatherName"
+		},
+		"defects" : {
+			"id" : "id", 
+			"priority" : "priority", 
+			"name" : "name", 
+			"creation-time" : "creationTime", 
+			"last-modified" : "lastModified", 
+			"status" : "status", 
+			"severity" : "severity", 
+			"detected-by" : "detectedBy", 
+			"owner" : "owner"
+		}
+	  }
   },
+  "agentId": "",
+  "toolCategory" : "ALM",
+  "enableDataValidation": true,
   "dataFetchCount" : 200,
+  "useResponseTemplate" : false,
   "auth": "base64",
   "runSchedule": 30,
   "userid": "userid",
@@ -48,8 +60,12 @@
   "toolsTimeZone" : "Asia/Kolkata",
   "timeStampField":"last-modified",
   "timeStampFormat":"%Y-%m-%d %H:%M:%S",
+  "isEpochTimeFormat" : false,
+  
   "isDebugAllowed" : true,
   	"loggingSetting" : {
-		"logLevel" : "WARN"
+		"logLevel" : "WARN",
+		"maxBytes" : 5000000,
+		"backupCount" : 1000
 	}
 }

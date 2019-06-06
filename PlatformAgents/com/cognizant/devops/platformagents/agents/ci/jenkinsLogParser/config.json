@@ -3,7 +3,8 @@
     "user": "iSight",
     "password": "iSight",
     "host": "127.0.0.1",
-    "exchange": "iSight"
+    "exchange": "iSight",
+    "agentControlXchg":"iAgent"
   },
   "subscribe": {
     "config": "CI.JENKINS.config"
@@ -13,44 +14,51 @@
     "health": "CI.JENKINS.HEALTH"
   },
   "communication": {
-    "type": "REST"
+    "type": "REST",
+    "sslVerify": true,
+    "responseType": "JSON"
   },
-  "responseTemplate": {
-  "actions": [
-    {
-      "causes": [
-        {
-          "shortDescription": "shortDescription"
-        }
-      ]
-    },
-    {
-      "remoteUrls": [
-        "scmUrl"
-      ]
-    },
-    {
-    "url": "sonarUrl"
-    }
-  ],
-  "changeSet": {
-    "items": [
-      {
-        "commitId": "scmCommitId",
-        "author": {
-          "fullName": "scmAuthor"
-        },
-        "date": "buildDate"
-      }
-    ],
-    "kind": "scmKind"
-  },
-  "duration": "duration",
-  "id": "buildNumber",
-  "result": "result",
-  "timestamp": "buildTimestamp",
-  "url": "buildUrl"
-},
+ "dynamicTemplate": {
+ 	 "timeFieldMapping" : {
+		"startDate" : "%Y-%m-%d"
+  	 },
+	 "responseTemplate": {
+		  "actions": [
+		    {
+		      "causes": [
+		        {
+		          "shortDescription": "shortDescription"
+		        }
+		      ]
+		    },
+		    {
+		      "remoteUrls": [
+		        "scmUrl"
+		      ]
+		    },
+		    {
+		    "url": "sonarUrl"
+		    }
+		  ],
+		  "changeSet": {
+		    "items": [
+		      {
+		        "commitId": "scmCommitId",
+		        "author": {
+		          "fullName": "scmAuthor"
+		        },
+		        "date": "buildDate"
+		      }
+		    ],
+		    "kind": "scmKind"
+		  },
+		  "duration": "duration",
+		  "id": "buildNumber",
+		  "result": "result",
+		  "timestamp": "buildTimestamp",
+		  "url": "buildUrl"
+		}  
+	},
 "jobDetails" : {
 	"rundeckJobId" : "maven2-moduleset/publishers/org.jenkinsci.plugins.rundeck.RundeckNotifier/jobId",
 	"scmRemoteUrl" : "maven2-moduleset/scm/userRemoteConfigs/hudson.plugins.git.UserRemoteConfig/url",
@@ -58,11 +66,16 @@
 	"groupId" : "maven2-moduleset/rootModule/groupId",
 	"artifactId" : "maven2-moduleset/rootModule/artifactId"
 },
+"agentId" :"",
+"toolCategory" : "CI",
 "toolsTimeZone" : "Asia/Kolkata",
+"enableDataValidation": true,
+"isDebugAllowed" : false,
+"enableValueArray": false,
 "useResponseTemplate" : true,
 "useAllBuildsApi" : false,
 "runSchedule": 30,
-"BaseUrl": "http://127.0.0.1:8080/",
+"baseUrl": "http://127.0.0.1:8080/",
 "jenkinsMasters" : {
   	"master1" : "http://127.0.0.1:8080/",
   	"master2" : "http://127.0.0.1:8080/"
@@ -70,8 +83,10 @@
 "timeStampField":"buildTimestamp",
 "timeStampFormat":"epoch",
 "isEpochTimeFormat" : true,
-"StartFrom" : "2016-10-10 15:46:33",
+"startFrom" : "2019-03-01 15:46:33",
 "loggingSetting" : {
-	"logLevel" : "WARN"
+	"logLevel" : "WARN",
+	"maxBytes" : 5000000,
+	"backupCount" : 1000
 }
 }

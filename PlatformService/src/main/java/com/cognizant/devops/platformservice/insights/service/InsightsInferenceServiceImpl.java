@@ -26,7 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ import com.google.gson.JsonObject;
 @Service("insightsInferenceService")
 public class InsightsInferenceServiceImpl implements InsightsInferenceService {
 
-	private static final Logger log = Logger.getLogger(InsightsInferenceServiceImpl.class);
+	private static final Logger log = LogManager.getLogger(InsightsInferenceServiceImpl.class);
 	
 	@Autowired
 	private ReloadableResourceBundleMessageSource messageSource;
@@ -54,9 +55,7 @@ public class InsightsInferenceServiceImpl implements InsightsInferenceService {
 	}
 
 	public List<InsightsInference> getInferenceDetails(String schedule) {
-		List<InsightsInference> inferences = getInferences(schedule);
-		
-		return inferences;
+		return getInferences(schedule);
 	}
 
 	private List<InsightsInference> getInferences(String schedule) {
@@ -151,11 +150,40 @@ public class InsightsInferenceServiceImpl implements InsightsInferenceService {
 
 						trend = getTrend(values[0],values[1]);
 
-					}
-					
-					tempMap = getFinalResultMap(schedule, resultFirstData, sentiment, values, trend, inferenceResultDetailsList, tempMap);
-					//return tempMap;
-			}
+					trend = getTrend(values[0],values[1]);
+
+				}
+				
+				Long kpiID = resultFirstData.getKpiID();
+				String inferenceName = resultFirstData.getName();
+				String action =  resultFirstData.getAction();
+				String jobSchedule = resultFirstData.getSchedule();
+				String resultOutputType = resultFirstData.getResultOutPutType();
+				boolean isComparison = resultFirstData.getIsComparisionKpi();
+				Date lastRunDate = new Date(resultFirstData.getResultTime());
+				String vector = resultFirstData.getVector();
+				
+				String inferenceText = getInferenceText(inferenceName,
+						vector,	kpiID, sentiment, schedule, values,
+						isComparison, resultOutputType);
+
+				
+				List<ResultSetModel> resultValues = new ArrayList<ResultSetModel>();
+				for (InferenceResultDetails details : inferenceResultDetailsList) {
+					ResultSetModel model = new ResultSetModel();
+					model.setValue(details.getResult());
+					model.setResultDate(new Date(details.getResultTime()));
+					resultValues.add(model);
+				}
+				Collections.reverse(resultValues);
+				List<InsightsInferenceDetail> detailsList = getInferenceDetails(inferenceName, sentiment, action, trend,
+						inferenceText, jobSchedule, lastRunDate, resultValues, kpiID);
+				if (tempMap.get(vector) != null) {
+					tempMap.get(vector).addAll(detailsList);
+				} else {
+					tempMap.put(vector, detailsList);
+				}
+				//return tempMap;
 		}
 			
 		return tempMap;
@@ -245,7 +273,7 @@ public class InsightsInferenceServiceImpl implements InsightsInferenceService {
 	}
 
 	private List<InsightsInferenceDetail> getInferenceDetails(String name, KPISentiment sentiment, String action,
-			String trend, String inferenceLine, String jobSchedule, Date lastRunDate, List<ResultSetModel> result) {
+			String trend, String inferenceLine, String jobSchedule, Date lastRunDate, List<ResultSetModel> result, Long kpiID) {
 
 		List<InsightsInferenceDetail> details = new ArrayList<>(10);
 
@@ -258,6 +286,7 @@ public class InsightsInferenceServiceImpl implements InsightsInferenceService {
 		detail.setSchedule(jobSchedule);
 		detail.setLastRun(lastRunDate);
 		detail.setResultSet(result);
+		detail.setKpiId(kpiID.intValue());
 		details.add(detail);
 
 		return details;

@@ -22,20 +22,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.cognizant.devops.platformservice.rest.util.PlatformServiceUtil;
+
 @Component
 public class SpringAuthenticationEntryPoint implements AuthenticationEntryPoint {
-	static Logger log = Logger.getLogger(SpringAuthenticationEntryPoint.class.getName());
+	static Logger log = LogManager.getLogger(SpringAuthenticationEntryPoint.class.getName());
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
 		log.error(authException);
-		String msg = "{ \"error\" : { \"message\" : \"Invalid Credentials\"}}";
+		//String msg = "{ \"error\" : { \"message\" : \"Invalid Credentials\"}}";
+		String msg = PlatformServiceUtil.buildFailureResponse("Invalid Credentials").toString();
 		PrintWriter writer = response.getWriter();
 		writer.write(msg);
 		writer.flush();

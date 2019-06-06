@@ -20,14 +20,14 @@ Created on Jun 28, 2016
 '''
 #from time import mktime
 from dateutil import parser
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 
 class BitBucketCloudAgent(BaseAgent):
     def process(self):
-        BaseEndPoint = self.config.get("BaseEndPoint", '')
-        UserId = self.config.get("UserID", '')
-        Passwd = self.config.get("Passwd", '')
-        startFrom = self.config.get("StartFrom", '')
+        BaseEndPoint = self.config.get("baseEndPoint", '')
+        UserId = self.config.get("userID", '')
+        Passwd = self.config.get("passwd", '')
+        startFrom = self.config.get("startFrom", '')
         startFromLen = len(startFrom)
         startFrom = parser.parse(startFrom)
         getProjectsUrl = BaseEndPoint + '?fields=values.slug'

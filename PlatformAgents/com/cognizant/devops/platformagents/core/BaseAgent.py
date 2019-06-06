@@ -20,8 +20,8 @@ Created on Jun 16, 2016
 '''
 
 import json
-from com.cognizant.devops.platformagents.core.MessageQueueProvider import MessageFactory
-from com.cognizant.devops.platformagents.core.CommunicationFacade import CommunicationFacade
+from .MessageQueueProvider import MessageFactory
+from .CommunicationFacade import CommunicationFacade
 from apscheduler.schedulers.blocking import BlockingScheduler
 import sys
 import os.path
@@ -29,11 +29,13 @@ import uuid
 from datetime import datetime
 from pytz import timezone
 import logging.handlers
+import time
 
 class BaseAgent(object):
        
     def __init__(self):
         try:
+            self.shouldAgentRun = True;
             self.setupAgent()
         except Exception as ex:
             self.publishHealthData(self.generateHealthData(ex=ex))
@@ -48,6 +50,7 @@ class BaseAgent(object):
         self.loadCommunicationFacade()
         self.initializeMQ()
         #self.configUpdateSubscriber()
+        self.subscriberForAgentControl()
         self.setupLocalCache()
         self.extractToolName()
         self.scheduleExtensions()
@@ -57,25 +60,40 @@ class BaseAgent(object):
     
     def resolveConfigPath(self):
         filePresent = os.path.isfile('config.json')
-        if filePresent:
+        agentDir = os.path.dirname(sys.modules[self.__class__.__module__].__file__) + os.path.sep
+        if "INSIGHTS_HOME" in os.environ:
+            logDirPath = os.environ['INSIGHTS_HOME']+'/logs/PlatformAgent'
+            if not os.path.exists(logDirPath):
+                os.makedirs(logDirPath)
+        else:
+            logDirPath = agentDir
+	if filePresent:
             self.configFilePath = 'config.json'
             self.trackingFilePath = 'tracking.json'
-            self.logFilePath = 'log_'+type(self).__name__+'.log'
+            #self.logFilePath = logDirPath +'/'+ 'log_'+type(self).__name__+'.log'            
         else:
-            agentDir = os.path.dirname(sys.modules[self.__class__.__module__].__file__) + os.path.sep
             self.configFilePath = agentDir+'config.json'
-            self.trackingFilePath = agentDir+'tracking.json'
-            self.logFilePath = agentDir+'log_'+type(self).__name__+'.log'
+            self.trackingFilePath = agentDir+'tracking.json' 
+	    #self.logFilePath = logDirPath + '/'+'log_'+type(self).__name__+'.log'	    
         trackingFilePresent = os.path.isfile(self.trackingFilePath)
         if not trackingFilePresent:
             self.updateTrackingJson({})
     
     def setupLogging(self):
+        agentDir = os.path.dirname(sys.modules[self.__class__.__module__].__file__) + os.path.sep
+        self.logFilePath = agentDir +'/'+ 'log_'+type(self).__name__+'.log'
+        if self.config.get('agentId') != None and self.config.get('agentId') != '':
+            if "INSIGHTS_HOME" in os.environ:
+                logDirPath = os.environ['INSIGHTS_HOME']+'/logs/PlatformAgent'
+                if not os.path.exists(logDirPath):
+                    os.makedirs(logDirPath)
+                self.logFilePath = logDirPath +'/'+ 'log_'+self.config.get('agentId')+'.log'
+        
         loggingSetting = self.config.get('loggingSetting',{})
         maxBytes = loggingSetting.get('maxBytes', 1000 * 1000 * 5)
         backupCount = loggingSetting.get('backupCount', 1000)
         handler = logging.handlers.RotatingFileHandler(self.logFilePath, maxBytes=maxBytes, backupCount=backupCount)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(filename)s - %(lineno)s - %(funcName)s - %(message)s')
         handler.setFormatter(formatter)
         logging.getLogger().setLevel(loggingSetting.get('logLevel',logging.WARN))
         logging.getLogger().addHandler(handler)
@@ -94,7 +112,7 @@ class BaseAgent(object):
     
     def buildTimeFormatLengthMapping(self):
         self.timeFormatLengthMapping = {}
-        timeFieldMapping = self.config.get('timeFieldMapping', None)
+        timeFieldMapping = self.config.get('dynamicTemplate', {}).get('timeFieldMapping', None)
         if timeFieldMapping:
             for field in timeFieldMapping:
                 self.timeFormatLengthMapping[field] = len(self.epochStartDateTime.strftime(timeFieldMapping[field]))
@@ -132,13 +150,32 @@ class BaseAgent(object):
         if mqConfig == None:
             raise ValueError('BaseAgent: unable to initialize MQ. mqConfig is not found')
         
-        self.messageFactory = MessageFactory(mqConfig.get('user', None), 
-                                             mqConfig.get('password', None), 
-                                             mqConfig.get('host', None), 
-                                             mqConfig.get('exchange', None))
+        user = mqConfig.get('user', None)
+        mqPass =  mqConfig.get('password', None)
+        host = mqConfig.get('host', None)
+        exchange = mqConfig.get('exchange', None)
+        agentCtrlXchg  = mqConfig.get('agentControlXchg', None)
+        
+        self.messageFactory = MessageFactory(user,mqPass,host,exchange)
         if self.messageFactory == None:
             raise ValueError('BaseAgent: unable to initialize MQ. messageFactory is Null')
         
+        self.agentCtrlMessageFactory = MessageFactory(user,mqPass,host,agentCtrlXchg)
+
+    '''
+    Subscribe for Agent START/STOP exchange and queue
+    '''
+    def subscriberForAgentControl(self):
+        routingKey = self.config.get('subscribe').get('agentCtrlQueue')
+        def callback(ch, method, properties, data):
+            #Update the config file and cache.
+            action = data
+            if "STOP" == action:
+                self.shouldAgentRun = False
+                self.publishHealthData(self.generateHealthData(note="Agent is in STOP mode"))
+            ch.basic_ack(delivery_tag = method.delivery_tag)
+        self.agentCtrlMessageFactory.subscribe(routingKey, callback)
+           
     '''
     Subscribe for Engine Config Changes. Any changes to respective agent will be consumed and processed here.
     '''
@@ -167,11 +204,39 @@ class BaseAgent(object):
             if metadataType is not dict:
                 raise ValueError('BaseAgent: Dict metadata object is expected')
         if data:
+            enableDataValidation = self.config.get('enableDataValidation',False)
+            if enableDataValidation:
+                data = self.validateData(data)
             self.addExecutionId(data, self.executionId)
             self.addTimeStampField(data, timeStampField, timeStampFormat, isEpochTime)
-            self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', None), metadata)
+            logging.info(data)
+            self.messageFactory.publish(self.dataRoutingKey, data, self.config.get('dataBatchSize', 100), metadata)
             self.logIndicator(self.PUBLISH_START, self.config.get('isDebugAllowed', False))
-
+            
+    '''
+        This method validates data and 
+        removes any JSON which contains nested JSON object 
+        as an element value
+    '''
+    def validateData(self, data):   
+        corrected_json_array =[]
+        showErrorMessage = False
+        for each_json in data:    
+            errorFlag = False
+            for element in each_json:        
+                if isinstance(each_json[element],dict):
+                    errorFlag = True
+                    showErrorMessage = True
+                    logging.error('Value is not in expected format, nested JSON encountered.Rejecting: '+ str(each_json))                    
+                    break;
+            if not errorFlag:
+                corrected_json_array.append(each_json)
+        if showErrorMessage:
+            self.publishHealthData(self.generateHealthData(note="Agent has encountered nested JSON, rejecting that node."))     
+        data = []
+        data = corrected_json_array
+        return data
+        
     def publishHealthData(self, data):
         self.addExecutionId(data, self.executionId)
         self.messageFactory.publish(self.healthRoutingKey, data)
@@ -183,7 +248,7 @@ class BaseAgent(object):
             timeStampFormat = self.config.get('timeStampFormat')
         if not isEpochTime:
             isEpochTime = self.config.get('isEpochTimeFormat', False)
-        timeFieldMapping = self.config.get('timeFieldMapping', None)
+        timeFieldMapping = self.config.get('dynamicTemplate', {}).get('timeFieldMapping', None)
         for d in data:
             eventTime = d.get(timeStampField, None)
             if eventTime != None:
@@ -208,6 +273,7 @@ class BaseAgent(object):
                             value = value[:self.timeFormatLengthMapping[field]]
                             d[outputField] = self.getRemoteDateTime(datetime.strptime(value, timeFormat)).get('epochTime')
                         except Exception as ex:
+                            logging.warn('Unable to parse timestamp field '+ field)
                             logging.error(ex)
             
             d['toolName'] = self.toolName;
@@ -241,21 +307,23 @@ class BaseAgent(object):
         return self.communicationFacade.processResponse(template, response, injectData, self.config.get('useResponseTemplate',False))
     
     def getResponseTemplate(self):
-        return self.config.get('responseTemplate', None)
+        return self.config.get('dynamicTemplate', {}).get('responseTemplate',None)
     
-    def generateHealthData(self, ex=None, systemFailure=False):
+    def generateHealthData(self, ex=None, systemFailure=False,note=None):
         data = []
-        currentTime = self.getRemoteDateTime(datetime.now())
-        health = { 'inSightsTimeX' : currentTime['time'], 'inSightsTime' : currentTime['epochTime'], 'executionTime' : int((datetime.now() - self.executionStartTime).total_seconds() * 1000)}
+        currentTime = self.getRemoteDateTime(datetime.utcnow())
+        health = { 'agentId' : self.config.get('agentId'), 'inSightsTimeX' : currentTime['time'], 'inSightsTime' : currentTime['epochTime'], 'executionTime' : int((datetime.now() - self.executionStartTime).total_seconds() * 1000)}
         if systemFailure:
             health['status'] = 'failure'
             health['message'] = 'Agent is shutting down'
         elif ex != None:
             health['status'] = 'failure'
-            health['message'] = 'Error occured: '+str(ex)
+            health['message'] = 'Error occurred: '+str(ex)
             logging.error(ex)
         else:
             health['status'] = 'success'
+            if note != None:
+                health['message'] = note
         data.append(health)
         return data
     
@@ -298,6 +366,7 @@ class BaseAgent(object):
         self.extensions[name] = {'func': func, 'duration': duration}
     
     def execute(self):
+        logging.debug('Agent is in START mode')
         try:
             self.executionStartTime = datetime.now()
             self.logIndicator(self.EXECUTION_START, self.config.get('isDebugAllowed', False))
@@ -305,11 +374,16 @@ class BaseAgent(object):
             self.process()
             self.executeAgentExtensions()
             self.publishHealthData(self.generateHealthData())
+            
         except Exception as ex:
             self.publishHealthData(self.generateHealthData(ex=ex))
             logging.error(ex)
             self.logIndicator(self.EXECUTION_ERROR, self.config.get('isDebugAllowed', False))
-    
+        finally:
+            '''If agent receive the STOP command, Python program should exit gracefully after current data collection is complete.  '''
+            if self.shouldAgentRun == False:
+                os._exit(0)
+        
     def executeAgentExtensions(self):
         if hasattr(self, 'extensions'):
             extensions = self.extensions

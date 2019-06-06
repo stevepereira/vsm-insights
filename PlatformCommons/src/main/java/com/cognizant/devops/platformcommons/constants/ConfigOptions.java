@@ -16,12 +16,15 @@
 package com.cognizant.devops.platformcommons.constants;
 
 import java.io.File;
-
+import java.time.Instant;
 public interface ConfigOptions {
 	String CONFIG_DIR = ".InSights";
 	String CONFIG_FILE = "server-config.json";
 	String TOOLS_CONFIG_FILE = "toolsConfig.json";
 	String CORRELATION_TEMPLATE = "correlation.json";
+	String NEO4J_TEMPLATE = "neo4jdata.json";
+	String CORRELATION = "correlation"+Instant.now().toEpochMilli()+".json";
+	String DATA_ENRICHMENT_TEMPLATE = "data-enrichment.json";
 	String ENDPOINT_DATA = "endpointData";
 	String USER_DATA = "userData";
 	String PROPERTY_USER_HOME = "user.home";
@@ -34,6 +37,7 @@ public interface ConfigOptions {
 	String CONFIG_FILE_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.CONFIG_FILE;
 	String CORRELATION_FILE_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.CORRELATION_TEMPLATE;
 	String TOOLS_CONFIG_FILE_RESOLVED_PATH = System.getProperty(ConfigOptions.PROPERTY_USER_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.TOOLS_CONFIG_FILE;
+	String DATA_ENRICHMENT_FILE_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.DATA_ENRICHMENT_TEMPLATE;
 	String FAILURE_RESPONSE = "FAILURE";
 	String SUCCESS_RESPONSE = "SUCCESS";
 	String CONFIG_FILE_DIR = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR;
@@ -45,4 +49,20 @@ public interface ConfigOptions {
 	String MAC_ADDRESS = "macAddress";
 	String VALID_TILL = "validTill";
 	String DATE_FORMAT = "MM/dd/yyyy";
+	String DATAPURGING_SETTINGS_TYPE = "DATAPURGING";
+	String ROW_LIMIT = "rowLimit";
+	String BACKUP_FILE_LOCATION = "backupFileLocation";
+	String BACKUP_FILE_NAME = "backupFileName";
+	String BACKUP_DURATION_IN_DAYS = "backupRetentionInDays";
+	String DATA_ARCHIVAL_FREQUENCY = "dataArchivalFrequency";
+	String LAST_RUN_TIME = "lastRunTime";
+	String NEXT_RUN_TIME = "nextRunTime";
+	String BACKUP_FILE_FORMAT = "backupFileFormat";
+	String CSV_FORMAT = "CSV";
+	String JSON_FORMAT = "JSON";
+	String OFFLINE_DATA_PROCESSING_FOLDER = "data-enrichment";
+	String QUERY_DATA_PROCESSING_FOLDER = "Audit-report";
+	String OFFLINE_DATA_PROCESSING_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.OFFLINE_DATA_PROCESSING_FOLDER;
+	String QUERY_DATA_PROCESSING_RESOLVED_PATH = System.getenv().get(INSIGHTS_HOME) + FILE_SEPERATOR + ConfigOptions.CONFIG_DIR + FILE_SEPERATOR + ConfigOptions.QUERY_DATA_PROCESSING_FOLDER;
+
 }

@@ -15,7 +15,8 @@
  ******************************************************************************/
 package com.cognizant.devops.platforminsights.app;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -27,6 +28,8 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigCache;
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
+import com.cognizant.devops.platformcommons.constants.PlatformServiceConstants;
+import com.cognizant.devops.platforminsights.core.InsightsStatusProvider;
 import com.cognizant.devops.platforminsights.core.SparkJobExecutor;
 
 /**
@@ -34,7 +37,7 @@ import com.cognizant.devops.platforminsights.core.SparkJobExecutor;
  * Initialize Publisher and subscriber modules 3. Initialize Correlation Module.
  */
 public class PlatformInsightsSparkApplication {
-	private static Logger log = Logger.getLogger(PlatformInsightsSparkApplication.class);
+	private static Logger log = LogManager.getLogger(PlatformInsightsSparkApplication.class);
 	
 	private static int defaultInterval = 600;
 	private PlatformInsightsSparkApplication(){
@@ -50,7 +53,7 @@ public class PlatformInsightsSparkApplication {
 		ApplicationConfigCache.loadConfigCache();
 		// Create Default users
 		ApplicationConfigProvider.performSystemCheck();
-		
+				
 		// Subscribe for desired events.
 		JobDetail sparkAggrgatorJob = JobBuilder.newJob(SparkJobExecutor.class)
 				.withIdentity("SparkJobExecutorModule", "iSightSpark")
@@ -71,8 +74,13 @@ public class PlatformInsightsSparkApplication {
 			scheduler.start();
 			scheduler.scheduleJob(sparkAggrgatorJob, sparkAggregatorTrigger);
 			log.debug("Job has been scheduled with interval of - "+defaultInterval);
+			//Insight status to DB
 		} catch (SchedulerException e) {
 			log.error("Exception in Sparkjob schedular",e);
+			InsightsStatusProvider.getInstance().createInsightStatusNode("Platform Insights Spark Application not started ", PlatformServiceConstants.FAILURE);
+		}catch (Exception e) {
+			log.error("Exception in Sparkjob ",e);
+			InsightsStatusProvider.getInstance().createInsightStatusNode("Platform Insights Spark Application not started ", PlatformServiceConstants.FAILURE);
 		}
 	}
 }

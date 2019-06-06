@@ -25,7 +25,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.NewCookie;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,7 @@ import com.sun.jersey.api.client.ClientResponse;
 @RestController
 @RequestMapping("/admin/userMgmt")
 public class UserManagementService {
-	private static Logger log = Logger.getLogger(UserManagementService.class.getName());
+	private static Logger log = LogManager.getLogger(UserManagementService.class.getName());
 	private static String authHeader = null;
 	
 	@Autowired
@@ -188,6 +189,45 @@ public class UserManagementService {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Authorization", buildAuthenticationHeader());
 		ClientResponse response = RestHandler.doPatch(apiUrl, request, headers);
+		return response.getEntity(String.class);
+	}
+	
+	@RequestMapping(value = "/getOrganizationUsers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public JsonObject getOrganizationUsers(@RequestParam int orgId) {
+		log.debug("\n\nInside geOrganizationtUser method call");
+		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/orgs/"+orgId+"/users";
+		log.debug("API URL is: " + apiUrl);
+		Map<String, String> headers = new HashMap<String, String>();
+		//headers.put("Cookie", getUserCookies());
+		headers.put("Authorization", buildAuthenticationHeader());
+		ClientResponse response = RestHandler.doGet(apiUrl, null, headers);
+		log.debug("Headers: " + headers + "\n\n");
+		return PlatformServiceUtil
+				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
+	}
+	
+	@RequestMapping(value = "/editOrganizationUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String editOrganizationUser(@RequestParam int orgId,@RequestParam int userId, @RequestParam String role) {
+		log.debug("\n\nInside editOrganizationUser method call");
+		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/orgs/"+orgId+"/users/"+userId;
+		log.debug("API URL is: " + apiUrl);
+		JsonObject request = new JsonObject();
+		request.addProperty("role", role);
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Authorization", buildAuthenticationHeader());
+		ClientResponse response = RestHandler.doPatch(apiUrl, request, headers);
+		return response.getEntity(String.class);
+	}
+	
+	@RequestMapping(value = "/deleteOrganizationUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String deleteOrganizationUser(@RequestParam int orgId,@RequestParam int userId, @RequestParam String role) {
+		log.debug("\n\nInside editOrganizationUser method call");
+		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/orgs/"+orgId+"/users/"+userId;
+		log.debug("API URL is: " + apiUrl);
+		JsonObject request = new JsonObject();
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("Authorization", buildAuthenticationHeader());
+		ClientResponse response = RestHandler.doDelete(apiUrl, request, headers);
 		return response.getEntity(String.class);
 	}
 

@@ -3,9 +3,9 @@
 #   
 # Licensed under the Apache License, Version 2.0 (the "License"); you may not
 # use this file except in compliance with the License.  You may obtain a copy
-# 	of the License at
+#     of the License at
 #   
-# 	http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #   
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -27,21 +27,21 @@
 #-------------------------------------------------------------------------------
 '''
 Created on Dec 28, 2017
-
 @author: 104714
 '''
 from time import mktime
 from dateutil import parser
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 
 class BitBucketAgent(BaseAgent):
     def process(self):
-        self.baseEndPoint = self.config.get("BaseEndPoint", '')
-        self.userId = self.config.get("UserID", '')
-        self.passwd = self.config.get("Passwd", '')
+        self.baseEndPoint = self.config.get("baseEndPoint", '')
+        self.userId = self.config.get("userID", '')
+        self.passwd = self.config.get("passwd", '')
         self.scanAllBranches = self.config.get("scanAllBranches", False)
         self.scanPullRequests = self.config.get("scanPullRequests", False)
-        startFrom = self.config.get("StartFrom", '')
+        self.scanReleaseBranches = self.config.get("scanReleaseBranches", False)
+        startFrom = self.config.get("startFrom", '')
         startFrom = parser.parse(startFrom)
         startFrom = mktime(startFrom.timetuple()) + startFrom.microsecond/1000000.0
         self.startFrom = long(startFrom * 1000)
@@ -95,6 +95,26 @@ class BitBucketAgent(BaseAgent):
                                 for branches in range(numBranches):
                                     branchName = bitBicketBranches["values"][branches]["displayId"]
                                     self.processAllCommitsForBranch(projKey, repoName, branchName, repoTracking)
+                                if bitBicketBranches.get("isLastPage", True):
+                                    fetchNextBranchPage = False
+                                    break;
+                                branchStart = bitBicketBranches.get("nextPageStart", None)
+                        if self.scanReleaseBranches:
+                            # scan all release branches (starting with "release/" and master and commit inside it
+                            bitBicketBranchessUrl = self.baseEndPoint+projKey+"/repos/"+repoName+"/branches/"
+                            # get all branches under a repo
+                            branchStart = 0
+                            fetchNextBranchPage = True
+                            while fetchNextBranchPage:
+                                bitBicketBranches = self.getResponse(bitBicketBranchessUrl+'?limit='+str(limit)+'&start='+str(branchStart), 'GET', self.userId, self.passwd, None)
+                                numBranches = len(bitBicketBranches["values"])
+                                if numBranches == 0:
+                                    fetchNextBranchPage = False
+                                    break;
+                                for branches in range(numBranches):
+                                    branchName = bitBicketBranches["values"][branches]["displayId"]
+                                    if(branchName == "master" or branchName.startswith("release/") ):
+                                        self.processAllCommitsForBranch(projKey, repoName, branchName, repoTracking)
                                 if bitBicketBranches.get("isLastPage", True):
                                     fetchNextBranchPage = False
                                     break;
@@ -205,7 +225,7 @@ class BitBucketAgent(BaseAgent):
                 break;
             prStart = pullRequests.get("nextPageStart", None)
 
-        # Update data once its processed for each repositor
+        # Update data once its processed for each repository
         if len(data) > 0:
             self.publishToolsData(data)
         if lastUpdatedPRId != None :

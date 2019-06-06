@@ -14,7 +14,6 @@
  * the License.
  ******************************************************************************/
 package com.cognizant.devops.platformservice.config;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.config.GrafanaData;
@@ -39,22 +39,26 @@ import com.google.gson.JsonParser;
 import com.sun.jersey.api.client.ClientResponse;
 
 public final class InsightsConfiguration {
-	private static Logger log = Logger.getLogger(InsightsConfiguration.class);
+	
+	//private static Logger log = LogManager.getLogger(InsightsConfiguration.class);
+	private static Logger log = LogManager.getLogger(InsightsConfiguration.class);
 	private static final String NEO4J_DS = "Neo4j_DS";
 	private static final String ElaticSearch_DS = "ElaticSearch_DS";
 
-	private InsightsConfiguration(){
-		
+	private InsightsConfiguration() {
+
 	}
-	
+
 	/**
-	 * Update following: 1. Default layout JSON's 2. Default Datasources in
-	 * Grafana 3. Default Dashboards in Grafana
+	 * Update following: 1. Default layout JSON's 2. Default Datasources in Grafana
+	 * 3. Default Dashboards in Grafana
 	 */
 	public static void doInsightsConfiguration() {
-		updateLayouts();
+		log.info("Coming inside do insights");
+		// updateLayouts();
 		updateDatasources();
-		updateDashboards();
+		//updateDashboards();
+
 	}
 
 	private static void updateLayouts() {
@@ -82,10 +86,9 @@ public final class InsightsConfiguration {
 
 	private static JsonObject loadJsonFile(String path) {
 		/*
-		 * InputStream in =
-		 * InsightsConfiguration.class.getResourceAsStream(path); BufferedReader
-		 * reader = new BufferedReader(new InputStreamReader(in)); JsonObject
-		 * json = new JsonParser().parse(reader).getAsJsonObject(); try {
+		 * InputStream in = InsightsConfiguration.class.getResourceAsStream(path);
+		 * BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+		 * JsonObject json = new JsonParser().parse(reader).getAsJsonObject(); try {
 		 * reader.close(); } catch (IOException e) { log.error(
 		 * "Unable to close the reader.", e); }
 		 */
@@ -203,11 +206,6 @@ public final class InsightsConfiguration {
 			requestJson.add("inputs", inputs);
 			ClientResponse response = RestHandler.doPost(apiUrl, requestJson, headers);
 			jsonResponse = getNewJsonParser().parse(response.getEntity(String.class)).getAsJsonObject();
-			if (jsonResponse.get("imported").getAsBoolean()) {
-				log.info("Dashboard created : " + dashboard);
-			} else {
-				log.warn("Unable to create dashboard: " + jsonResponse.toString());
-			}
 		}
 	}
 

@@ -19,13 +19,13 @@ Created on 30 March 2017
 @author: 446620
 '''
 import json
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 
 class TeamCityAgent(BaseAgent):
     def process(self):
-        BaseUrl = self.config.get("BaseUrl", '')
-        UserID = self.config.get("UserID", '')
-        Passwd = self.config.get("Passwd", '')
+        BaseUrl = self.config.get("baseUrl", '')
+        UserID = self.config.get("userID", '')
+        Passwd = self.config.get("passwd", '')
         if not self.tracking.get("sinceBuild",None):
             getBuildsUrl = BaseUrl + '/httpAuth/app/rest/builds/'
         else:

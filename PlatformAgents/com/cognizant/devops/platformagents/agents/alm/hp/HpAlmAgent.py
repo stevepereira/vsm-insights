@@ -18,7 +18,7 @@ Created on Jun 22, 2016
 
 @author: 463188
 '''
-from com.cognizant.devops.platformagents.core.BaseAgent import BaseAgent
+from ....core.BaseAgent import BaseAgent
 import xml.etree.ElementTree as ET
 import logging
 
@@ -43,6 +43,10 @@ class HpAlmAgent(BaseAgent):
                        "Cookie" : 'LWSSO_COOKIE_KEY='+ssoCookie+';QCSession='+responseTupple['cookies']['QCSession']
                        }
         return cookieHeader
+    
+    def extendSession(self, baseEndPoint, cookieHeader):
+        extendSessionUrl = baseEndPoint + '/qcbin/rest/site-session'
+        extendSessionResponse = self.getResponse(extendSessionUrl, 'GET', None, None, None, reqHeaders=cookieHeader)
     
     def signOut(self, baseEndPoint):
         signOutEndPoint = baseEndPoint + '/qcbin/authentication-point/logout'
@@ -73,7 +77,7 @@ class HpAlmAgent(BaseAgent):
             projectEndPoint += '&query={'+trackingFieldName+'[>"'+startFrom+'"]}&order-by={'+trackingFieldName+'[ASC]}'
         else:
             projectEndPoint += '&query={'+trackingFieldName+'[>"'+entityTracking+'"]}&order-by={'+trackingFieldName+'[ASC]}'
-        entityMetaDetails = self.config.get("almEntities").get(entityName)
+        entityMetaDetails = self.config.get('dynamicTemplate', {}).get("almEntities").get(entityName)
         dataList = []
         startIndex = 1
         totalResults = 1
@@ -157,7 +161,8 @@ class HpAlmAgent(BaseAgent):
         cookieHeader = self.getHpAlmSSOHeader(baseEndPoint)
         domainResponse = self.getDomains(baseEndPoint, cookieHeader)
         startFrom = self.config.get("startFrom", '')
-        almEntities = self.config.get("almEntities")
+        almEntities = self.config.get('dynamicTemplate', {}).get("almEntities")
+        almDomains = self.config.get('dynamicTemplate', {}).get("almDomains", None)
         if almEntities:
             for almEntity in almEntities:
                 fieldsList = almEntities[almEntity]
@@ -170,11 +175,14 @@ class HpAlmAgent(BaseAgent):
                         domains = list(tree.iter('Domain'))
                         for domain in domains:
                             domainName = domain.attrib['Name']
+                            if almDomains is not None and domainName not in almDomains:
+                                continue
                             projects = list(domain.iter('Project'))
                             for project in projects:
                                 projectName = project.attrib['Name']
                                 dataList = []
                                 try:
+                                    self.extendSession(baseEndPoint, cookieHeader)
                                     dataList = self.getProjectDetails(baseEndPoint, cookieHeader, domainName, projectName, almEntity, fields, startFrom)
                                 except Exception as ex:
                                     logging.error(ex)
