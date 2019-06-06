@@ -78,7 +78,6 @@ export class UserOnboardingComponent implements OnInit {
   itemForm: FormGroup;
   searchOrgForUser: string;
   regex = new RegExp("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$)")
-
   additionalProperties = ['name', 'email', 'username', 'password', 'role', 'org'];
   roleRecord = [
     { value: 'Editor', name: 'Editor' },
@@ -89,32 +88,19 @@ export class UserOnboardingComponent implements OnInit {
   constructor(private fb: FormBuilder, private router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
     public dialog: MatDialog, public messageDialog: MessageDialogService, private dataShare: DataSharedService) {
     var self = this;
-    /* this.addForm = this.fb.group({
-      items: [null, Validators.required],
-      items_value: ['no', Validators.required]
-    });
-
-     */
     this.rows = this.fb.array([]);
-
     for (let number of [1, 2, 3, 4, 5]) {
-      // console.log(number)
       if (number % 2 == 0) {
         this.rowcss = false;
-
       }
       else {
         this.rowcss = true;
-
       }
       this.rows.push(this.createItemFormGroup(this.rowcss));
       // console.log(this.rowcss)
     }
-
-
     this.framesize = window.frames.innerHeight;
     var orgId2 = this.dataShare.getStoragedProperty("orgId");
-
     var receiveMessage = function (evt) {
       var height = parseInt(evt.data);
       if (!isNaN(height)) {
@@ -124,28 +110,13 @@ export class UserOnboardingComponent implements OnInit {
     window.addEventListener('message', receiveMessage, false);
     this.getApplicationDetail();
   }
-
   private newMethod() {
-
   }
-
   ngOnInit() {
-    /*    this.addForm.get("items").valueChanges.subscribe(val => {
-         if (val === true) {
-           this.addForm.get("items_value").setValue("yes");
-   
-           this.addForm.addControl('rows', this.rows);
-         }
-         if (val === false) {
-           this.addForm.get("items_value").setValue("no");
-           this.addForm.removeControl('rows');
-         }
-       }); */
   }
   onAddRow() {
     this.rows.push(this.createItemFormGroup(this.rowcss));
   }
-
   createItemFormGroup(rowcsss): FormGroup {
     this.rowcss = rowcsss
     return this.fb.group({
@@ -161,7 +132,6 @@ export class UserOnboardingComponent implements OnInit {
 
   async getApplicationDetail() {
     this.adminOrgDataArray = [];
-
     let adminOrgsResponse = await this.userOnboardingService.getCurrentUserOrgs();
     //console.log(adminOrgsResponse);
     if (adminOrgsResponse.data != undefined && adminOrgsResponse.status == "success") {
@@ -180,10 +150,8 @@ export class UserOnboardingComponent implements OnInit {
       }
       this.isSaveEnable = false;
     }
-
     //console.log(this.selectedAdminOrg);
     this.loadUsersInfo(this.selectedAdminOrg);
-
   }
 
   loadUsersInfo(selectedAdminOrg) {
@@ -212,9 +180,7 @@ export class UserOnboardingComponent implements OnInit {
   statusEdit(element) {
     //console.log("After radio check " + JSON.stringify(element) + "" + this.isSaveEnable);
     if (element != undefined) {
-
       this.oldSelectedUser = this.selectedUser;
-
       if (this.isSaveEnable) {
         var title = "Cancel Changes";
         var dialogmessage = "Are you sure you want to discard your changes?";
@@ -269,10 +235,6 @@ export class UserOnboardingComponent implements OnInit {
     return jsonData;
   }
 
-
-
-
-
   saveUser(newName, email, username, pass) {
     this.isEmailIncorrect = false;
     this.isUsernameIncorrect = false;
@@ -283,7 +245,6 @@ export class UserOnboardingComponent implements OnInit {
     var userBMparameter;
     this.userPropertyList = {};
     //  this.userPropertyList = this.clubProperties(this.userPropertyList, false);
-
     this.userPropertyList['name'] = newName;
     this.userPropertyList['email'] = email;
     this.userPropertyList['userName'] = username;
@@ -294,7 +255,6 @@ export class UserOnboardingComponent implements OnInit {
     //  console.log(this.userPropertyList)
     //console.log(this.selectedAdminOrg)
     userBMparameter = JSON.stringify(this.userPropertyList);
-
     //console.log(userBMparameter)
     var checkname = this.regex.test(email);
     if (!checkname) {
@@ -323,8 +283,7 @@ export class UserOnboardingComponent implements OnInit {
           console.log(data.data)
           // console.log(data.data["message"])
           // console.log(JSON.stringify(data.data.message))
-          console.log(userResponse)
-
+          //console.log(userResponse)
           if (userResponse == "User created") {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
           }
@@ -346,10 +305,6 @@ export class UserOnboardingComponent implements OnInit {
           else if (userResponse == "failed to create user") {
             this.messageDialog.showApplicationsMessage("Failed to create User.Please try again", "ERROR");
           }
-          /*  else if (userResponse == "Not found") {
-             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
-           } */
-
           else if (userResponse = "User exists in currrent org with different role") {
             var title = "ERROR";
             //  console.log(this.deleteRelation);
@@ -362,22 +317,9 @@ export class UserOnboardingComponent implements OnInit {
               }
             })
           }
-
-
         })
-
-
-
     }
-
-    // console.log(JSON.parse(userBMparameter))   // this.callEditOrSaveDataAPI(userBMparameter);
-
-
-
   }
-
-
-
   assignUser() {
     // console.log(this.rows)
     //  console.log(this.rows.value)
@@ -386,13 +328,10 @@ export class UserOnboardingComponent implements OnInit {
     var count = 0;
     var userBMparameter;
     for (let data of this.rows.value) {
-
-
       if (data.role != null) {
         orgArray.push(data.org.orgId);
-
-        console.log("Array" + orgArray);
-        console.log("Index of " + orgArray.indexOf(data.org.orgId))
+        // console.log("Array" + orgArray);
+        // console.log("Index of " + orgArray.indexOf(data.org.orgId))
         var firstindex = orgArray.indexOf(data.org.orgId)
         var lastindex = orgArray.lastIndexOf(data.org.orgId)
         if (lastindex == firstindex) {
@@ -402,160 +341,71 @@ export class UserOnboardingComponent implements OnInit {
           orgAssignData['roleName'] = data.role;
           orgAssignData['userName'] = this.searchOrgForUser;
           requestjson.push(orgAssignData);
-
         }
         else {
           this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
           count = count + 1;
           break;
-
         }
-
       }
     }
     if (count == 0) {
-
-      console.log(requestjson);
-
-
+      //console.log(requestjson);
       userBMparameter = JSON.stringify(requestjson);
       this.userOnboardingService.assignUser(userBMparameter)
         .subscribe(data => {
-          console.log(data);
+          // console.log(data);
           this.messageDialog.showApplicationsMessage(data.data, "SUCCESS");
         })
     }
   }
 
-
-  /* async assignUser(usertoBeAdded, selectOrgForUser1, selectedrole1, selectOrgForUser2, selectedrole2, selectOrgForUser3, selectedrole3, selectOrgForUser4, selectedrole4, selectOrgForUser5, selectedrole5) {
-    this.assignUserData = {};
-    this.orgNameArray = [];
-    this.orgIdArray = [];
-    this.userRolesArray = [];
-    //console.log(selectOrgForUser2.name, selectedrole1)
-    if (selectOrgForUser1 != undefined) {
-      this.orgNameArray.push(selectOrgForUser1.name)
-      this.orgIdArray.push(selectOrgForUser1.orgId)
-      this.userRolesArray.push(selectedrole1)
-    }
-
-    if (selectOrgForUser2 != undefined) {
-      this.orgNameArray.push(selectOrgForUser2.name)
-      this.orgIdArray.push(selectOrgForUser2.orgId)
-      this.userRolesArray.push(selectedrole2)
-    }
-    if (selectOrgForUser3 != undefined) {
-      this.orgNameArray.push(selectOrgForUser3.name)
-      this.orgIdArray.push(selectOrgForUser3.orgId)
-      this.userRolesArray.push(selectedrole3)
-    }
-    if (selectOrgForUser4 != undefined) {
-      this.orgNameArray.push(selectOrgForUser4.name)
-      this.orgIdArray.push(selectOrgForUser4.orgId)
-      this.userRolesArray.push(selectedrole4)
-    }
-    if (selectOrgForUser5 != undefined) {
-      this.orgNameArray.push(selectOrgForUser5.name)
-      this.orgIdArray.push(selectOrgForUser5.orgId)
-      this.userRolesArray.push(selectedrole5)
-    }
-    console.log(this.orgNameArray)
-    //  this.userPropertyList = this.clubProperties(this.userPropertyList, false);
-    var userBMparameter;
-
-    this.assignUserData['userName'] = usertoBeAdded;
-    this.assignUserData['orgId'] = this.orgIdArray;
-    this.assignUserData['role'] = this.userRolesArray;
-    this.assignUserData['orgName'] = this.orgNameArray;
-    console.log(this.assignUserData)
-    userBMparameter = JSON.stringify(this.assignUserData);
-    this.userOnboardingService.assignUser(userBMparameter)
-      .subscribe(data => {
-        console.log(data);
-        this.messageDialog.showApplicationsMessage(data.data, "ERROR");
-      })
-
-  } */
-
-
-
-
   adduserenableSave() {
     this.adduserSaveEnable = true
   }
 
-
   searchData(searchUser, selectedAdminOrg) {
     var count = 0;
-
-
-
-
-
-
-
     var self = this;
     self.userDataSource = new MatTableDataSource();
     this.userOnboardingService.getOrganizationUsers(selectedAdminOrg.orgId).then(function (usersResponseData) {
       if (usersResponseData.data != undefined && usersResponseData.status == "success") {
-
-
         self.userDataSource.data = usersResponseData.data; //new MatTableDataSource( )
         self.userDataSource.paginator = self.paginator;
-        console.log(self.userDataSource.data)
-
-
-
-
+        //  console.log(self.userDataSource.data)
         for (var element of self.userDataSource.data) {
           var emailcheck = (element.email);
           var usernamecheck = element.login
           self.searchInput = searchUser
-          console.log(searchUser)
+          //  console.log(searchUser)
           if (self.searchInput == emailcheck) {
             count = count + 1;
             break;
-
           }
           else if (self.searchInput == usernamecheck) {
             count = count + 1;
             break;
-
           }
         }
         if (count == 1) {
           var dialogmessage = " User already exists in " + "<b>" + self.selectedAdminOrg.name
-
           self.messageDialog.showApplicationsMessage(dialogmessage, "SUCCESS");
         }
         else {
           self.messageDialog.showApplicationsMessage("No User Found.", "ERROR");
         }
-
-
-
       } else {
         self.messageDialog.showApplicationsMessage("Unable to load data", "WARN");
       }
     });
-
-
-
-
     // this.loadUsersInfo(selectedAdminOrg);
-    console.log(this.userDataSource.data)
-
+    // console.log(this.userDataSource.data)
   }
-
-
-
   editUserData() {
     //console.log(this.selectedUser.userId);
     this.isSaveEnable = true;
     this.isSelectedUserId = this.selectedUser.userId;
   }
-
   deleteOrgUser() {
     //console.log("result " + this.selectedUser.login);
     if (this.selectedUser != undefined) {
@@ -587,7 +437,6 @@ export class UserOnboardingComponent implements OnInit {
   async saveData() {
     console.log(this.selectedUser);
     //console.log(" Organization " + "  " + this.selectedAdminOrg)
-
     let editResponse = await this.userOnboardingService.editUserOrg(this.selectedUser.orgId, this.selectedUser.userId, this.selectedUser.role);
     if (editResponse.message = "Organization user updated") {
       this.isSaveEnable = false;
@@ -606,7 +455,6 @@ export class UserOnboardingComponent implements OnInit {
   }
 
   displayaccessGroupCreateField() {
-
     this.displayAccessGroupDetail = !this.displayAccessGroupDetail;
     if (this.accessGroupName != undefined) {
       var self = this;

@@ -114,6 +114,11 @@
     border-radius: 10px 10px 0 0;
     text-align: center;
 }
+
+.table
+{
+        border-spacing :0 px !important;
+}
 .AddUserColTextCss
 {
     text-align: left; 
@@ -164,6 +169,13 @@
     margin-left: 5px;
 }
 
+tr:nth-child(odd) td {
+    background-color: #ffffff;
+}
+
+tr:nth-child(even) td {
+    background-color: #E1E3E7;
+}
 .dat-row2 {
     height: 45px !important;
     text-align: left !important;
