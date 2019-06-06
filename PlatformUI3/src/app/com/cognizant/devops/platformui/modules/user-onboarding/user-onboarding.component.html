@@ -257,7 +257,7 @@
 
     </div>
     <!-- Below Code needs formatting! -->
-    <div class="column2">
+    <!-- <div class="column2">
       <div class="showTable" style="text-align: center; padding: 8px;">
         <div style="margin-right: 110px;">
           <mat-radio-group>
@@ -448,7 +448,101 @@
       </table>
 
 
-      <!-- <div [hidden]="!showDetail">
+      <div [hidden]="!showDetail">
     <mat-paginator #paginator [pageSize]="MAX_ROWS_PER_TABLE" showFirstLastButtons class="paginationStyle"></mat-paginator>
-  </div> -->
+  </div> 
+    </div> -->
+
+
+
+
+    <div class="column2">
+      <div class="showTable" style="text-align: center; padding: 8px;">
+        <div style="margin-right: 110px;">
+          <mat-radio-group>
+            <mat-radio-button [value]="element" color="primary" (click)=adduserenableSave()>
+            </mat-radio-button>
+
+          </mat-radio-group>
+          Assign users to various access groups
+        </div>
+      </div>
+
+
+
+
+
+      <table>
+        <tbody style="display: grid; max-height: 38vh">
+          <tr class="dat-row1">
+
+            <td class="AddUserColTextCss">
+              <div>
+                <label class="mainText"> Current Access Group </label>
+
+              </div>
+            </td>
+            <td class="AddUserColTextCss">
+
+            </td>
+
+            <input [disabled]="!adduserSaveEnable" type="text" class="searchbox" [(ngModel)]='searchOrgForUser' [value]="searchOrgForUser"
+              required placeholder=" Search by Login ID or E-mail Address">
+            <button mat-icon-button (click)="assignUser()">
+              <mat-icon title="Search" class="mat-icon material-icons">
+                search
+              </mat-icon>
+
+            </button>
+          </tr>
+
+          <div class="col-md-2" [formGroup]="addForm">
+            <div class="form-group">
+              <!--  <label class="label-control">Items</label>
+        <br> -->
+
+
+              <table>
+
+                <tbody>
+                  <tr *ngFor="let row of rows?.controls;let index = index;" [ngClass]="{  'dat-row2' : rowcss ,  'dat-row1': !rowcss}">
+                    <td class="AddUserColTextCss">Access Group </td>
+                    <td>
+                      <mat-select [formControl]="row.get('org')" [style.height.px]="20" [style.width.px]="160" name="selectOrgForUser5"
+                        [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}">
+
+                        <mat-option *ngFor="let record of adminOrgDataArray" [value]="record">
+                          {{record.name}}
+                        </mat-option>
+                      </mat-select>
+
+
+                    </td>
+                    <td style="padding-left: 30px;">Role</td>
+
+                    <td>
+
+
+                      <mat-select required placeholder="Select Role" [formControl]="row.get('role')" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
+                        [style.width.px]="100 " name="role5">
+                        <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
+                          {{record.name}}
+                        </mat-option>
+                      </mat-select>
+
+
+                    </td>
+
+
+
+                  </tr>
+                </tbody>
+              </table>
+
+
+            </div>
+          </div>
+        </tbody>
+      </table>
     </div>
+    <!--   <pre>{{rows.value | json}}</pre> -->

@@ -78,11 +78,12 @@ export class UserOnboardingService implements IUserOnboardingService {
   */
 
     addUserInOrg(userPropertyList: string) {
-        console.log( userPropertyList);
+        console.log(userPropertyList);
         return this.restHandler.postWithData("USER_CREATE", userPropertyList, "", { 'Content-Type': 'application/x-www-form-urlencoded' })
     }
     assignUser(assignUserList: string) {
-        return this.restHandler.postWithData("ASSIGN_USER", assignUserList, "", { 'Content-Type': 'application/json' })
+        console.log("Hi")
+        return this.restHandler.postWithData("ASSIGN_USER", assignUserList, "", { 'Content-Type': 'application/json'  })
     }
 
 

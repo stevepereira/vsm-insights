@@ -23,6 +23,7 @@ import { AddGroupMessageDialog } from '@insights/app/modules/user-onboarding/add
 import { MessageDialogService } from '@insights/app/modules/application-dialog/message-dialog-service';
 import { DataSharedService } from '@insights/common/data-shared-service';
 import { Router, ActivatedRoute, ParamMap, NavigationExtras } from '@angular/router';
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray, NgForm } from '@angular/forms'
 @Component({
   selector: 'app-user-onboarding',
   templateUrl: './user-onboarding.component.html',
@@ -71,6 +72,11 @@ export class UserOnboardingComponent implements OnInit {
   isSelectedUserId: any = -1;
   searchInput: any;
   usernamestore: any;
+  rowcss: boolean = true;
+  addForm: FormGroup;
+  rows: FormArray;
+  itemForm: FormGroup;
+  searchOrgForUser: string;
   regex = new RegExp("(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$)")
 
   additionalProperties = ['name', 'email', 'username', 'password', 'role', 'org'];
@@ -80,9 +86,28 @@ export class UserOnboardingComponent implements OnInit {
     { value: 'Viewer', name: 'Viewer' }
   ];
 
-  constructor(private router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
+  constructor(private fb: FormBuilder, private router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
     public dialog: MatDialog, public messageDialog: MessageDialogService, private dataShare: DataSharedService) {
     var self = this;
+    /* this.addForm = this.fb.group({
+      items: [null, Validators.required],
+      items_value: ['no', Validators.required]
+    });
+
+     */
+    this.rows = this.fb.array([]);
+
+    for (let number of [1, 2, 3, 4, 5]) {
+      if (number % 2 == 0) {
+        this.rowcss = false;
+
+      }
+      else {
+        this.rowcss = true;
+
+      }
+      this.rows.push(this.createItemFormGroup());
+    }
 
 
     this.framesize = window.frames.innerHeight;
@@ -103,6 +128,27 @@ export class UserOnboardingComponent implements OnInit {
   }
 
   ngOnInit() {
+    /*    this.addForm.get("items").valueChanges.subscribe(val => {
+         if (val === true) {
+           this.addForm.get("items_value").setValue("yes");
+   
+           this.addForm.addControl('rows', this.rows);
+         }
+         if (val === false) {
+           this.addForm.get("items_value").setValue("no");
+           this.addForm.removeControl('rows');
+         }
+       }); */
+  }
+  onAddRow() {
+    this.rows.push(this.createItemFormGroup());
+  }
+
+  createItemFormGroup(): FormGroup {
+    return this.fb.group({
+      org: null,
+      role: null
+    });
   }
 
   ngAfterViewInit() {
@@ -279,10 +325,9 @@ export class UserOnboardingComponent implements OnInit {
           if (userResponse == "User created") {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
           }
-          else if (userResponse == "Organization user updated")
-          {
+          else if (userResponse == "Organization user updated") {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
-            }
+          }
           else if (userResponse == "Email already exists") {
             this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
           }
@@ -315,9 +360,7 @@ export class UserOnboardingComponent implements OnInit {
             })
           }
 
-          else if (adduserresponse.data == "failed to create user") {
-            this.messageDialog.showApplicationsMessage("Failed to create user.", "ERROR");
-          }
+
         })
 
 
@@ -329,7 +372,60 @@ export class UserOnboardingComponent implements OnInit {
 
 
   }
-  async assignUser(usertoBeAdded, selectOrgForUser1, selectedrole1, selectOrgForUser2, selectedrole2, selectOrgForUser3, selectedrole3, selectOrgForUser4, selectedrole4, selectOrgForUser5, selectedrole5) {
+
+
+
+  assignUser() {
+    // console.log(this.rows)
+    //  console.log(this.rows.value)
+    var requestjson = [];
+    var orgArray = [];
+    var count = 0;
+    var userBMparameter;
+    for (let data of this.rows.value) {
+
+
+      if (data.role != null) {
+        orgArray.push(data.org.orgId);
+
+        console.log("Array" + orgArray);
+        console.log("Index of " + orgArray.indexOf(data.org.orgId))
+        var firstindex = orgArray.indexOf(data.org.orgId)
+        var lastindex = orgArray.lastIndexOf(data.org.orgId)
+        if (lastindex == firstindex) {
+          var orgAssignData = {};
+          orgAssignData['orgName'] = data.org.name;
+          orgAssignData['orgId'] = data.org.orgId;
+          orgAssignData['roleName'] = data.role;
+          orgAssignData['userName'] = this.searchOrgForUser;
+          requestjson.push(orgAssignData);
+
+        }
+        else {
+          this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
+          count = count + 1;
+          break;
+
+        }
+
+      }
+    }
+    if (count == 0) {
+
+      console.log(requestjson);
+
+
+      userBMparameter = JSON.stringify(requestjson);
+      this.userOnboardingService.assignUser(userBMparameter)
+        .subscribe(data => {
+          console.log(data);
+          this.messageDialog.showApplicationsMessage(data.data, "SUCCESS");
+        })
+    }
+  }
+
+
+  /* async assignUser(usertoBeAdded, selectOrgForUser1, selectedrole1, selectOrgForUser2, selectedrole2, selectOrgForUser3, selectedrole3, selectOrgForUser4, selectedrole4, selectOrgForUser5, selectedrole5) {
     this.assignUserData = {};
     this.orgNameArray = [];
     this.orgIdArray = [];
@@ -370,12 +466,14 @@ export class UserOnboardingComponent implements OnInit {
     this.assignUserData['role'] = this.userRolesArray;
     this.assignUserData['orgName'] = this.orgNameArray;
     console.log(this.assignUserData)
-    // this.assignUserData['orgId'] = this.selectedAdminOrg.orgId
-    //  console.log(this.userPropertyList)
-    //console.log(this.selectedAdminOrg)
     userBMparameter = JSON.stringify(this.assignUserData);
+    this.userOnboardingService.assignUser(userBMparameter)
+      .subscribe(data => {
+        console.log(data);
+        this.messageDialog.showApplicationsMessage(data.data, "ERROR");
+      })
 
-  }
+  } */
 
 
 
