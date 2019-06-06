@@ -98,6 +98,7 @@ export class UserOnboardingComponent implements OnInit {
     this.rows = this.fb.array([]);
 
     for (let number of [1, 2, 3, 4, 5]) {
+      // console.log(number)
       if (number % 2 == 0) {
         this.rowcss = false;
 
@@ -106,7 +107,8 @@ export class UserOnboardingComponent implements OnInit {
         this.rowcss = true;
 
       }
-      this.rows.push(this.createItemFormGroup());
+      this.rows.push(this.createItemFormGroup(this.rowcss));
+      // console.log(this.rowcss)
     }
 
 
@@ -141,10 +143,11 @@ export class UserOnboardingComponent implements OnInit {
        }); */
   }
   onAddRow() {
-    this.rows.push(this.createItemFormGroup());
+    this.rows.push(this.createItemFormGroup(this.rowcss));
   }
 
-  createItemFormGroup(): FormGroup {
+  createItemFormGroup(rowcsss): FormGroup {
+    this.rowcss = rowcsss
     return this.fb.group({
       org: null,
       role: null
