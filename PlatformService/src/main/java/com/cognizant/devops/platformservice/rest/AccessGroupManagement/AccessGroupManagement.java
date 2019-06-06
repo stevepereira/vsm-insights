@@ -107,8 +107,7 @@ public class AccessGroupManagement {
 				updatedAuthorities);
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-		return PlatformServiceUtil
-				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
+		return PlatformServiceUtil.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
 
 	
@@ -116,14 +115,75 @@ public class AccessGroupManagement {
 	
 	
 	
-	@RequestMapping(value = "/assignUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/assignUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)		
+		public @ResponseBody JsonObject assignUser(@RequestBody String assignUserdata) {	
+		log.debug(assignUserdata);
+		String message = null;
+		JsonParser parser = new JsonParser();
+		JsonElement updateAgentJson = parser.parse(assignUserdata);
+		//log.debug(updateAgentJson);
 	
-		
-		public @ResponseBody JsonObject assignUser(@RequestBody String assignUserdata) {	String message = null;
-	
+		//log.debug(updateAgentJson);
+	//	return PlatformServiceUtil.buildSuccessResponseWithData(message);
+		/*String message = null;
+		log.debug(assignUserdata);
+		JsonParser parser = new JsonParser();
+		JsonObject updateAgentJson = (JsonObject) parser.parse(assignUserdata);
+		log.debug(updateAgentJson);
+		JsonArray jsonArray = new JsonArray();
+		jsonArray.add(updateAgentJson);
+		log.debug(jsonArray); */
 		try {
-			JsonParser parser = new JsonParser();
-			JsonObject updateAgentJson = (JsonObject) parser.parse(assignUserdata);
+			
+			if(updateAgentJson.isJsonArray()) {
+				JsonArray arrayOfOrg = updateAgentJson.getAsJsonArray();
+				int size =arrayOfOrg.size();
+				log.debug(size);
+				for(int i=0;i<size;i++) {
+					JsonElement aorg= arrayOfOrg.get(i);
+					log.debug(aorg);
+					
+					    int orgId = aorg.getAsJsonObject().get("orgId").getAsInt();
+						String userName = aorg.getAsJsonObject().get("userName").getAsString();
+						String role = aorg.getAsJsonObject().get("roleName").getAsString();
+						String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+userName;
+						log.debug(userName);
+						ClientResponse responsename = callgrafana(apiUrlName,null,"get");
+						JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class)).getAsJsonObject();
+						
+						if(jsonResponseName.get("id") == null) {
+							message ="User does not exsist.";
+							//return PlatformServiceUtil.buildSuccessResponseWithData(message);
+						}
+						//checking whether user name exists
+						//log.error(jsonResponseNameEmail+email);
+						else{
+							
+							
+								String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+								JsonObject requestOrg = new JsonObject();
+								requestOrg.addProperty("loginOrEmail", userName);
+								requestOrg.addProperty("role", role);
+								//request.addProperty("name", orgName);
+								//requestOrg.addProperty("Password", "admin");
+								ClientResponse responseorg = callgrafana(apiUrlorg,requestOrg,"post");
+								
+										message = "Org"+": "+responseorg.getEntity(String.class);
+										
+							
+							
+						}
+					
+					
+				}
+				
+			} 
+			return PlatformServiceUtil.buildSuccessResponseWithData(message);
+			
+			
+			
+			/* MY CODE PREVIOUS 
+			//arrInt[]= updateAgentJson.get("orgId").getAsInt();
 			int orgId = updateAgentJson.get("orgId").getAsInt();
 		//	String name = updateAgentJson.get("name").getAsString();
 			//String email = updateAgentJson.get("email").getAsString();
@@ -145,6 +205,7 @@ public class AccessGroupManagement {
 			//log.error(jsonResponseNameEmail+email);
 			else{
 				
+				
 					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
 					JsonObject requestOrg = new JsonObject();
 					requestOrg.addProperty("loginOrEmail", userName);
@@ -158,7 +219,7 @@ public class AccessGroupManagement {
 				
 				
 			}
-			
+			 */
 			
 		} 
 	
@@ -166,8 +227,8 @@ public class AccessGroupManagement {
 	
 	catch (Exception e) {
 			return PlatformServiceUtil.buildFailureResponse(e.toString());
-		}
-		
+		} 
+		 
 		
 			
 	}
