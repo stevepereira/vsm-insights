@@ -297,6 +297,9 @@ export class UserOnboardingComponent implements OnInit {
           else if (userResponse == "Organization user updated") {
             this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
           }
+          else if (userResponse == "User added to organization") {
+            this.messageDialog.showApplicationsMessage("User has been added.", "SUCCESS");
+          }
           else if (userResponse == "Email already exists") {
             this.messageDialog.showApplicationsMessage(userResponse, "ERROR");
           }
@@ -334,36 +337,49 @@ export class UserOnboardingComponent implements OnInit {
     var orgArray = [];
     var count = 0;
     var userBMparameter;
-    for (let data of this.rows.value) {
-      if (data.role != null) {
-        orgArray.push(data.org.orgId);
-        // console.log("Array" + orgArray);
-        // console.log("Index of " + orgArray.indexOf(data.org.orgId))
-        var firstindex = orgArray.indexOf(data.org.orgId)
-        var lastindex = orgArray.lastIndexOf(data.org.orgId)
-        if (lastindex == firstindex) {
-          var orgAssignData = {};
-          orgAssignData['orgName'] = data.org.name;
-          orgAssignData['orgId'] = data.org.orgId;
-          orgAssignData['roleName'] = data.role;
-          orgAssignData['userName'] = this.searchOrgForUser;
-          requestjson.push(orgAssignData);
-        }
-        else {
-          this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
-          count = count + 1;
-          break;
+    if (this.searchOrgForUser == undefined) {
+      this.messageDialog.showApplicationsMessage("Please enter a Username or Login ID", "ERROR");
+    }
+    else {
+      for (let data of this.rows.value) {
+        if (data.role != null) {
+          orgArray.push(data.org.orgId);
+          // console.log("Array" + orgArray);
+          // console.log("Index of " + orgArray.indexOf(data.org.orgId))
+          var firstindex = orgArray.indexOf(data.org.orgId)
+          var lastindex = orgArray.lastIndexOf(data.org.orgId)
+
+
+          if (lastindex == firstindex) {
+            var orgAssignData = {};
+            orgAssignData['orgName'] = data.org.name;
+            orgAssignData['orgId'] = data.org.orgId;
+            orgAssignData['roleName'] = data.role;
+            orgAssignData['userName'] = this.searchOrgForUser;
+            requestjson.push(orgAssignData);
+          }
+          else {
+            this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
+            count = count + 1;
+            break;
+          }
         }
       }
-    }
-    if (count == 0) {
-      //console.log(requestjson);
-      userBMparameter = JSON.stringify(requestjson);
-      this.userOnboardingService.assignUser(userBMparameter)
-        .subscribe(data => {
-          // console.log(data);
-          this.messageDialog.showApplicationsMessage(data.data, "SUCCESS");
-        })
+      if (count == 0) {
+        //console.log(requestjson);
+        userBMparameter = JSON.stringify(requestjson);
+        this.userOnboardingService.assignUser(userBMparameter)
+          .subscribe(data => {
+            console.log(data);
+            var userResponse2 = data.data;
+            console.log(data.data)
+            if (userResponse2 == "User does not exsist.") {
+              this.messageDialog.showApplicationsMessage(data.data, "ERROR")
+            }
+            else { this.messageDialog.showApplicationsMessage(data.data, "SUCCESS"); }
+
+          })
+      }
     }
   }
   Refresh() {
