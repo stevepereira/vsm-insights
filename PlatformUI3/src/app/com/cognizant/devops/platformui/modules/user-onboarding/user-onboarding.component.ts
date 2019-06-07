@@ -48,6 +48,10 @@ export class UserOnboardingComponent implements OnInit {
   userPropertyList = {};
   assignUserData = {};
   role: any;
+  pass: string
+  username: string
+  email: string
+  names: string;
   isEmailIncorrect: boolean = false;
   isNameIncorrect: boolean = false;
   isUsernameIncorrect: boolean = false;
@@ -391,6 +395,11 @@ export class UserOnboardingComponent implements OnInit {
     this.addRadioSelected = false;
     this.assignRadioSelected = false;
     this.assignuserSaveEnable = false;
+    this.pass = null;
+    this.username = null;
+    this.email = null;
+    this.names = null;
+
   }
   adduserenableSave() {
     this.showAddUserDetail = true;
