@@ -39,16 +39,16 @@ gitCommitID = sh (
   	} //License Check ends	
    // Platform Service Starts
 	try{
-	
+	// settings.xml in /home/ubuntu/BuildOn must be changed to switch between central repo and NexusDevOpsMaven repo to download dependencies
   	stage ('Insight_PS_Build') {
         sh 'cd /var/jenkins/jobs/$commitID/workspace/PlatformUI3 && npm install'
 	sh 'cd /var/jenkins/jobs/$commitID/workspace && mvn clean install -DskipTests'
 	   }	
 	
 	//Below step will be enabled in next release to include security analysis.
-	/*stage ('Insight_PS_IQ') {	
+	stage ('Insight_PS_IQ') {	
 	sh 'mvn com.sonatype.clm:clm-maven-plugin:evaluate -Dclm.applicationId=Insights'
-   	}*/
+   	}
 
 	stage ('Insight_PS_CodeAnalysis') {
 		sh 'mvn sonar:sonar -Dmaven.test.failure.ignore=true -DskipTests=true -Dsonar.sources=src/main/java -pl !PlatformUI3'
