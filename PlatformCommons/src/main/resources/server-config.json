@@ -1,13 +1,8 @@
 {
-	"endpointData": 
-	{
+	"endpointData": {
 		"elasticSearchEndpoint": "http://localhost:9200"
 	},
 	
-	"maturityModelConfig": {
-		"inputFilelocation": "D:\\Project\\Insights\\InSights_Windows\\maturityFiles\\Instructions.docx"
-	},
-
 	"sparkConfigurations": {
 		"appName": "inSights",
 		"master": "local[*]",
@@ -20,15 +15,10 @@
 		"sparkResultSince": 5,
 		"sparkMasterExecutionEndPoint": "http://52.202.65.198:4040"
 	},
-
-
-	"queryCache": 
-	{
+	"queryCache": {
 		"esCacheIndex": "neo4j-cached-results/querycacheresult"
 	},
-
-	"emailConfiguration": 
-	{
+	"emailConfiguration": {
 		"sendEmailEnabled": true,
 		"smtpHostServer": "",
 		"smtpPort": "",
@@ -44,94 +34,58 @@
 		"line": "img/Line.svg",
 		"footerLogo": "img/FooterLogo.svg"
 	},
-
-	"ldapConfiguration": 
-	{
-		"ldapUrl": "ldap://ldaphost:389",
-		"bindDN": "BindDN",
-		"bindPassword": "Passwd",
-		"searchBaseDN": "DC=XX,DC=XX",
-		"searchFilter": "(sAMAccountName={0})",
-		"ldapAttributes": 
-		{
-			"name": "givenname",
-			"surname": "sn",
-			"memberOf": "",
-			"email": "mail",
-			"username": "sAMAccountName"
-		}
-	},
-
-	"graph": 
-	{
+	"graph": {
 		"endpoint": "http://localhost:7474",
-		"authToken": "bmVvNGo6QzBnbml6YW50QDE=",
+		"authToken": "",
 		"boltEndPoint": "bolt://localhost:7687",
 		"maxIdleConnections": 25
 	},
-
-	"grafana": 
-	{
+	"grafana": {
 		"grafanaEndpoint": "http://localhost:3000",
 		"grafanaDBEndpoint": "jdbc:postgresql://localhost:5432/grafana",
 		"adminUserName": "admin",
 		"adminUserPassword": "admin",
 		"dbUserName": "grafana",
-		"dbPassword": "C0gnizant@1"
+		"dbPassword": ""
 	},
-
-	"postgre": 
-	{
+	"postgre": {
 		"userName": "grafana",
-		"password": "C0gnizant@1",
+		"password": "",
 		"insightsDBUrl": "jdbc:postgresql://localhost:5432/insight",
 		"grafanaDBUrl": "jdbc:postgresql://localhost:5432/grafana"
 	},
-	
-	"mysql":
-	{
-		"userName":"root",
-		"password":"root",
-		"dbUrl":"jdbc:mysql://localhost:3306/devops_stage?zeroDateTimeBehavior=convertToNull"
+	"mysql": {
+		"userName": "root",
+		"password": "root",
+		"dbUrl": "jdbc:mysql://localhost:3306/devops_stage?zeroDateTimeBehavior=convertToNull"
 	},
-	
-	"messageQueue": 
-	{
+	"messageQueue": {
 		"host": "localhost",
 		"user": "iSight",
 		"password": "iSight",
-		"prefetchCount" : 5
-		
+		"prefetchCount": 5
 	},
-
-	"agentDetails": 
-	{
-		"isOnlineRegistration": false,
+	"agentDetails": {
+		"isOnlineRegistration": true,
 		"docrootUrl": "http://platform.cogdevops.com//insights_install//release//",
 		"offlineAgentPath": "D:\\Project\\Insights\\InSights_Windows\\Agents\\offlineAgent",
-		"unzipPath": "D:\\Project\\Insights\\InSights_Windows\\Agents\\PlatformAgents\\zip",
+		"unzipPath": "D:\\Project\\Insights\\InSights_Windows\\Agents\\PlatformAgents\\unzip",
 		"agentExchange": "iAgent",
 		"agentPkgQueue": "INSIGHTS.AGENTS.PACKAGE"
 	},
-	"correlations" : {
-    "correlationWindow" : 48,                                                                     
-   "correlationFrequency" : 3,
-    "batchSize" : 2000
-  },
-
-
+	"correlations": {
+		"correlationWindow": 48,
+		"correlationFrequency": 3,
+		"batchSize": 2000
+	},
 	"insightsServiceURL": "http://localhost:8080",
-	"disableAuth": false,
-	"enableNativeUsers": true,
 	"insightsTimeZone": "Asia/Kolkata",
 	"userId": "admin",
 	"password": "admin",
 	"refreshTime": "Jan 22, 2017 5:04:25 PM",
 	"enableOnlineDatatagging": true,
-	"trustedHosts": 
-	[
+	"trustedHosts": [
 		"localhost"
 	],
-
 	"enableOnlineBackup": false
 }
