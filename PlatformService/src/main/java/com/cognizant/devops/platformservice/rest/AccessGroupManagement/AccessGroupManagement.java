@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.cognizant.devops.platformcommons.config.GrafanaData;
+import com.cognizant.devops.platformcommons.core.util.ValidationUtils;
 import com.cognizant.devops.platformcommons.dal.rest.RestHandler;
 import com.cognizant.devops.platformcommons.exception.InsightsCustomException;
 import com.cognizant.devops.platformdal.grafana.user.UserDAL;
@@ -175,13 +176,9 @@ public class AccessGroupManagement {
 
 	@RequestMapping(value = "/getCurrentUserOrgs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public JsonObject getCurrentUserOrgs() {
-		log.debug("\n\nInside getCurrentUserOrgs method call");
 		Map<String, String> headers = new HashMap<String, String>();
 		String cookies = getUserCookies();
 		headers.put("Cookie", cookies);
-
-		log.debug("Inside getCurrentUserOrgs() - Cookies -- " + cookies);
-
 		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/user/orgs";
 		ClientResponse response = RestHandler.doGet(apiUrl, null, headers);
 		log.debug(" response " + response);
@@ -202,13 +199,10 @@ public class AccessGroupManagement {
 
 	@RequestMapping(value = "/getUser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public JsonObject getUser() {
-		log.debug("\n\nInside getUser method call");
 		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/user";
-		log.debug("API URL is: " + apiUrl);
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("Cookie", getUserCookies());
 		ClientResponse response = RestHandler.doGet(apiUrl, null, headers);
-		log.debug("Headers: " + headers + "\n\n");
 		return PlatformServiceUtil
 				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
@@ -394,7 +388,6 @@ public class AccessGroupManagement {
 
 	@RequestMapping(value = "/getGrafanaVersion", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public JsonObject getGrafanaVersion() {
-		log.debug("\n\nInside getGrafanaVersion method call");
 		JsonObject grafanaVersionJson = new JsonObject();
 		String grafanaVersion = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaVersion();
 		if (grafanaVersion == null) {
@@ -405,19 +398,22 @@ public class AccessGroupManagement {
 	}
 
 	private String getUserCookies() {
-		log.debug("\n\nInside getUserCookies method call");
 		Map<String, String> cookieMap = (Map) httpRequest.getAttribute("responseHeaders");
 		if (cookieMap == null || cookieMap.get("grafana_sess") == null) {
-			Cookie[] cookies = httpRequest.getCookies();
+			Cookie[] cookies = PlatformServiceUtil.validateCookies(httpRequest.getCookies());
 			cookieMap = new HashMap<String, String>();
 			if (cookies != null) {
 				for (Cookie cookie : cookies) {
-					cookieMap.put(cookie.getName(), cookie.getValue());
+					cookieMap.put(cookie.getName(), cookie.getValue().concat("; HttpOnly"));
+					cookie.setHttpOnly(true);
 				}
 			}
 			if (!cookieMap.containsKey("grafana_sess")) {
 				try {
-					String authHeader = httpRequest.getHeader("Authorization");
+
+					String authHeader = ValidationUtils
+							.extactAutharizationToken(httpRequest.getHeader("Authorization"));
+					//log.debug(" authTokenDecrypt  ========= " + authHeader);
 					String decodedAuthHeader = new String(Base64.getDecoder().decode(authHeader.split(" ")[1]),
 							"UTF-8");
 					String[] authTokens = decodedAuthHeader.split(":");
@@ -441,7 +437,6 @@ public class AccessGroupManagement {
 		for (Map.Entry<String, String> entry : cookieMap.entrySet()) {
 			grafanaCookies.append(entry.getKey()).append("=").append(entry.getValue()).append(";");
 		}
-		log.debug("Grafana's cookies: " + grafanaCookies.toString() + "\n\n");
 		return grafanaCookies.toString();
 	}
 
@@ -449,7 +444,6 @@ public class AccessGroupManagement {
 		log.debug("\n\nInside getCurrentOrgRole method call");
 		String userOrgsApiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
 				+ "/api/user/orgs";
-		log.debug("userOrgs API URL is: " + userOrgsApiUrl);
 		// log.debug("Headers: " + headers);
 		ClientResponse grafanaCurrentOrgResponse = RestHandler.doGet(userOrgsApiUrl, null, headers);
 		JsonArray grafanaOrgs = new JsonParser().parse(grafanaCurrentOrgResponse.getEntity(String.class))
