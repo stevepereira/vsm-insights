@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
+// import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
 
 import com.cognizant.devops.platformcommons.core.enums.ExecutionActions;
 import com.cognizant.devops.platformcommons.core.enums.JobSchedule;
@@ -66,7 +66,7 @@ public abstract class BaseActionImpl {
 		jobConf.put("es.resource", kpiDefinition.getEsResource());
 		jobConf.put("es.index.read.missing.as.empty", Boolean.TRUE.toString());
 		JavaSparkContext sparkContext = JavaSparkContextProvider.getJavaSparkContext();
-		esRDD = JavaEsSpark.esRDD(sparkContext, jobConf);
+		//esRDD = JavaEsSpark.esRDD(sparkContext, jobConf);
 	}
 
 	protected Map<String, Object> getResultMap(Long result, String groupByValue) {

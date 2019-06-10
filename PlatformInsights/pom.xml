@@ -30,11 +30,11 @@
 			<version>2.8.5</version>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.elasticsearch</groupId>
 			<artifactId>elasticsearch-spark-20_2.11</artifactId>
 			<version>5.6.16</version>
-		</dependency>
+		</dependency> -->
 	<!-- 	<dependency>
 			<groupId>graphframes</groupId>
 			<artifactId>graphframes</artifactId>
