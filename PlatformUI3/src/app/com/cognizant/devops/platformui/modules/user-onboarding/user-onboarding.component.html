@@ -282,15 +282,15 @@
       </div>
 
       <table>
-        <tbody style="display: grid; max-height: 38vh ;">
+        <tbody style="display: grid; max-height: 38vh ;border-spacing:0px !important;; border-collapse: none !important">
           <tr>
 
-            <td class="AddUserColTextCss">
+            <td class="AddUserColTextCss" style="border-spacing:0px !important;; border-collapse: none !important">
               <div>
 
               </div>
             </td>
-            <td class="AddUserColTextCss">
+            <td class="AddUserColTextCss" style="border-spacing:0px !important;; border-collapse: none !important">
 
             </td>
 
@@ -312,8 +312,9 @@
               <table style="margin-top: 10px;">
 
                 <tbody>
-                  <tr class="AddUserColTextCss" *ngFor="let row of rows?.controls;let index = index;">
-                    <td style="padding:0 15px 0 15px;">Access Group </td>
+                  <tr class="AddUserColTextCss" style="border-spacing:0px !important;; border-collapse: none !important"
+                    *ngFor="let row of rows?.controls;let index = index;">
+                    <td style="border-spacing:0px !important;padding:0 15px 0 15px;">Access Group </td>
                     <td style="border-spacing:0px !important;">
                       <mat-select [disabled]="!assignuserSaveEnable" required placeholder="Select Access Group"
                         [formControl]="row.get('org')" [style.width.px]="100 " [style.height.px]="20" [style.width.px]="160"
@@ -325,7 +326,7 @@
                       </mat-select>
 
                     </td>
-                    <td style="padding:0 15px 0 15px;">Role</td>
+                    <td style="padding:0 15px 0 15px;border-spacing:0px !important;">Role</td>
 
                     <td style="border-spacing:0px !important; border-collapse: none !important">
 

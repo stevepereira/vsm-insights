@@ -335,8 +335,6 @@ export class UserOnboardingComponent implements OnInit {
     }
   }
   assignUser() {
-    // console.log(this.rows)
-    //  console.log(this.rows.value)
     var requestjson = [];
     var orgArray = [];
     var count = 0;
@@ -345,46 +343,60 @@ export class UserOnboardingComponent implements OnInit {
       this.messageDialog.showApplicationsMessage("Please enter a Username or Login ID", "ERROR");
     }
     else {
+      var orgcount = 0;
       for (let data of this.rows.value) {
-        if (data.role != null) {
-          orgArray.push(data.org.orgId);
-          // console.log("Array" + orgArray);
-          // console.log("Index of " + orgArray.indexOf(data.org.orgId))
-          var firstindex = orgArray.indexOf(data.org.orgId)
-          var lastindex = orgArray.lastIndexOf(data.org.orgId)
+        console.log(data)
+        if (data.org != null) {
+          orgcount = orgcount + 1;
+          if (data.role != null) {
+            orgArray.push(data.org.orgId);
+            // console.log("Array" + orgArray);
+            // console.log("Index of " + orgArray.indexOf(data.org.orgId))
+            var firstindex = orgArray.indexOf(data.org.orgId)
+            var lastindex = orgArray.lastIndexOf(data.org.orgId)
 
 
-          if (lastindex == firstindex) {
-            var orgAssignData = {};
-            orgAssignData['orgName'] = data.org.name;
-            orgAssignData['orgId'] = data.org.orgId;
-            orgAssignData['roleName'] = data.role;
-            orgAssignData['userName'] = this.searchOrgForUser;
-            requestjson.push(orgAssignData);
+            if (lastindex == firstindex) {
+              var orgAssignData = {};
+              orgAssignData['orgName'] = data.org.name;
+              orgAssignData['orgId'] = data.org.orgId;
+              orgAssignData['roleName'] = data.role;
+              orgAssignData['userName'] = this.searchOrgForUser;
+              requestjson.push(orgAssignData);
+            }
+            else {
+              this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
+              count = count + 1;
+              break;
+            }
+            if (count == 0) {
+              //console.log(requestjson);
+              userBMparameter = JSON.stringify(requestjson);
+              this.userOnboardingService.assignUser(userBMparameter)
+                .subscribe(data => {
+                  console.log(data);
+                  var userResponse2 = data.data;
+                  console.log(data.data)
+                  if (userResponse2 == "User does not exist.") {
+                    this.messageDialog.showApplicationsMessage(data.data, "ERROR")
+                  }
+                  else { this.messageDialog.showApplicationsMessage(data.data, "SUCCESS"); }
+
+                })
+            }
           }
           else {
-            this.messageDialog.showApplicationsMessage("Repeated selection of Organisation", "ERROR");
-            count = count + 1;
-            break;
+            this.messageDialog.showApplicationsMessage("Please select a Role", "ERROR");
           }
         }
-      }
-      if (count == 0) {
-        //console.log(requestjson);
-        userBMparameter = JSON.stringify(requestjson);
-        this.userOnboardingService.assignUser(userBMparameter)
-          .subscribe(data => {
-            console.log(data);
-            var userResponse2 = data.data;
-            console.log(data.data)
-            if (userResponse2 == "User does not exsist.") {
-              this.messageDialog.showApplicationsMessage(data.data, "ERROR")
-            }
-            else { this.messageDialog.showApplicationsMessage(data.data, "SUCCESS"); }
 
-          })
       }
+      if (orgcount == 0) {
+        this.messageDialog.showApplicationsMessage("No Organisation selected", "ERROR");
+      }
+
     }
+
   }
   Refresh() {
 
@@ -431,6 +443,7 @@ export class UserOnboardingComponent implements OnInit {
     if (this.assignRadioSelected == true) {
       selectedAdminOrg.orgId = 1;
     }
+    console.log(selectedAdminOrg.orgId)
     this.userOnboardingService.getOrganizationUsers(selectedAdminOrg.orgId).then(function (usersResponseData) {
       if (usersResponseData.data != undefined && usersResponseData.status == "success") {
         self.userDataSource.data = usersResponseData.data; //new MatTableDataSource( )
@@ -451,7 +464,7 @@ export class UserOnboardingComponent implements OnInit {
           }
         }
         if (count == 1) {
-          var dialogmessage = " User already exists in " + "<b>" + self.selectedAdminOrg.name
+          var dialogmessage = " User already exists." + "<b>"
           self.messageDialog.showApplicationsMessage(dialogmessage, "SUCCESS");
         }
         else {

@@ -107,135 +107,72 @@ public class AccessGroupManagement {
 				updatedAuthorities);
 		SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-		return PlatformServiceUtil.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
+		return PlatformServiceUtil
+				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
 
-	
-	
-	
-	
-	
-	@RequestMapping(value = "/assignUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)		
-		public @ResponseBody JsonObject assignUser(@RequestBody String assignUserdata) {	
+	@RequestMapping(value = "/assignUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public @ResponseBody JsonObject assignUser(@RequestBody String assignUserdata) {
 		log.debug(assignUserdata);
-		String message = null;
+		String message = " ";
 		JsonParser parser = new JsonParser();
 		JsonElement updateAgentJson = parser.parse(assignUserdata);
-		//log.debug(updateAgentJson);
-	
-		//log.debug(updateAgentJson);
-	//	return PlatformServiceUtil.buildSuccessResponseWithData(message);
-		/*String message = null;
-		log.debug(assignUserdata);
-		JsonParser parser = new JsonParser();
-		JsonObject updateAgentJson = (JsonObject) parser.parse(assignUserdata);
-		log.debug(updateAgentJson);
-		JsonArray jsonArray = new JsonArray();
-		jsonArray.add(updateAgentJson);
-		log.debug(jsonArray); */
+
 		try {
-			
-			if(updateAgentJson.isJsonArray()) {
+
+			if (updateAgentJson.isJsonArray()) {
 				JsonArray arrayOfOrg = updateAgentJson.getAsJsonArray();
-				int size =arrayOfOrg.size();
+				int size = arrayOfOrg.size();
 				log.debug(size);
-				for(int i=0;i<size;i++) {
-					JsonElement aorg= arrayOfOrg.get(i);
+				for (int i = 0; i < size; i++) {
+					JsonElement aorg = arrayOfOrg.get(i);
 					log.debug(aorg);
-					
-					    int orgId = aorg.getAsJsonObject().get("orgId").getAsInt();
-						String userName = aorg.getAsJsonObject().get("userName").getAsString();
-						String role = aorg.getAsJsonObject().get("roleName").getAsString();
-						String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+userName;
-						log.debug(userName);
-						ClientResponse responsename = callgrafana(apiUrlName,null,"get");
-						JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class)).getAsJsonObject();
-						
-						if(jsonResponseName.get("id") == null) {
-							message ="User does not exsist.";
-							//return PlatformServiceUtil.buildSuccessResponseWithData(message);
-						}
-						//checking whether user name exists
-						//log.error(jsonResponseNameEmail+email);
-						else{
-							
-							
-								String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
-								JsonObject requestOrg = new JsonObject();
-								requestOrg.addProperty("loginOrEmail", userName);
-								requestOrg.addProperty("role", role);
-								//request.addProperty("name", orgName);
-								//requestOrg.addProperty("Password", "admin");
-								ClientResponse responseorg = callgrafana(apiUrlorg,requestOrg,"post");
-								
-										message = "Org"+": "+responseorg.getEntity(String.class);
-										
-							
-							
-						}
-					
-					
+
+					int orgId = aorg.getAsJsonObject().get("orgId").getAsInt();
+					String userName = aorg.getAsJsonObject().get("userName").getAsString();
+					String orgName = aorg.getAsJsonObject().get("orgName").getAsString();
+					String role = aorg.getAsJsonObject().get("roleName").getAsString();
+					String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+							+ "/api/users/lookup?loginOrEmail=" + userName;
+					log.debug(userName);
+					ClientResponse responsename = callgrafana(apiUrlName, null, "get");
+					JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class))
+							.getAsJsonObject();
+
+					if (jsonResponseName.get("id") == null) {
+						message = "User does not exsist.";
+						// return PlatformServiceUtil.buildSuccessResponseWithData(message);
+					}
+					// checking whether user name exists
+					// log.error(jsonResponseNameEmail+email);
+					else {
+
+						String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+								+ "/api/orgs/" + orgId + "/users";
+						JsonObject requestOrg = new JsonObject();
+						requestOrg.addProperty("loginOrEmail", userName);
+						requestOrg.addProperty("role", role);
+						// request.addProperty("name", orgName);
+						// requestOrg.addProperty("Password", "admin");
+						ClientResponse responseorg = callgrafana(apiUrlorg, requestOrg, "post");
+
+						message = message + "Org" + ": " + orgName + " " + responseorg.getEntity(String.class);
+
+					}
+
 				}
-				
-			} 
+
+			}
 			return PlatformServiceUtil.buildSuccessResponseWithData(message);
-			
-			
-			
-			/* MY CODE PREVIOUS 
-			//arrInt[]= updateAgentJson.get("orgId").getAsInt();
-			int orgId = updateAgentJson.get("orgId").getAsInt();
-		//	String name = updateAgentJson.get("name").getAsString();
-			//String email = updateAgentJson.get("email").getAsString();
-			String userName = updateAgentJson.get("userName").getAsString();
-			String role = updateAgentJson.get("role").getAsString();
-			
-			String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+userName;
-			
-			ClientResponse responsename = callgrafana(apiUrlName,null,"get");
-			JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class)).getAsJsonObject();
-			
-			
-			
-			if(jsonResponseName.get("id") == null) {
-				message ="User does not exsist.";
-				return PlatformServiceUtil.buildSuccessResponseWithData(message);
-			}
-			//checking whether user name exists
-			//log.error(jsonResponseNameEmail+email);
-			else{
-				
-				
-					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
-					JsonObject requestOrg = new JsonObject();
-					requestOrg.addProperty("loginOrEmail", userName);
-					requestOrg.addProperty("role", role);
-					//request.addProperty("name", orgName);
-					//requestOrg.addProperty("Password", "admin");
-					ClientResponse responseorg = callgrafana(apiUrlorg,requestOrg,"post");
-					
-							message = "Org"+": "+responseorg.getEntity(String.class);
-							return PlatformServiceUtil.buildSuccessResponseWithData(message);
-				
-				
-			}
-			 */
-			
-		} 
-	
-	
-	
-	catch (Exception e) {
+
+		}
+
+		catch (Exception e) {
 			return PlatformServiceUtil.buildFailureResponse(e.toString());
-		} 
-		 
-		
-			
+		}
+
 	}
-	
-	
-	
-	
+
 	@RequestMapping(value = "/getCurrentUserOrgs", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public JsonObject getCurrentUserOrgs() {
 		log.debug("\n\nInside getCurrentUserOrgs method call");
@@ -247,7 +184,7 @@ public class AccessGroupManagement {
 
 		String apiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint() + "/api/user/orgs";
 		ClientResponse response = RestHandler.doGet(apiUrl, null, headers);
-		log.debug(" response "+ response);
+		log.debug(" response " + response);
 		return PlatformServiceUtil
 				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
@@ -275,12 +212,10 @@ public class AccessGroupManagement {
 		return PlatformServiceUtil
 				.buildSuccessResponseWithData(new JsonParser().parse(response.getEntity(String.class)));
 	}
-	
-	
-	//ADD USER :- 
-	
-	
-	  @RequestMapping(value = "/addUserInOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+
+	// ADD USER :-
+
+	@RequestMapping(value = "/addUserInOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public @ResponseBody JsonObject addUser(@RequestBody String userPropertyList) {
 		String message = null;
 		log.debug("getOrgs API is: " + userPropertyList);
@@ -294,296 +229,169 @@ public class AccessGroupManagement {
 			String role = updateAgentJson.get("role").getAsString();
 			String password = updateAgentJson.get("password").getAsString();
 			String orgName = updateAgentJson.get("orgName").getAsString();
-			String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+name;
-			
-			ClientResponse responsename = callgrafana(apiUrlName,null,"get");
-			JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class)).getAsJsonObject();
-			
-			
-			String jsonResponseNameEmail="";
-			if(jsonResponseName.get("id") != null) {
-				jsonResponseNameEmail=jsonResponseName.get("email").getAsString();
+			String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+					+ "/api/users/lookup?loginOrEmail=" + name;
+
+			ClientResponse responsename = callgrafana(apiUrlName, null, "get");
+			JsonObject jsonResponseName = new JsonParser().parse(responsename.getEntity(String.class))
+					.getAsJsonObject();
+
+			String jsonResponseNameEmail = "";
+			if (jsonResponseName.get("id") != null) {
+				jsonResponseNameEmail = jsonResponseName.get("email").getAsString();
 			}
-			//checking whether user name exists
-			//log.error(jsonResponseNameEmail+email);
-			if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)){
-				//if the user exists then we are getting the list of orgs in which the user is already present
-				String apiUrlUserOrgs = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/"+jsonResponseName.get("id").getAsInt()+"/orgs";
+			// checking whether user name exists
+			// log.error(jsonResponseNameEmail+email);
+			if (jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)) {
+				// if the user exists then we are getting the list of orgs in which the user is
+				// already present
+				String apiUrlUserOrgs = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+						+ "/api/users/" + jsonResponseName.get("id").getAsInt() + "/orgs";
 				Map<String, String> headersUserOrgs = new HashMap<String, String>();
 				headersUserOrgs.put("Authorization", buildAuthenticationHeader());
 				ClientResponse responseUserOrgs = RestHandler.doGet(apiUrlUserOrgs, null, headersUserOrgs);
-				JsonArray userOrgs=new JsonParser().parse(responseUserOrgs.getEntity(String.class)).getAsJsonArray();
-				boolean orgFlag=false;
-				String orgCurrentRole="";
-				for (JsonElement totalOrgs: userOrgs){
-					JsonObject orgs=totalOrgs.getAsJsonObject();
-					int responseOrgId=orgs.get("orgId").getAsInt();
-					String responseOrgRole=orgs.get("role").getAsString();
-					//log.error(responseOrgId+responseOrgRole);
-					//log.error(responseOrgId==orgId);
-					if (responseOrgId== orgId ) {
-						orgFlag=true;
-						orgCurrentRole=responseOrgRole;
+				JsonArray userOrgs = new JsonParser().parse(responseUserOrgs.getEntity(String.class)).getAsJsonArray();
+				boolean orgFlag = false;
+				String orgCurrentRole = "";
+				for (JsonElement totalOrgs : userOrgs) {
+					JsonObject orgs = totalOrgs.getAsJsonObject();
+					int responseOrgId = orgs.get("orgId").getAsInt();
+					String responseOrgRole = orgs.get("role").getAsString();
+					// log.error(responseOrgId+responseOrgRole);
+					// log.error(responseOrgId==orgId);
+					if (responseOrgId == orgId) {
+						orgFlag = true;
+						orgCurrentRole = responseOrgRole;
 					}
 				}
-				//checking whether the user exists in the org we entered in UI
-				if(orgFlag) {
-					//if the user exists in the or we entered , then we check if it is in the same role or not
+				// checking whether the user exists in the org we entered in UI
+				if (orgFlag) {
+					// if the user exists in the or we entered , then we check if it is in the same
+					// role or not
 					if (role.equals(orgCurrentRole)) {
 						message = "{\"message\":\"User exists in currrent org with same role\"}";
-					//	message="User exists in currrent org with same role as "+orgCurrentRole;
+						// message="User exists in currrent org with same role as "+orgCurrentRole;
 						return PlatformServiceUtil.buildSuccessResponseWithData(message);
-	                }
-	                else {
-	                	message = "{\"message\":\"User exists in currrent org with different role\"}";
-	                	//message = "User exists in currrent org with different role as "+orgCurrentRole;
-	                	log.debug( PlatformServiceUtil.buildSuccessResponseWithData(message));
-	                	return PlatformServiceUtil.buildSuccessResponseWithData(message);
+					} else {
+						message = "{\"message\":\"User exists in currrent org with different role\"}";
+						// message = "User exists in currrent org with different role as
+						// "+orgCurrentRole;
+						log.debug(PlatformServiceUtil.buildSuccessResponseWithData(message));
+						return PlatformServiceUtil.buildSuccessResponseWithData(message);
 
-				}
-				}
-					else {
-					//if the user is not exists in the org we entered, then we add it to the org
-					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+					}
+				} else {
+					// if the user is not exists in the org we entered, then we add it to the org
+					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+							+ "/api/orgs/" + orgId + "/users";
 					JsonObject requestOrg = new JsonObject();
 					requestOrg.addProperty("loginOrEmail", email);
 					requestOrg.addProperty("role", role);
-					//request.addProperty("name", orgName);
-					//requestOrg.addProperty("Password", "admin");
-					ClientResponse responseorg = callgrafana(apiUrlorg,requestOrg,"post");
-					
-						//log.error("requestOrg top------------- "+responseOrg.getEntity(String.class));
-					 
-							message = responseorg.getEntity(String.class);
-							return PlatformServiceUtil.buildSuccessResponseWithData(message);
-				}
-				
-			}else if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)!=true){
-				message="{\"message\":\"Username already exists\"}";
-				return PlatformServiceUtil.buildSuccessResponseWithData(message);
-				
-			}else {
-				//if the username is not present in grafana then we are checking for the email 
-				String apiUrlEmail = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+email;
-				ClientResponse responseEmail = callgrafana(apiUrlEmail,null,"get");
-				JsonObject jsonResponseEmail = new JsonParser().parse(responseEmail.getEntity(String.class)).getAsJsonObject();
-				//log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
-				if(jsonResponseEmail.get("id") != null){
-					//if email id exists  returning email exists 
-					message= "{\"message\":\"Email already exists\"}";
+					// request.addProperty("name", orgName);
+					// requestOrg.addProperty("Password", "admin");
+					ClientResponse responseorg = callgrafana(apiUrlorg, requestOrg, "post");
+
+					// log.error("requestOrg top-------------
+					// "+responseOrg.getEntity(String.class));
+
+					message = responseorg.getEntity(String.class);
 					return PlatformServiceUtil.buildSuccessResponseWithData(message);
-				}else {
-					//if email not exits then we are creating a new user
-					String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/admin/users";
+				}
+
+			} else if (jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email) != true) {
+				message = "{\"message\":\"Username already exists\"}";
+				return PlatformServiceUtil.buildSuccessResponseWithData(message);
+
+			} else {
+				// if the username is not present in grafana then we are checking for the email
+				String apiUrlEmail = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+						+ "/api/users/lookup?loginOrEmail=" + email;
+				ClientResponse responseEmail = callgrafana(apiUrlEmail, null, "get");
+				JsonObject jsonResponseEmail = new JsonParser().parse(responseEmail.getEntity(String.class))
+						.getAsJsonObject();
+				// log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
+				if (jsonResponseEmail.get("id") != null) {
+					// if email id exists returning email exists
+					message = "{\"message\":\"Email already exists\"}";
+					return PlatformServiceUtil.buildSuccessResponseWithData(message);
+				} else {
+					// if email not exits then we are creating a new user
+					String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+							+ "/api/admin/users";
 					JsonObject requestCreate = new JsonObject();
 					requestCreate.addProperty("name", name);
 					requestCreate.addProperty("login", userName);
 					requestCreate.addProperty("email", email);
 					requestCreate.addProperty("role", role);
 					requestCreate.addProperty("password", password);
-					ClientResponse responseCreate = callgrafana(apiUrlCreate,requestCreate,"post");
-								
-					JsonObject jsonResponse = new JsonParser().parse(responseCreate.getEntity(String.class)).getAsJsonObject();
-					//log.error(jsonResponseCreate);
-					if(jsonResponse.get("id") != null && orgId!=1){
-						//if the org is other than main org we are adding the created user to the org
-						String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
+					ClientResponse responseCreate = callgrafana(apiUrlCreate, requestCreate, "post");
+
+					JsonObject jsonResponse = new JsonParser().parse(responseCreate.getEntity(String.class))
+							.getAsJsonObject();
+					// log.error(jsonResponseCreate);
+					if (jsonResponse.get("id") != null && orgId != 1) {
+						// if the org is other than main org we are adding the created user to the org
+						String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+								+ "/api/orgs/" + orgId + "/users";
 						JsonObject requestOrg = new JsonObject();
 						requestOrg.addProperty("loginOrEmail", email);
 						requestOrg.addProperty("role", role);
-						//request.addProperty("name", orgName);
-						//requestOrg.addProperty("Password", admin);
-						
-						ClientResponse responseOrg = callgrafana(apiUrlorg,requestOrg,"post");
+						// request.addProperty("name", orgName);
+						// requestOrg.addProperty("Password", admin);
+
+						ClientResponse responseOrg = callgrafana(apiUrlorg, requestOrg, "post");
 						message = responseOrg.getEntity(String.class);
-						//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
+						// log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
 						return PlatformServiceUtil.buildSuccessResponseWithData(message);
-					}else if(jsonResponse.get("id") != null && orgId==1 && role.equals("Viewer")!=true){
-						//if the org is main org and the role is other than viewer we are adding the role to the created user
-						JsonObject createdUserId=jsonResponse.getAsJsonObject();
-						int userIdRole=createdUserId.get("id").getAsInt();
+					} else if (jsonResponse.get("id") != null && orgId == 1 && role.equals("Viewer") != true) {
+						// if the org is main org and the role is other than viewer we are adding the
+						// role to the created user
+						JsonObject createdUserId = jsonResponse.getAsJsonObject();
+						int userIdRole = createdUserId.get("id").getAsInt();
 						log.error("hi");
-						String apiUrlRole = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users/"+userIdRole;
+						String apiUrlRole = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
+								+ "/api/orgs/" + orgId + "/users/" + userIdRole;
 						JsonObject requestRole = new JsonObject();
 						requestRole.addProperty("role", role);
 						Map<String, String> headersRole = new HashMap<String, String>();
 						headersRole.put("Authorization", buildAuthenticationHeader());
 						ClientResponse responseRole = RestHandler.doPatch(apiUrlRole, requestRole, headersRole);
-						log.error(responseRole );
-						 message =responseRole.getEntity(String.class);
-						 return PlatformServiceUtil.buildSuccessResponseWithData(message);
-					}else {
-						//if the org is main org and the role is viewer then we are not doing anything
-						 message=jsonResponse.toString();
-						 log.debug(PlatformServiceUtil.buildSuccessResponseWithData(message));
-						 return PlatformServiceUtil.buildSuccessResponseWithData(message);
-					}	
+						log.error(responseRole);
+						message = responseRole.getEntity(String.class);
+						return PlatformServiceUtil.buildSuccessResponseWithData(message);
+					} else {
+						// if the org is main org and the role is viewer then we are not doing anything
+						message = jsonResponse.toString();
+						log.debug(PlatformServiceUtil.buildSuccessResponseWithData(message));
+						return PlatformServiceUtil.buildSuccessResponseWithData(message);
+					}
 				}
 			}
-			
+
 		} catch (Exception e) {
 			return PlatformServiceUtil.buildFailureResponse(e.toString());
 		}
-		
-		
-		
+
 	}
-	
-	public ClientResponse callgrafana(String url, JsonElement requestJson , String type){
-		if (type== "get") {
+
+	public ClientResponse callgrafana(String url, JsonElement requestJson, String type) {
+		if (type == "get") {
 			Map<String, String> headersName = new HashMap<String, String>();
 			headersName.put("Cookie", getUserCookies());
 			ClientResponse responseName = RestHandler.doGet(url, null, headersName);
 			return responseName;
-			
-		}
-		else if (type == "post")
-		{
+
+		} else if (type == "post") {
 			Map<String, String> headersOrg = new HashMap<String, String>();
-			
+
 			headersOrg.put("Authorization", buildAuthenticationHeader());
 			ClientResponse responseName = RestHandler.doPost(url, requestJson, headersOrg);
 			return responseName;
 		}
 		return null;
-	
-	} 
-	  
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
- 	/* @RequestMapping(value = "/addUserInOrg", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String addUser(@RequestParam int orgId,@RequestParam String name, @RequestParam String email, @RequestParam String role,@RequestParam String userName,@RequestParam String orgName ,@RequestParam String password){
- 		log.debug("getOrgs API is: " + name);
- 		Map<String, String> headersName = new HashMap<String, String>();
-		headersName.put("Cookie", getUserCookies());
-		String apiUrlName = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+name;
-		ClientResponse responseName = RestHandler.doGet(apiUrlName, null, headersName);
-		JsonObject jsonResponseName = new JsonParser().parse(responseName.getEntity(String.class)).getAsJsonObject();
-		//log.error(jsonResponseName);
-		String jsonResponseNameEmail="";
-		if(jsonResponseName.get("id") != null) {
-			jsonResponseNameEmail=jsonResponseName.get("email").getAsString();
-		}
-		//checking whether username exists
-		//log.error(jsonResponseNameEmail+email);
-		if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)){
-			//if the user exists then we are getting the list of orgs in which the user is already present
-			String apiUrlUserOrgs = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/"+jsonResponseName.get("id").getAsInt()+"/orgs";
-			Map<String, String> headersUserOrgs = new HashMap<String, String>();
-			headersUserOrgs.put("Authorization", buildAuthenticationHeader());
-			ClientResponse responseUserOrgs = RestHandler.doGet(apiUrlUserOrgs, null, headersUserOrgs);
-			JsonArray userOrgs=new JsonParser().parse(responseUserOrgs.getEntity(String.class)).getAsJsonArray();
-			boolean orgFlag=false;
-			String orgCurrentRole="";
-			for (JsonElement totalOrgs: userOrgs){
-				JsonObject orgs=totalOrgs.getAsJsonObject();
-				int responseOrgId=orgs.get("orgId").getAsInt();
-				String responseOrgRole=orgs.get("role").getAsString();
-				//log.error(responseOrgId+responseOrgRole);
-				//log.error(responseOrgId==orgId);
-				if (responseOrgId== orgId ) {
-					orgFlag=true;
-					orgCurrentRole=responseOrgRole;
-				}
-			}
-			//checking whether the user exists in the org we entered in UI
-			if(orgFlag) {
-				//if the user exists in the or we entered , then we check if it is in the same role or not
-				if (role.equals(orgCurrentRole)) {
-					return "{\"message\":\" user exists in currrent org with same role "+orgCurrentRole+"\"}";
-                }
-                else {
-                      return "{\"message\":\" user exists in currrent org with different  role "+orgCurrentRole+"\"}";}
 
-			}else {
-				//if the user is not exists in the org we entered, then we add it to the org
-				String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
-				JsonObject requestOrg = new JsonObject();
-				requestOrg.addProperty("loginOrEmail", email);
-				requestOrg.addProperty("role", role);
-				//request.addProperty("name", orgName);
-				//requestOrg.addProperty("Password", "admin");
-				Map<String, String> headersOrg = new HashMap<String, String>();
-				headersOrg.put("Authorization", buildAuthenticationHeader());
-				ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
-				//log.error("requestOrg top------------- "+responseOrg.getEntity(String.class));
-				return responseOrg.getEntity(String.class);
-			}
-			
-		}else if(jsonResponseName.get("id") != null && jsonResponseNameEmail.equals(email)!=true){
-			return "{\"message\":\" username already exists\"}";
-		}else {
-			//if the username is not present in grafana then we are checking for the email 
-			Map<String, String> headersEmail = new HashMap<String, String>();
-			headersEmail.put("Cookie", getUserCookies());
-			String apiUrlEmail = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/users/lookup?loginOrEmail="+email;
-			ClientResponse responseEmail = RestHandler.doGet(apiUrlEmail, null, headersEmail);
-			JsonObject jsonResponseEmail = new JsonParser().parse(responseEmail.getEntity(String.class)).getAsJsonObject();
-			//log.error("jsonResponseEmail--------------------"+jsonResponseEmail);
-			if(jsonResponseEmail.get("id") != null){
-				//if email id exists  returning email exists 
-				return "{\"message\":\" email already exists\"}";
-			}else {
-				//if email not exits then we are creating a new user
-				String apiUrlCreate = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/admin/users";
-				JsonObject requestCreate = new JsonObject();
-				requestCreate.addProperty("name", name);
-				requestCreate.addProperty("login", userName);
-				requestCreate.addProperty("email", email);
-				requestCreate.addProperty("role", role);
-				requestCreate.addProperty("password", password);
-				Map<String, String> headersCreate = new HashMap<String, String>();
-				headersCreate.put("Authorization", buildAuthenticationHeader());
-				ClientResponse responseCreate = RestHandler.doPost(apiUrlCreate, requestCreate, headersCreate);
-				JsonObject jsonResponse = new JsonParser().parse(responseCreate.getEntity(String.class)).getAsJsonObject();
-				//log.error(jsonResponseCreate);
-				if(jsonResponse.get("id") != null && orgId!=1){
-					//if the org is other than main org we are adding the created user to the org
-					String apiUrlorg = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users";
-					JsonObject requestOrg = new JsonObject();
-					requestOrg.addProperty("loginOrEmail", email);
-					requestOrg.addProperty("role", role);
-					//request.addProperty("name", orgName);
-					//requestOrg.addProperty("Password", admin);
-					Map<String, String> headersOrg = new HashMap<String, String>();
-					headersOrg.put("Authorization", buildAuthenticationHeader());
-					ClientResponse responseOrg = RestHandler.doPost(apiUrlorg, requestOrg,headersOrg);
-					//log.error(requestOrg+""+headersOrg+" "+responseOrg.getEntity(String.class));
-					return responseOrg.getEntity(String.class);
-				}else if(jsonResponse.get("id") != null && orgId==1 && role.equals("Viewer")!=true){
-					//if the org is main org and the role is other than viewer we are adding the role to the created user
-					JsonObject createdUserId=jsonResponse.getAsJsonObject();
-					int userIdRole=createdUserId.get("id").getAsInt();
-					String apiUrlRole = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()+"/api/orgs/"+orgId+"/users/"+userIdRole;
-					JsonObject requestRole = new JsonObject();
-					requestRole.addProperty("role", role);
-					Map<String, String> headersRole = new HashMap<String, String>();
-					headersRole.put("Authorization", buildAuthenticationHeader());
-					ClientResponse responseRole = RestHandler.doPatch(apiUrlRole, requestRole, headersRole);
-					return responseRole.getEntity(String.class);
-				}else {
-					//if the org is main org and the role is viewver then we are not doing anything
-					return jsonResponse.toString();
-				}	
-			}
-		}
-	}  */
-	
+	}
+
 	@RequestMapping(value = "/getGrafanaVersion", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public JsonObject getGrafanaVersion() {
 		log.debug("\n\nInside getGrafanaVersion method call");
@@ -618,7 +426,7 @@ public class AccessGroupManagement {
 					loginRequestParams.addProperty("password", authTokens[1]);
 					String loginApiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
 							+ "/login";
-					//log.debug("Getting user cookies from: " + loginApiUrl);
+					// log.debug("Getting user cookies from: " + loginApiUrl);
 					ClientResponse grafanaLoginResponse = RestHandler.doPost(loginApiUrl, loginRequestParams, null);
 					List<NewCookie> cookies2 = grafanaLoginResponse.getCookies();
 					for (NewCookie cookie : cookies2) {
@@ -642,7 +450,7 @@ public class AccessGroupManagement {
 		String userOrgsApiUrl = ApplicationConfigProvider.getInstance().getGrafana().getGrafanaEndpoint()
 				+ "/api/user/orgs";
 		log.debug("userOrgs API URL is: " + userOrgsApiUrl);
-		//log.debug("Headers: " + headers);
+		// log.debug("Headers: " + headers);
 		ClientResponse grafanaCurrentOrgResponse = RestHandler.doGet(userOrgsApiUrl, null, headers);
 		JsonArray grafanaOrgs = new JsonParser().parse(grafanaCurrentOrgResponse.getEntity(String.class))
 				.getAsJsonArray();
