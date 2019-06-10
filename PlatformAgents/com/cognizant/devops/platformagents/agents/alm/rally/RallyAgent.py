@@ -15,7 +15,6 @@
 #-------------------------------------------------------------------------------
 '''
 Created on Jun 18, 2018
-
 @author: 476693
 '''
 
@@ -79,7 +78,7 @@ class RallyAgent(BaseAgent):
                 workspaceUrl = str(specificWorkspaceList[i])
                 logging.debug("workspaceUrl ==== " + workspaceUrl)
                 artifactListUrl = baseUrl + "artifact?workspace=" + workspaceUrl + "&query=(LastUpdateDate > " + lastUpdated + ")&fetch=true"
-                logging.debug(" artifactListUrl  22 ==== " + artifactListUrl)
+                logging.debug(" artifactListUrl   ==== " + artifactListUrl)
                 responseTemplate = self.getResponseTemplate()
                 pageNum = 1
                 fetchNextPage = True
@@ -145,6 +144,7 @@ class RallyAgent(BaseAgent):
                                 injectArtifactData['iterationID'] = int(iterationId)
                                else :
                                 injectArtifactData['iterationID'] = 0
+                                injectArtifactData['iterationName'] = 0
                                if artifactListData.get('Release') and artifactListData['Release'] != None:
                                 injectArtifactData['releaseName'] = artifactListData['Release']['_refObjectName']
                                 logging.debug(" releaseName artifact ==== " + str(artifactListData['Release']['_refObjectName']))
@@ -159,6 +159,7 @@ class RallyAgent(BaseAgent):
                                   injectArtifactData['releaseID'] = ReleasetRes['Release']['ObjectID']
                                else :
                                  injectArtifactData['Release'] = 0
+                                 injectArtifactData['releaseName'] = 0
                                for key in arr:
                                    if ':' in key:
                                     #if key.split(":")[0] in artifactListData:
