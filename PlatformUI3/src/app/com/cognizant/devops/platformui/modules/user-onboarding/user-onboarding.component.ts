@@ -252,7 +252,7 @@ export class UserOnboardingComponent implements OnInit {
     this.isPasswordIncorrect = false;
     this.isNameIncorrect = false;
     this.isRoleIncorrect = false;
-    console.log(this.role);
+    // console.log(this.role);
     var userBMparameter;
     this.userPropertyList = {};
     //  this.userPropertyList = this.clubProperties(this.userPropertyList, false);
@@ -286,12 +286,12 @@ export class UserOnboardingComponent implements OnInit {
     if (!this.isRoleIncorrect && !this.isNameIncorrect && !this.isPasswordIncorrect && !this.isUsernameIncorrect && !this.isEmailIncorrect) {
       this.userOnboardingService.addUserInOrg(userBMparameter)
         .subscribe(data => {
-          console.log(data)
-          console.log(data.data)
-          console.log(typeof (data.data))
-          console.log(JSON.parse(data.data).message)
+          // console.log(data)
+          // console.log(data.data)
+          // console.log(typeof (data.data))
+          // console.log(JSON.parse(data.data).message)
           var userResponse = JSON.parse(data.data).message;
-          console.log(data.data)
+          //console.log(data.data)
           // console.log(data.data["message"])
           // console.log(JSON.stringify(data.data.message))
           //console.log(userResponse)
@@ -345,7 +345,7 @@ export class UserOnboardingComponent implements OnInit {
     else {
       var orgcount = 0;
       for (let data of this.rows.value) {
-        console.log(data)
+        // console.log(data)
         if (data.org != null) {
           orgcount = orgcount + 1;
           if (data.role != null) {
@@ -374,9 +374,9 @@ export class UserOnboardingComponent implements OnInit {
               userBMparameter = JSON.stringify(requestjson);
               this.userOnboardingService.assignUser(userBMparameter)
                 .subscribe(data => {
-                  console.log(data);
+                  //  console.log(data);
                   var userResponse2 = data.data;
-                  console.log(data.data)
+                  //  console.log(data.data)
                   if (userResponse2 == "User does not exist.") {
                     this.messageDialog.showApplicationsMessage(data.data, "ERROR")
                   }
@@ -439,7 +439,7 @@ export class UserOnboardingComponent implements OnInit {
     var count = 0;
     var self = this;
     self.userDataSource = new MatTableDataSource();
-    console.log(this.assignRadioSelected)
+    //console.log(this.assignRadioSelected)
     if (this.assignRadioSelected == true) {
       selectedAdminOrg.orgId = 1;
     }
@@ -511,7 +511,7 @@ export class UserOnboardingComponent implements OnInit {
   }
 
   async saveData() {
-    console.log(this.selectedUser);
+    //  console.log(this.selectedUser);
     //console.log(" Organization " + "  " + this.selectedAdminOrg)
     let editResponse = await this.userOnboardingService.editUserOrg(this.selectedUser.orgId, this.selectedUser.userId, this.selectedUser.role);
     if (editResponse.message = "Organization user updated") {
