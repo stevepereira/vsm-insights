@@ -50,6 +50,7 @@ export class UserOnboardingComponent implements OnInit {
   role: any;
   pass: string
   username: string
+  searchUser: string
   email: string
   names: string;
   isEmailIncorrect: boolean = false;
@@ -411,6 +412,10 @@ export class UserOnboardingComponent implements OnInit {
     this.username = null;
     this.email = null;
     this.names = null;
+    this.searchOrgForUser = null;
+    console.log(this.rows.value)
+    this.searchUser = null;
+
 
   }
   adduserenableSave() {
@@ -422,6 +427,7 @@ export class UserOnboardingComponent implements OnInit {
     this.addRadioSelected = true;
     this.assignRadioSelected = false;
     this.assignuserSaveEnable = false;
+    this.searchOrgForUser = null;
 
   }
   assignuserenableSave() {
@@ -433,6 +439,11 @@ export class UserOnboardingComponent implements OnInit {
     this.showDetail2 = true;
     this.assignRadioSelected = true;
     this.addRadioSelected = false;
+    this.pass = null;
+    this.username = null;
+    this.email = null;
+    this.names = null;
+    this.searchUser = null;
   }
 
   searchData(searchUser, selectedAdminOrg) {

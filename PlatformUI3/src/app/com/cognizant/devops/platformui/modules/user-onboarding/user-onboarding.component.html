@@ -330,8 +330,9 @@
 
                     <td style="border-spacing:0px !important; border-collapse: none !important">
 
-                      <mat-select required placeholder="Select Role" [formControl]="row.get('role')" [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}"
-                        [style.width.px]="100 " name="role5">
+                      <mat-select [disabled]="!assignuserSaveEnable" required placeholder="Select Role" [formControl]="row.get('role')"
+                        [ngClass]="{  'input-disabled' : readOnlyOrg ,  'form-control': !readOnlyOrg}" [style.width.px]="100 "
+                        name="role5">
                         <mat-option *ngFor=" let record of roleRecord " [value]="record.value ">
                           {{record.name}}
                         </mat-option>

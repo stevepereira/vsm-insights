@@ -141,7 +141,7 @@ public class AccessGroupManagement {
 							.getAsJsonObject();
 
 					if (jsonResponseName.get("id") == null) {
-						message = "User does not exsist.";
+						message = "User does not exist.";
 						// return PlatformServiceUtil.buildSuccessResponseWithData(message);
 					}
 					// checking whether user name exists
@@ -455,7 +455,7 @@ public class AccessGroupManagement {
 				break;
 			}
 		}
-		log.debug("Current grafana org role: " + grafanaCurrentOrgRole + "\n\n");
+	//	log.debug("Current grafana org role: " + grafanaCurrentOrgRole + "\n\n");
 		return grafanaCurrentOrgRole;
 	}
 
