@@ -53,6 +53,7 @@ make install && wget https://platform.cogdevops.com/insights_install/installatio
 python /opt/python/Python-2.7.11/get-pip.py
 pip install pika==0.11.2 requests apscheduler python-dateutil xmltodict pytz requests_ntlm
 
+echo "done with python "
 
 #UPDATE IPs -SERVER_CONFIG.JSON
 elasticSearchEndpoint="http:\/\/$elasticIP:9200"
@@ -64,7 +65,7 @@ grafanaDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
 
 #UPDATE ServiceEndpoint - uiConfig.json and server-config.json
 ServiceEndpoint="http:\/\/$hostIP:8080"
-
+echo "68"
 configPath='/usr/INSIGHTS_HOME/.InSights/server-config.json'
 sed -i -e "s/.*elasticSearchEndpoint.*/  \"elasticSearchEndpoint\": \"$elasticSearchEndpoint\"/g" $configPath
 sed -i -e "s/.endpoint\":.*/\"endpoint\": \"$neo4jEndpoint\",/g" $configPath
@@ -75,7 +76,7 @@ sed -i -e "s/.*grafanaDBUrl.*/\t\t\"grafanaDBUrl\": \"$grafanaDBUrl\"/g" $config
 sed -i -e "s/.*insightsServiceURL.*/    \"insightsServiceURL\": \"$ServiceEndpoint\",/g" $configPath
 
 sed -i 's/\r$//g' $configPath
-
+echo "79"
 #RabbitMq
 echo "#################### Installing Erlang , required for Rabbit MQ ####################"
  mkdir erlang && cd erlang
