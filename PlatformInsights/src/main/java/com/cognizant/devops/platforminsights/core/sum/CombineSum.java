@@ -15,18 +15,18 @@
  ******************************************************************************/
 package com.cognizant.devops.platforminsights.core.sum;
 
-import org.apache.spark.api.java.function.Function2;
+// import org.apache.spark.api.java.function.Function2;
 
-public class CombineSum implements Function2<Sum, Sum, Sum>{
+public class CombineSum { //implements Function2<Sum, Sum, Sum>
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3620814382510494699L;
 
-	@Override
+	/*@Override
 	public Sum call(Sum a, Sum b) {
 		a.total_ += b.total_;
 		a.num_ += b.num_;
 		return a;
-	}
+	}*/
 }

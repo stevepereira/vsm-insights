@@ -35,11 +35,11 @@
 			<artifactId>elasticsearch-spark-20_2.11</artifactId>
 			<version>5.6.16</version>
 		</dependency> -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>graphframes</groupId>
 			<artifactId>graphframes</artifactId>
 			<version>0.7.0-spark2.4-s_2.11</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- <dependency>
 			<groupId>neo4j-contrib</groupId>
@@ -87,17 +87,17 @@
 			<artifactId>log4j-core</artifactId>
 			<version>2.11.2</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
 			<version>3.4.14</version>
-		</dependency>
+		</dependency> -->
 		
-		<dependency>
+		<!-- <dependency>
 		    <groupId>org.apache.spark</groupId>
 		    <artifactId>spark-core_2.12</artifactId>
 		    <version>2.4.3</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- <dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
 			<version>2.9.8</version> </dependency> -->
@@ -126,12 +126,12 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>2.26.0</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
@@ -142,11 +142,12 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<!-- <dependency>
+		<!-- 
+		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.9.9</version>
-		</dependency> -->
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
@@ -156,7 +157,7 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 			<version>2.9.9</version>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency>
 			<groupId>net.java.dev.jets3t</groupId>
 			<artifactId>jets3t</artifactId>
@@ -177,11 +178,11 @@
 			</exclusions>
 		</dependency> -->
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.61</version>
-		</dependency>
+		</dependency> -->
 		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
 			<version>4.5.8</version> </dependency> -->
 		<dependency>
@@ -195,7 +196,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.scala-lang.modules</groupId>
 			<artifactId>scala-xml_2.11</artifactId>
 			<version>1.2.0</version>
@@ -204,17 +205,17 @@
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-scala_2.11</artifactId>
 			<version>2.9.9</version>
-		</dependency>
+		</dependency> -->
 
 
 	</dependencies>
 
-	<repositories>
+	<!-- <repositories>
 		<repository>
 			<id>SparkPackagesRepo</id>
 			<url>http://dl.bintray.com/spark-packages/maven</url>
 		</repository>
-	</repositories>
+	</repositories> -->
 
 	<build>
 		<!-- <finalName>PlatformInsights</finalName> -->

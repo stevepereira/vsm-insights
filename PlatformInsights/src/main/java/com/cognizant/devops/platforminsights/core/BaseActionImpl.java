@@ -21,8 +21,10 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaSparkContext;
+/*
+ * import org.apache.spark.api.java.JavaPairRDD;
+ * import org.apache.spark.api.java.JavaSparkContext;
+ */
 // import org.elasticsearch.spark.rdd.api.java.JavaEsSpark;
 
 import com.cognizant.devops.platformcommons.core.enums.ExecutionActions;
@@ -36,7 +38,7 @@ import com.cognizant.devops.platforminsights.exception.InsightsSparkJobFailedExc
 public abstract class BaseActionImpl {
 
 	private static Logger log = LogManager.getLogger(BaseActionImpl.class);
-	protected JavaPairRDD<String, Map<String, Object>> esRDD;
+	//protected JavaPairRDD<String, Map<String, Object>> esRDD;
 	protected KPIDefinition kpiDefinition;
 
 	public BaseActionImpl(KPIDefinition kpiDefinition) {
@@ -65,7 +67,7 @@ public abstract class BaseActionImpl {
 		jobConf.put("es.query", esQuery);
 		jobConf.put("es.resource", kpiDefinition.getEsResource());
 		jobConf.put("es.index.read.missing.as.empty", Boolean.TRUE.toString());
-		JavaSparkContext sparkContext = JavaSparkContextProvider.getJavaSparkContext();
+		//JavaSparkContext sparkContext = JavaSparkContextProvider.getJavaSparkContext();
 		//esRDD = JavaEsSpark.esRDD(sparkContext, jobConf);
 	}
 

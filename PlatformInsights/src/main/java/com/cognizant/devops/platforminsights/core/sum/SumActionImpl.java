@@ -21,8 +21,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.JavaPairRDD;
-import org.apache.spark.api.java.JavaRDD;
+/*
+ * import org.apache.spark.api.java.JavaPairRDD;
+ * import org.apache.spark.api.java.JavaRDD;
+ */
 
 import com.cognizant.devops.platforminsights.core.BaseActionImpl;
 import com.cognizant.devops.platforminsights.core.function.ESMapFunction;
@@ -30,7 +32,7 @@ import com.cognizant.devops.platforminsights.core.function.Neo4jDBImp;
 import com.cognizant.devops.platforminsights.datamodel.KPIDefinition;
 import com.cognizant.devops.platforminsights.exception.InsightsSparkJobFailedException;
 
-import scala.Tuple2;
+// import scala.Tuple2;
 
 public class SumActionImpl extends BaseActionImpl {
 
@@ -68,7 +70,7 @@ public class SumActionImpl extends BaseActionImpl {
 	}
 
 	private void executeESQuery() throws InsightsSparkJobFailedException {
-		if (kpiDefinition.getDbType() == null || kpiDefinition.getDbType().equalsIgnoreCase("elasticsearch")) {
+		/*if (kpiDefinition.getDbType() == null || kpiDefinition.getDbType().equalsIgnoreCase("elasticsearch")) {
 			try {
 				if (kpiDefinition.isGroupBy()) {
 					log.debug("GroupBy found true. Entering GroupBy method");
@@ -82,7 +84,7 @@ public class SumActionImpl extends BaseActionImpl {
 							.mapValues(value -> new Tuple2<Long, Integer>(value, 1));
 					JavaPairRDD<String, Tuple2<Long, Integer>> reducedCount = valueCount.reduceByKey((tuple1,
 							tuple2) -> new Tuple2<Long, Integer>(tuple1._1 + tuple2._1, tuple1._2 + tuple2._2));
-
+		
 					// calculate average
 					JavaPairRDD<String, Long> sumPair = reducedCount.mapToPair(new InsightsSumFunction());
 					// print averageByKey
@@ -109,7 +111,7 @@ public class SumActionImpl extends BaseActionImpl {
 				throw new InsightsSparkJobFailedException(
 						"Sum calculation job failed for kpiID - " + kpiDefinition.getKpiID(), e);
 			}
-		}
+		}*/
 	}
 
 }
