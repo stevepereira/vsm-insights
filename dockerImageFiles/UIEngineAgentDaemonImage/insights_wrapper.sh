@@ -164,12 +164,18 @@ chmod -R 755 /opt/insightsengine/
 java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar
 # Apache server 
 yum install httpd
+cd /etc/httpd/conf
+rm -f httpd.conf
+wget https://platform.cogdevops.com/insights_install/installationScripts/latest/RHEL/httpd/httpd.conf
+cd /etc/httpd/conf.d
+rm -f httpd-vhosts.conf
+wget https://platform.cogdevops.com/insights_install/installationScripts/latest/RHEL/httpd/httpd-vhosts.conf
 systemctl start httpd
 firewall-cmd --zone=public --permanent --add-service=http
 firewall-cmd --zone=public --permanent --add-service=https
 firewall-cmd --reload
 /usr/sbin/setsebool -P httpd_can_network_connect 1
-systemctl start httpd
+systemctl restart httpd
 
 # now we bring the primary process back into the foreground
 # and leave it there
