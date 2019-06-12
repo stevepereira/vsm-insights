@@ -57,7 +57,7 @@ pip install pika==0.11.2 requests apscheduler python-dateutil xmltodict pytz req
 #UPDATE IPs -SERVER_CONFIG.JSON
 elasticSearchEndpoint="http:\/\/$elasticIP:9200"
 neo4jEndpoint="http:\/\/$neo4jIP:7474"
-grafanaEndpoint="http:\/\/$hostIP:3000"
+grafanaEndpoint="http:\/\/$hostIP/grafana"
 grafanaDBEndpoint="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
 insightsDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/insight"
 grafanaDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
@@ -138,9 +138,9 @@ cd grafana-5.2.2 && nohup ./bin/grafana-server &
 sleep 40
 echo $hostIP
 echo $! > grafana-pid.txt
-curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{"name":"PowerUser","email":"PowerUser@PowerUser.com","login":"PowerUser","password":"C0gnizant@1"}' http://$hostIP:3000/api/admin/users
+curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{"name":"PowerUser","email":"PowerUser@PowerUser.com","login":"PowerUser","password":"C0gnizant@1"}' http://$hostIP/grafana/api/admin/users
 sleep 10
-echo "GRAFANA URL :"$hostIP:3000
+echo "GRAFANA URL :"$hostIP/grafana
 
 #TOMCAT
 cd /opt && wget $insightsUI
