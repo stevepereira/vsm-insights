@@ -15,10 +15,8 @@
  ******************************************************************************/
 package com.cognizant.devops.platforminsights.core.sum;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 /*
@@ -27,9 +25,9 @@ import org.apache.log4j.Logger;
  */
 
 import com.cognizant.devops.platforminsights.core.BaseActionImpl;
-import com.cognizant.devops.platforminsights.core.function.ESMapFunction;
 import com.cognizant.devops.platforminsights.core.function.Neo4jDBImp;
 import com.cognizant.devops.platforminsights.datamodel.KPIDefinition;
+import com.cognizant.devops.platforminsights.datamodel.Neo4jKPIDefinition;
 import com.cognizant.devops.platforminsights.exception.InsightsSparkJobFailedException;
 
 // import scala.Tuple2;
@@ -40,6 +38,10 @@ public class SumActionImpl extends BaseActionImpl {
 
 	public SumActionImpl(KPIDefinition kpiDefinition) {
 		super(kpiDefinition);
+	}
+
+	public SumActionImpl(Neo4jKPIDefinition neo4jKpiDefinition) {
+		super(neo4jKpiDefinition);
 	}
 
 	@Override
@@ -112,6 +114,21 @@ public class SumActionImpl extends BaseActionImpl {
 						"Sum calculation job failed for kpiID - " + kpiDefinition.getKpiID(), e);
 			}
 		}*/
+	}
+
+	@Override
+	public void executeNeo4jGraphQuery() {
+		//if (kpiDefinition.getDbType().equalsIgnoreCase("neo4j")) {
+		try {
+			Neo4jDBImp graphDb = new Neo4jDBImp(neo4jKpiDefinition);
+			List<Map<String, Object>> graphResposne = graphDb.getNeo4jResult();
+			log.debug(" graphResposne  " + graphResposne);
+			saveResultInNeo4j(graphResposne);
+
+		} catch (Exception e) {
+			log.error("Sum calculation job failed for kpiID - " + kpiDefinition.getKpiID(), e);
+		}
+		//}
 	}
 
 }

@@ -118,4 +118,10 @@ public class SparkJobConfiguration implements Serializable{
 		
 		return kpiDef;
 	}
+
+	@Override
+	public String toString() {
+		return "SparkJobConfiguration [kpiDefinition=" + kpiDefinition + ", id=" + id + ", name=" + name + ", schedule="
+				+ schedule + ", nextRun=" + nextRun + ", lastRunTime=" + lastRunTime + ", isActive=" + isActive + "]";
+	}
 }

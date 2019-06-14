@@ -26,7 +26,9 @@ import org.apache.logging.log4j.Logger;
 import com.cognizant.devops.platformcommons.dal.elasticsearch.ElasticSearchDBHandler;
 import com.cognizant.devops.platforminsights.configs.ConfigConstants;
 import com.cognizant.devops.platforminsights.core.BaseActionImpl;
+import com.cognizant.devops.platforminsights.core.function.Neo4jDBImp;
 import com.cognizant.devops.platforminsights.datamodel.KPIDefinition;
+import com.cognizant.devops.platforminsights.datamodel.Neo4jKPIDefinition;
 import com.google.gson.Gson;
 /*
  * import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -41,6 +43,10 @@ public class CountActionImpl extends BaseActionImpl {
 	Gson gson = new Gson();
 	public CountActionImpl(KPIDefinition kpiDefinition) {
 		super(kpiDefinition);
+	}
+
+	public CountActionImpl(Neo4jKPIDefinition neo4jKpiDefinition) {
+		super(neo4jKpiDefinition);
 	}
 
 	@Override
@@ -93,4 +99,20 @@ public class CountActionImpl extends BaseActionImpl {
 		}
 		return resultMap;
 	}
+
+	@Override
+	protected void executeNeo4jGraphQuery() {
+		//if (kpiDefinition.getDbType().equalsIgnoreCase("neo4j")) {
+		try {
+			Neo4jDBImp graphDb = new Neo4jDBImp(neo4jKpiDefinition);
+			List<Map<String, Object>> graphResposne = graphDb.getNeo4jResult();
+			log.debug(" graphResposne  " + graphResposne);
+			saveResultInNeo4j(graphResposne);
+
+		} catch (Exception e) {
+			log.error("Sum calculation job failed for kpiID - " + kpiDefinition.getKpiID(), e);
+		}
+		//}
+	}
+
 }
