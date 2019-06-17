@@ -20,6 +20,9 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -38,7 +41,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class Neo4jDBHandler {
 	DocumentParser parser = new DocumentParser();
-
+	private static Logger log = LogManager.getLogger(Neo4jDBHandler.class.getName());
 	/*
 	 * Create Nodes using neo4j rest api with transaction support. Following are
 	 * request details: POST http://localhost:7474/db/data/transaction/commit
@@ -277,6 +280,7 @@ public class Neo4jDBHandler {
 		JsonArray statementArray = new JsonArray();
 		for (JsonObject data : dataList) {
 			JsonObject statement = getCreateCypherQueryStatement(data, cypherQuery);
+			log.debug("  statement  " + statement);
 			statementArray.add(statement);
 		}
 		requestJson.add("statements", statementArray);
