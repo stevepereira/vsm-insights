@@ -53,19 +53,29 @@ make install && wget https://platform.cogdevops.com/insights_install/installatio
 python /opt/python/Python-2.7.11/get-pip.py
 pip install pika==0.11.2 requests apscheduler python-dateutil xmltodict pytz requests_ntlm
 
-echo "done with python "
+
+# Apache server
+yum install httpd -y
+cd /etc/httpd/conf
+rm -f httpd.conf
+wget $httpdConf
+cd /etc/httpd/conf.d
+rm -f httpd-vhosts.conf
+wget $httpdVhostsConf
+apachectl -k start
+
 
 #UPDATE IPs -SERVER_CONFIG.JSON
 elasticSearchEndpoint="http:\/\/$elasticIP:9200"
 neo4jEndpoint="http:\/\/$neo4jIP:7474"
-grafanaEndpoint="http:\/\/$hostIP/grafana"
+grafanaEndpoint="http:\/\/$hostIP\/grafana"
 grafanaDBEndpoint="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
 insightsDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/insight"
 grafanaDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
 
 #UPDATE ServiceEndpoint - uiConfig.json and server-config.json
 ServiceEndpoint="http:\/\/$hostIP:8080"
-echo "68"
+
 configPath='/usr/INSIGHTS_HOME/.InSights/server-config.json'
 sed -i -e "s/.*elasticSearchEndpoint.*/  \"elasticSearchEndpoint\": \"$elasticSearchEndpoint\"/g" $configPath
 sed -i -e "s/.endpoint\":.*/\"endpoint\": \"$neo4jEndpoint\",/g" $configPath
@@ -76,7 +86,7 @@ sed -i -e "s/.*grafanaDBUrl.*/\t\t\"grafanaDBUrl\": \"$grafanaDBUrl\"/g" $config
 sed -i -e "s/.*insightsServiceURL.*/    \"insightsServiceURL\": \"$ServiceEndpoint\",/g" $configPath
 
 sed -i 's/\r$//g' $configPath
-echo "79"
+
 #RabbitMq
 echo "#################### Installing Erlang , required for Rabbit MQ ####################"
  mkdir erlang && cd erlang
@@ -92,9 +102,9 @@ echo "#################### Installing Rabbit MQ with configs and user creation #
  chkconfig rabbitmq-server on &&  service rabbitmq-server start
  rabbitmq-plugins enable rabbitmq_management
 #sleep 15
-curl -X PUT -u guest:guest -H "Content-Type: application/json" -d '{"password":"iSight","tags":"administrator"}' "http://localhost:15672/api/users/iSight"
+curl -X PUT -u guest:guest -H "Content-Type: application/json" -d '{"password":"iSight","tags":"administrator"}' "http://localhost/mq/api/users/iSight"
 #sleep 15
-curl -X PUT -u guest:guest -H "Content-Type: application/json" -d '{"configure":".*","write":".*","read":".*"}' "http://localhost:15672/api/permissions/%2f/iSight"
+curl -X PUT -u guest:guest -H "Content-Type: application/json" -d '{"configure":".*","write":".*","read":".*"}' "http://localhost/mq/api/permissions/%2f/iSight"
 
 #AgentDaemon
 echo "Set up Agent_Daemon"
@@ -122,7 +132,6 @@ yum install sudo -y
  chmod -R 777 /opt/agent20
 sh ./installdaemonagent.sh Linux
 
-
 #GRAFANA
 cd /opt
 mkdir grafana-v5.2.2 && cd grafana-v5.2.2
@@ -133,15 +142,17 @@ chmod -R 766 grafana-5.2.2
 cp ldap.toml ./grafana-5.2.2/conf/ldap.toml
 wget $grafanaDefaults
 cp defaults.ini ./grafana-5.2.2/conf/defaults.ini
+wget $grafanaCustom
+cp custom.ini  ./grafana-5.2.2/conf/custom.ini
 export GRAFANA_HOME=/opt/grafana-v5.2.2/
 sed -i -e "s/host = localhost:5432/host = $postgresIP:5432/g"  ./grafana-5.2.2/conf/defaults.ini
 cd grafana-5.2.2 && nohup ./bin/grafana-server &
 sleep 40
 echo $hostIP
 echo $! > grafana-pid.txt
-curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{"name":"PowerUser","email":"PowerUser@PowerUser.com","login":"PowerUser","password":"C0gnizant@1"}' http://$hostIP/grafana/api/admin/users
+curl -X POST -u admin:admin -H "Content-Type: application/json" -d '{"name":"PowerUser","email":"PowerUser@PowerUser.com","login":"PowerUser","password":"C0gnizant@1"}' http://localhost:3000/api/admin/users
 sleep 10
-echo "GRAFANA URL :"$hostIP/grafana
+echo "GRAFANA URL :"$hostIP:3000
 
 #TOMCAT
 cd /opt && wget $insightsUI
@@ -158,26 +169,15 @@ cp /opt/PlatformService.war /opt/apache-tomcat-8.5.27/webapps/
 rm -rf /opt/PlatformService.war
 /opt/apache-tomcat-8.5.27/bin/startup.sh &
 
+
+
 #Platform Engine
 mkdir -p /opt/insightsengine/
 cd /opt/insightsengine/ && wget $insightsEngineJar
 chmod -R 755 /opt/insightsengine/
-java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar
-# Apache server 
-yum install httpd
-cd /etc/httpd/conf
-rm -f httpd.conf
-wget https://platform.cogdevops.com/insights_install/installationScripts/latest/RHEL/httpd/httpd.conf
-cd /etc/httpd/conf.d
-rm -f httpd-vhosts.conf
-wget https://platform.cogdevops.com/insights_install/installationScripts/latest/RHEL/httpd/httpd-vhosts.conf
-systemctl start httpd
-firewall-cmd --zone=public --permanent --add-service=http
-firewall-cmd --zone=public --permanent --add-service=https
-firewall-cmd --reload
-/usr/sbin/setsebool -P httpd_can_network_connect 1
-systemctl restart httpd
+java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar &
 
+service rabbitmq-server restart
 # now we bring the primary process back into the foreground
 # and leave it there
 fg %1
