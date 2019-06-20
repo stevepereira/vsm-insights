@@ -111,6 +111,10 @@
           cancel </mat-icon>
       </button>
 
+      <button mat-icon-button [disabled]="">
+        <mat-icon svgIcon="redirect_icon" title="Redirect To Landing Page" class="mat-icon material-icons" (click)="redirectToLandingPage()">
+          refresh </mat-icon>
+      </button>
     </div>
     <div *ngIf=" showDetail ">
 

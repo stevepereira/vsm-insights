@@ -23,7 +23,9 @@ import { AddGroupMessageDialog } from '@insights/app/modules/user-onboarding/add
 import { MessageDialogService } from '@insights/app/modules/application-dialog/message-dialog-service';
 import { DataSharedService } from '@insights/common/data-shared-service';
 import { Router, ActivatedRoute, ParamMap, NavigationExtras } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, FormControl, FormArray, NgForm } from '@angular/forms'
+import { FormGroup, FormBuilder, Validators, FormControl, FormArray, NgForm } from '@angular/forms';
+import { HomeComponent } from '@insights/app/modules/home/home.component';
+
 @Component({
   selector: 'app-user-onboarding',
   templateUrl: './user-onboarding.component.html',
@@ -97,7 +99,7 @@ export class UserOnboardingComponent implements OnInit {
     { value: 'Viewer', name: 'Viewer' }
   ];
 
-  constructor(private fb: FormBuilder, private router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
+  constructor(private fb: FormBuilder, public router: Router, private userOnboardingService: UserOnboardingService, private sanitizer: DomSanitizer,
     public dialog: MatDialog, public messageDialog: MessageDialogService, private dataShare: DataSharedService) {
     var self = this;
     this.rows = this.fb.array([]);
@@ -586,6 +588,16 @@ export class UserOnboardingComponent implements OnInit {
     this.showAddUserDetail = true;
     this.showDetail = false;
     this.showDetail2 = false
+  }
+
+  /*Method to redirect to Configuration | Group & Users Management page*/
+  redirectToLandingPage() {
+
+    this.Refresh();
+    this.showAssignUserDetail = false;
+    this.showAddUserDetail = false;
+    this.showDetail = true;
+    this.showDetail2 = true
   }
 }
 
