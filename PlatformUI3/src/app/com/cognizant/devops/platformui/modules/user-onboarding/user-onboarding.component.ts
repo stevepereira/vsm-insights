@@ -406,7 +406,7 @@ export class UserOnboardingComponent implements OnInit {
     this.adduserSaveEnable = false;
     this.addSelected = false;
     this.assignSelected = false;
-    this.showDetail2 = false;
+    this.showDetail2 = true;
     this.addRadioSelected = false;
     this.assignRadioSelected = false;
     this.assignuserSaveEnable = false;
