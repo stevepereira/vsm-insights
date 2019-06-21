@@ -59,7 +59,7 @@
 
       </button>
       <button *ngIf="!showAddUserDetail " mat-icon-button (click)="addGlobalUser()">
-        <mat-icon title="Add Global User" class="mat-icon material-icons">
+        <mat-icon title="Add User to Current/Selected Access Group" class="mat-icon material-icons">
           person_add
         </mat-icon>
       </button>
@@ -106,12 +106,12 @@
         </mat-icon>
       </button>
 
-      <button mat-icon-button [disabled]="">
+      <button mat-icon-button [disabled]="!showCancel">
         <mat-icon title="Cancel " class="mat-icon material-icons" (click)="Refresh()">
           cancel </mat-icon>
       </button>
 
-      <button mat-icon-button>
+      <button mat-icon-button [disabled]="!showCancel"> 
         <mat-icon svgIcon="redirect_icon" title="Redirect To Landing Page" class="mat-icon material-icons" (click)="redirectToLandingPage()">
           refresh </mat-icon>
       </button>

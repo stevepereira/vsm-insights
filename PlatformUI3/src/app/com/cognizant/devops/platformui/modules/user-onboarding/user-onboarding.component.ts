@@ -41,6 +41,7 @@ export class UserOnboardingComponent implements OnInit {
   assignuserSaveEnable: boolean = false
   showAddUserDetail: boolean = false;
   showAssignUserDetail: boolean = false;
+  showCancel: boolean = false;
   showThrobber: boolean = false;
   adminOrgDataArray = [];
   orgNameArray = [];
@@ -584,6 +585,7 @@ export class UserOnboardingComponent implements OnInit {
     }
   }
   addGlobalUser() {
+    this.showCancel = true;
     this.showAssignUserDetail = true;
     this.showAddUserDetail = true;
     this.showDetail = false;
@@ -597,7 +599,8 @@ export class UserOnboardingComponent implements OnInit {
     this.showAssignUserDetail = false;
     this.showAddUserDetail = false;
     this.showDetail = true;
-    this.showDetail2 = true
+    this.showDetail2 = true;
+    this.showCancel = false;
   }
 }
 
