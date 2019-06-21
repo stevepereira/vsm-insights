@@ -186,6 +186,35 @@ public class Neo4jDBHandler {
 	}
 
 	/**
+	 * @param query
+	 * @return GraphResponse
+	 * @throws GraphDBException
+	 */
+	public GraphResponse executeMultipleCypherQuery(List<String> queryList) throws GraphDBException {
+
+		for (String query : queryList) {
+			JsonObject requestJson = new JsonObject();
+			JsonArray statementArray = new JsonArray();
+			JsonObject statement = new JsonObject();
+			statement.addProperty("statement", query);
+			statementArray.add(statement);
+			JsonArray resultDataContents = new JsonArray();
+			resultDataContents.add("row");
+			resultDataContents.add("graph");
+			statement.add("resultDataContents", resultDataContents);
+
+			requestJson.add("statements", statementArray);
+			ClientResponse response = doCommitCall(requestJson);
+			if (response.getStatus() != 200) {
+				throw new GraphDBException(response);
+			}
+			parser.processGraphDBNode(response.getEntity(String.class));
+		}
+
+		return null;
+	}
+
+	/**
 	 * @param queryJson
 	 * @return String
 	 */
