@@ -38,6 +38,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class Neo4jDBHandler {
 	DocumentParser parser = new DocumentParser();
+
 	/*
 	 * Create Nodes using neo4j rest api with transaction support. Following are
 	 * request details: POST http://localhost:7474/db/data/transaction/commit
