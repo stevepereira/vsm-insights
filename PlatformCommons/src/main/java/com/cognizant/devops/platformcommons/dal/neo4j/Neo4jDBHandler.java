@@ -20,9 +20,6 @@ import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.cognizant.devops.platformcommons.config.ApplicationConfigProvider;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -41,7 +38,6 @@ import com.sun.jersey.api.client.WebResource;
 
 public class Neo4jDBHandler {
 	DocumentParser parser = new DocumentParser();
-	private static Logger log = LogManager.getLogger(Neo4jDBHandler.class.getName());
 	/*
 	 * Create Nodes using neo4j rest api with transaction support. Following are
 	 * request details: POST http://localhost:7474/db/data/transaction/commit
@@ -186,35 +182,6 @@ public class Neo4jDBHandler {
 	}
 
 	/**
-	 * @param query
-	 * @return GraphResponse
-	 * @throws GraphDBException
-	 */
-	public GraphResponse executeMultipleCypherQuery(List<String> queryList) throws GraphDBException {
-
-		for (String query : queryList) {
-			JsonObject requestJson = new JsonObject();
-			JsonArray statementArray = new JsonArray();
-			JsonObject statement = new JsonObject();
-			statement.addProperty("statement", query);
-			statementArray.add(statement);
-			JsonArray resultDataContents = new JsonArray();
-			resultDataContents.add("row");
-			resultDataContents.add("graph");
-			statement.add("resultDataContents", resultDataContents);
-
-			requestJson.add("statements", statementArray);
-			ClientResponse response = doCommitCall(requestJson);
-			if (response.getStatus() != 200) {
-				throw new GraphDBException(response);
-			}
-			parser.processGraphDBNode(response.getEntity(String.class));
-		}
-
-		return null;
-	}
-
-	/**
 	 * @param queryJson
 	 * @return String
 	 */
@@ -309,7 +276,6 @@ public class Neo4jDBHandler {
 		JsonArray statementArray = new JsonArray();
 		for (JsonObject data : dataList) {
 			JsonObject statement = getCreateCypherQueryStatement(data, cypherQuery);
-			log.debug("  statement  " + statement);
 			statementArray.add(statement);
 		}
 		requestJson.add("statements", statementArray);
