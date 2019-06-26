@@ -175,9 +175,8 @@ rm -rf /opt/PlatformService.war
 mkdir -p /opt/insightsengine/
 cd /opt/insightsengine/ && wget $insightsEngineJar
 chmod -R 755 /opt/insightsengine/
-java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar &
+java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar 
 
-service rabbitmq-server restart
 # now we bring the primary process back into the foreground
 # and leave it there
 fg %1
