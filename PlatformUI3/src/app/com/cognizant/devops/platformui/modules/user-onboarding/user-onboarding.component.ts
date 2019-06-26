@@ -602,6 +602,13 @@ export class UserOnboardingComponent implements OnInit {
     this.showDetail2 = true;
     this.showCancel = false;
   }
+
+  trackEvent = function(event) {
+    if(event.key === 'Enter') {
+      this.searchData(this.searchUser, this.selectedAdminOrg)
+    }
+  }
+
 }
 
 
