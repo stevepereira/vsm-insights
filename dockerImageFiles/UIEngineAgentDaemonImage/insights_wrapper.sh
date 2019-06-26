@@ -75,6 +75,9 @@ grafanaDBUrl="jdbc:postgresql:\/\/$postgresIP:5432\/grafana"
 
 #UPDATE ServiceEndpoint - uiConfig.json and server-config.json
 ServiceEndpoint="http:\/\/$hostIP:8080"
+insightsIP="http:\/\/$hostIP"
+grafanaIP="http:\/\/$hostIP\/grafana"
+
 
 configPath='/usr/INSIGHTS_HOME/.InSights/server-config.json'
 sed -i -e "s/.*elasticSearchEndpoint.*/  \"elasticSearchEndpoint\": \"$elasticSearchEndpoint\"/g" $configPath
@@ -163,8 +166,8 @@ wget $tomcatURL
 tar -zxvf apache-tomcat-8.5.27.tar.gz && rm -rf apache-tomcat-8.5.27.tar.gz
 cd apache-tomcat-8.5.27 && chmod -R 755 /opt/apache-tomcat-8.5.27
 cp -r /opt/app /opt/apache-tomcat-8.5.27/webapps/ && rm -rf /opt/app
-sed -i -e "s/.*serviceHost.*/    \"serviceHost\": \"$ServiceEndpoint\",/g" /opt/apache-tomcat-8.5.27/webapps/app/config/uiConfig.json
-sed -i -e "s/.*grafanaHost.*/    \"grafanaHost\": \"$ServiceEndpoint\"/g" /opt/apache-tomcat-8.5.27/webapps/app/config/uiConfig.json
+sed -i -e "s/.*serviceHost.*/    \"serviceHost\": \"$insightsIP\",/g" /opt/apache-tomcat-8.5.27/webapps/app/config/uiConfig.json
+sed -i -e "s/.*grafanaHost.*/    \"grafanaHost\": \"$grafanaIP\"/g" /opt/apache-tomcat-8.5.27/webapps/app/config/uiConfig.json
 cp /opt/PlatformService.war /opt/apache-tomcat-8.5.27/webapps/
 rm -rf /opt/PlatformService.war
 /opt/apache-tomcat-8.5.27/bin/startup.sh &
@@ -177,6 +180,10 @@ cd /opt/insightsengine/ && wget $insightsEngineJar
 chmod -R 755 /opt/insightsengine/
 java  -Xmx1024M -Xms500M  -jar /opt/insightsengine/PlatformEngine.jar 
 
+
+
+#Restarting Rabbitmq server
+#service rabbitmq-server restart
 # now we bring the primary process back into the foreground
 # and leave it there
 fg %1
