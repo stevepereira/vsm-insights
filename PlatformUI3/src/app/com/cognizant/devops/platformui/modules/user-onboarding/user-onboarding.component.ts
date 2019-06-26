@@ -415,6 +415,7 @@ export class UserOnboardingComponent implements OnInit {
     this.username = null;
     this.email = null;
     this.names = null;
+    this.role = null;
     this.searchOrgForUser = null;
     console.log(this.rows.value)
     this.searchUser = null;
