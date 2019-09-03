@@ -3,7 +3,7 @@
 set -e
 
 ##line1 is gitLab code.cognizant.com private token of a user
-line1=`echo "echo <<Enter GitHub Token here>>" > /opt/git-askpassword.sh`
+line1=`echo "echo deb507cbbb1d17255029d7f01aa8c2d76dca6736" > /opt/git-askpassword.sh`
 line2=`chmod +x /opt/git-askpassword.sh`
 ##export to avoid password prompt during git checkout for internal/private repo. 
 ##for public repo this will not be used
