@@ -49,6 +49,7 @@ class MessageFactory:
             subscriberThread()
             
     def publish(self, routingKey, data, batchSize=None, metadata=None):
+        print "message factory publish method"
         if data != None:
             credentials = pika.PlainCredentials(self.user, self.password)
             connection = pika.BlockingConnection(pika.ConnectionParameters(credentials=credentials,host=self.host))
@@ -69,22 +70,27 @@ class MessageFactory:
             #sys.getsizeof(dataJson)
             if batchSize is None:
                 dataJson = self.buildMessageJson(data, metadata)
+                print " if condition before publish"
                 channel.basic_publish(exchange=self.exchange, 
                                     routing_key=routingKey, 
                                     body=dataJson,
                                     properties=pika.BasicProperties(
                                         delivery_mode=2 #make message persistent
                                     ))
+                print "if successfully published "
             else:
                 baches = list(self.chunks(data, batchSize))
                 for batch in baches:
                     dataJson = self.buildMessageJson(batch, metadata)
+                    print " else condition before publish"
                     channel.basic_publish(exchange=self.exchange, 
                                     routing_key=routingKey, 
                                     body=dataJson,
                                     properties=pika.BasicProperties(
                                         delivery_mode=2 #make message persistent
                                     ))
+                    print "esle successfully published"
+                        
             connection.close()        
     
     def buildMessageJson(self, data, metadata=None):
