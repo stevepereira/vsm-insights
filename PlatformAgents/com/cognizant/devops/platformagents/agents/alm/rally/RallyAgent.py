@@ -98,9 +98,10 @@ class RallyAgent(BaseAgent):
                              artifactListResCount = artifactListRes['QueryResult']['PageSize']
                          logging.debug("artifactListResCount 8 ==== " + str(artifactListResCount))
                      except Exception as ex:
-                         artifactListResCount=0
-                         print ex
-                         self.publishHealthDataForExceptions(ex)
+                      artifactListResCount=0
+                      print "LOC1"
+                      print ex
+                      self.publishHealthDataForExceptions(ex)
                      for artifact in range(0, artifactListResCount):
                        try:  
                            artifactListData = artifactListRes['QueryResult']['Results'][artifact]
@@ -181,8 +182,9 @@ class RallyAgent(BaseAgent):
                                         injectArtifactData[key] = 0
                                data.append(injectArtifactData)
                        except Exception as ex:
-                            print ex
-                            self.publishHealthDataForExceptions(self,ex)
+                        print "LOC2"
+                        print ex
+                        self.publishHealthDataForExceptions(ex)
                      pageNum = 20 + pageNum
             ''' Section used to get all iteration inforamtion  '''
             for Workspace in range(0, len(specificWorkspaceList)):
@@ -206,7 +208,8 @@ class RallyAgent(BaseAgent):
                     else:
                          iterationCount = iterationListRes['QueryResult']['PageSize']
                 except Exception as ex:
-                     iterationCount=0 
+                     iterationCount=0
+                     print"LOC 3"
                      print ex
                      self.publishHealthDataForExceptions(ex) 
                 for iterationRes in range(0, iterationCount):
@@ -233,8 +236,9 @@ class RallyAgent(BaseAgent):
                         injectIterationData['iterationID'] = int(iterationId)
                         data_iteration = data_iteration + self.parseResponse(responseTemplate, iterationRes, injectIterationData)
                     except Exception as ex:
-                        print ex
-                        self.publishHealthDataForExceptions(ex)
+                      print "LOC4"
+                      print ex
+                      self.publishHealthDataForExceptions(ex)
                 pageNum = 20 + pageNum
             
             ''' Section used to get all release inforamtion  '''
@@ -260,9 +264,10 @@ class RallyAgent(BaseAgent):
                     else:
                          releaseCount = releaseListRes['QueryResult']['PageSize']
                 except Exception as ex:
-                     releaseCount=0  
-                     print ex
-                     self.publishHealthDataForExceptions(ex)
+                  print "LOC5"
+                  print ex
+                  releaseCount=0
+                  self.publishHealthDataForExceptions(ex)
                 for releaseRes in range(0, releaseCount):
                     try:
                         releaseListData = releaseListRes['QueryResult']['Results'][releaseRes]
@@ -287,12 +292,14 @@ class RallyAgent(BaseAgent):
                         injectReleaseData['releaseID'] = int(releaseId)
                         data_release = data_release + self.parseResponse(responseTemplate, releaseRes, injectReleaseData)
                     except Exception as ex:
-                        print ex
-                        self.publishHealthDataForExceptions(ex)
+                      print "LOC6 "
+                      print ex
+                      self.publishHealthDataForExceptions(ex)
                 pageNum = 20 + pageNum
         except Exception as ex:
-            print ex
-            self.publishHealthDataForExceptions(ex)
+          print "LOC7"
+          print ex
+          self.publishHealthDataForExceptions(ex)
         logging.debug(" publish data  ==== " )
         print "data"
         self.publishToolsData(data, storyMetadata)
@@ -306,4 +313,4 @@ class RallyAgent(BaseAgent):
         self.updateTrackingJson(self.tracking)
 
 if __name__ == "__main__":
-    RallyAgent()
+    RallyAgent()       
