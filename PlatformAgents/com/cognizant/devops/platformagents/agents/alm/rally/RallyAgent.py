@@ -287,11 +287,15 @@ class RallyAgent(BaseAgent):
         except Exception as ex:
             self.publishHealthDataForExceptions(self, ex)
         logging.debug(" publish data  ==== " )
+        print "data"
         self.publishToolsData(data, storyMetadata)
+        print "data_iteration"
         self.publishToolsData(data_iteration, relationMetadata)
+        print "data_release"
         self.publishToolsData(data_release, releaseMetadata)
         self.tracking['LastUpdatedDate'] = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%dT%H:%M:%SZ')
         logging.debug(" publish data complete ==== " )
+        print "tracking updated"
         self.updateTrackingJson(self.tracking)
 
 if __name__ == "__main__":
