@@ -78,14 +78,25 @@
 		"correlationFrequency": 3,
 		"batchSize": 2000
 	},
+	"schedulerConfigInMin" : {
+		"auditEngineInterval" : 60,
+		"webhookEngineInterval" : 10,
+		"engineAggregatorModuleInterval" : 10,
+		"engineCorrelatorModuleInterval" : 60,
+		"projectMapperModuleInterval" : 10,
+		"dataPurgingExecutorInterval" : 300,
+		"offlineDataProcessingExecutorInterval" : 10
+	},
 	"insightsServiceURL": "http://localhost:8080",
 	"insightsTimeZone": "Asia/Kolkata",
 	"userId": "admin",
 	"password": "admin",
 	"refreshTime": "Jan 22, 2017 5:04:25 PM",
 	"enableOnlineDatatagging": true,
+	"enableAuditEngine" : true,
+	"enableWebHookEngine" : true,
+	"enableOnlineBackup": false,
 	"trustedHosts": [
     "localhost", "hostip"
-  ],
-	"enableOnlineBackup": false
+  ]
 }
