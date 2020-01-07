@@ -97,6 +97,12 @@
 	"enableWebHookEngine" : true,
 	"enableOnlineBackup": false,
 	"trustedHosts": [
-    "localhost", "hostip"
-  ]
+    	"localhost", "hostip"
+  	],
+  	"vault": 
+	{
+		"vaultEndPoint": "http://10.224.90.35:3000/v1/",
+		"secretEngine": "insights-kv",
+		"vaultToken": "s.qkzC7bMWCEknYc1DGsNdzaSZ"
+	}
 }
